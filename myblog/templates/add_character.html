@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tambah Karakter</title>
+</head>
+<body>
+    <h1>Form Tambah Karakter</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Karakter</legend>
+            {{ char_form.as_p }}
+        </fieldset>
+        <fieldset>
+            <legend>Base Stat</legend>
+            {{ base_form.as_p }}
+        </fieldset>
+        <fieldset>
+            <legend>Final Stat</legend>
+            {{ final_form.as_p }}
+        </fieldset>
+        <button type="submit">Simpan</button>
+    </form>
+</body>
+</html>

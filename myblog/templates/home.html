@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web ku</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    
+    <!-- Static CSS -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo-company">
+                <img src="{% static 'ikon/logo/Logo-Company-Night.png' %}" alt="logo-company">
+            </div>
+            <ul class="button">
+                <li><a href="#" class="active">HOME</a></li>
+                <li><a href="#" class="active">CHARACTER</a></li>
+                <li><a href="#" class="active">BACKPACK</a></li>
+                <li><a href="#" class="active">ABOUT</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <img src="{% static 'ikon/logo/Wuthering-Waves-logo.png' %}" alt="logo-game" class="logo-game">
+            <p>Released on Multiple Platforms - Download Now!!</p>
+            <div class="platform">
+                <img src="{% static 'ikon/logo/Google-Play.png' %}" alt="playstore" class="platform-icon">
+                <img src="{% static 'ikon/logo/App-Store.png' %}" alt="appstore" class="platform-icon">
+                <img src="{% static 'ikon/logo/Windows.png' %}" alt="windows" class="platform-icon">
+                <img src="{% static 'ikon/logo/Ps5.png' %}" alt="ps5" class="platform-icon">
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
