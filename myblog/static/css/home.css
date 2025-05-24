@@ -14,7 +14,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-image: url("/static/background/Background-4.png");/* Disesuaikan dengan struktur folder */
+  background-image: url("/static/background/Background-4.1.png");/* Disesuaikan dengan struktur folder */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
