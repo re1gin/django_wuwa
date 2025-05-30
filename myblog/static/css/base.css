@@ -1,4 +1,4 @@
-    * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -18,11 +18,10 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    background-image: url("/static/background/Background-4.1.png");/* Disesuaikan dengan struktur folder */
+    background-image: url("/static/assets/background/Background-7.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: aliceblue;
     }
 
     .navbar {
@@ -64,42 +63,4 @@
     font-size: 13px;
     position: relative;
     padding: 7px;
-    }    
-
-    .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
-    width: 100%;
-    height: 686px;
-    gap: 15px;
-    }
-
-    .logo-game{
-    width: 280px;
-    }
-
-    p{
-    font-size: 15px;
-    color: rgb(255, 255, 255);
-    text-align: center;
-    }
-
-    .platform{
-    display: flex;
-    flex-direction: row;
-    gap: 25px;
-    margin-bottom: 100px;
-    }
-
-    .platform-icon{
-    width: 150px;
-    transition: all 0.3s ease; 
-    transform: scale(1);       
-    }
-
-    .platform-icon:hover{
-    transform: scale(1.1);
-    transition: all 0.3s ease;
-    }
+    }  
