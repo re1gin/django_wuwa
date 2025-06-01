@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Web ku - Pilih Karakter Resonator{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/resonators_selection.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="hero">
+        <div class="character-grid">
+            {% for char in characters %}
+                <a href="{{ char.detail_url }}" class="character-card">
+                    <img src="{{ char.wallpaper_url }}" alt="Wallpaper {{ char.name }}">
+                    <div class="character-name">{{ char.name }}</div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock content %}

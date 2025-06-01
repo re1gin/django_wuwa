@@ -1,0 +1,144 @@
+ .container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url("/static/assets/background/Background-7.png"); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    }
+
+.hero {
+    padding: 40px 20px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    animation: fadeInUp 2s ease-out;
+}
+
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0; 
+}
+
+.character-card {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    display: block;
+    width: 200px;
+    height: 300px;
+}
+
+.character-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    background-color: #3a3a3a;
+}
+
+.character-card img {
+    width: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+    filter: brightness(0.4);
+}
+
+.character-card:hover img {
+    transform: scale(1.08);
+    filter: brightness(1);
+}
+
+.character-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3em;
+    color: #d4d4d4;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+.character-card:hover .character-name {
+    color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    .navbar {
+        padding: 10px 15px;
+        margin-bottom: 20px;
+    }
+    .navbar .logo-company img {
+        height: 40px;
+    }
+    .navbar .button a {
+        font-size: 0.95em;
+        padding: 6px 12px;
+    }
+    .hero {
+        padding: 30px 15px;
+    }
+    .character-card img {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .button li {
+        margin: 5px 5px;
+    }
+    .navbar .button a {
+        font-size: 0.85em;
+        padding: 5px 10px;
+    }
+    .character-grid {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+        padding: 10px 0;
+    }
+    .character-card img {
+        height: 160px;
+    }
+    .character-name {
+        font-size: 1.1em;
+        padding: 10px;
+    }
+}

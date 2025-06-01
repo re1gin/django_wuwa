@@ -1,0 +1,12 @@
+{% load static %}
+<nav class="navbar">
+    <div class="logo-company">
+        <img src="{% static 'assets/logo/Logo-Company-Day.png' %}" alt="Company Logo">
+    </div>
+    <ul class="button">
+        <li><a href="{% url 'home' %}" class="active">HOME</a></li>
+        <li><a href="{% url 'resonators:character_selection' %}" class="active">RESONATOR</a></li>
+        <li><a href="#" class="active">BACKPACK</a></li>
+        <li><a href="#" class="active">ABOUT</a></li>
+    </ul>
+</nav>

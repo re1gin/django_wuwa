@@ -1,0 +1,151 @@
+/* myproject/static/admin/css/dashboard.css */
+
+/* --- GENERAL ADMIN DASHBOARD STYLING --- */
+/* Mengubah warna latar belakang body admin */
+body.dashboard {
+    background-color: #00b931; /* Warna abu-abu terang */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Mengubah font */
+}
+
+/* Mengubah warna header utama admin */
+#header {
+    background-color: #343a40; /* Darker header */
+    color: #ffffff;
+    border-bottom: 1px solid #23272b;
+}
+
+#site-name a {
+    color: #ffffff;
+}
+
+/* --- MODULE STYLING --- */
+/* Styling untuk kotak modul (app list, recent actions) */
+.module {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    padding: 20px;
+}
+
+/* Styling untuk judul modul */
+.module h2 {
+    color: #007bff; /* Warna biru untuk judul */
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+/* Styling untuk sub-judul modul (My actions) */
+.module h3 {
+    color: #555555;
+    font-size: 1.2em;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* --- APP LIST STYLING --- */
+/* Styling untuk daftar aplikasi di dashboard */
+#content-main .app-admin .model-admin {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #f2f7fc; /* Warna latar belakang untuk setiap model */
+    border-left: 5px solid #007bff; /* Garis biru di samping kiri */
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#content-main .app-admin .model-admin:hover {
+    background-color: #e6f0fa;
+}
+
+#content-main .app-admin .model-admin h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.4em;
+}
+
+#content-main .app-admin .model-admin h3 a {
+    color: #333333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#content-main .app-admin .model-admin h3 a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+#content-main .app-admin .model-admin ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Untuk menata tautan (View, Add) secara horizontal */
+    gap: 15px; /* Jarak antar tautan */
+}
+
+#content-main .app-admin .model-admin li {
+    display: inline;
+}
+
+#content-main .app-admin .model-admin li a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#content-main .app-admin .model-admin li a:hover {
+    text-decoration: underline;
+}
+
+/* Styling untuk link 'Add' */
+#content-main .app-admin .model-admin .addlink {
+    color: #28a745; /* Warna hijau untuk tambah */
+}
+#content-main .app-admin .model-admin .addlink:hover {
+    color: #218838;
+}
+
+/* --- RECENT ACTIONS STYLING --- */
+#recent-actions-module .actionlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#recent-actions-module .actionlist li {
+    border-bottom: 1px dashed #eeeeee;
+    padding: 10px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+#recent-actions-module .actionlist li:last-child {
+    border-bottom: none;
+}
+
+#recent-actions-module .actionlist li a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#recent-actions-module .actionlist li a:hover {
+    text-decoration: underline;
+}
+
+#recent-actions-module .actionlist li .mini.quiet {
+    font-size: 0.8em;
+    color: #999;
+}
+
+/* Styling untuk tipe aksi (add, change, delete) */
+.actionlist li.addlink { color: #28a745; }
+.actionlist li.changelink { color: #ffc107; } /* Warna kuning */
+.actionlist li.deletelink { color: #dc3545; } /* Warna merah */
+
+/* Styling untuk tautan di bawah recent actions (jika ada) */
+.actionlist li a {
+    font-weight: bold;
+}

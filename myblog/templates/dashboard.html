@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block body_class %}dashboard-page{% endblock %} {# Opsional: untuk styling background khusus #}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Selamat Datang di Dashboard Admin Kustom!</h2>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>Total Karakter</h3>
+            <p>{{ total_characters }}</p>
+        </div>
+        {# Anda bisa tambahkan stat-card lain di sini #}
+    </div>
+
+    <div class="dashboard-recent-activity">
+        <h3>Karakter Terbaru</h3>
+        {% if recent_characters %}
+        <ul>
+            {% for char in recent_characters %}
+                <li>
+                    <a href="{% url 'resonators:resonator_detail' char.character|lower %}">
+                        {{ char.character }} (ID: {{ char.id }})
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Belum ada karakter ditambahkan.</p>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-links">
+        <h3>Aksi Cepat</h3>
+        <ul>
+            <li><a href="{% url 'resonators:character_selection' %}">Lihat Semua Resonator</a></li>
+            <li><a href="{% url 'admin:index' %}">Pergi ke Admin Django Bawaan</a></li>
+            {# Tambahkan link ke halaman manajemen kustom lainnya di sini #}
+        </ul>
+    </div>
+</div>
+{% endblock content %}

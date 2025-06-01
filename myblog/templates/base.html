@@ -1,0 +1,37 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+        
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        
+        {# Blok untuk CSS atau meta tag tambahan di head per halaman #}
+        {% block extra_head %}{% endblock %} 
+
+        <title>{% block title %}Web ku - Default Title{% endblock %}</title> 
+    </head>
+<body>
+
+    <div class="container">
+        
+        {% include 'navbar.html' %}
+        
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+        
+    </div>
+
+    {% include 'footer.html' %}
+
+    {% block extra_js %}{% endblock %} 
+</body>
+</html>
