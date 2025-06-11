@@ -1,8 +1,34 @@
+import os
 from django.db import models
 from django.urls import reverse
 
-class Character(models.Model):
+def get_resonator_icon_path(instance, filename):
+    # Nama folder adalah nama resonator (misal: "Jian_Xin")
+    folder_name = instance.character.replace(" ", "_").replace("'", "").replace(".", "").lower()
+    # Nama file adalah 'Icon.ext'
+    ext = filename.split('.')[-1]
+    return os.path.join(folder_name, f'Icon.{ext}')
+
+# Fungsi untuk menentukan lokasi upload dan nama file untuk RENDER
+def get_resonator_render_path(instance, filename):
+    folder_name = instance.character.replace(" ", "_").replace("'", "").replace(".", "").lower()
+    ext = filename.split('.')[-1]
+    return os.path.join(folder_name, f'Render.{ext}')
+
+# Fungsi untuk menentukan lokasi upload dan nama file untuk CONVENE
+def get_resonator_convene_path(instance, filename):
+    folder_name = instance.character.replace(" ", "_").replace("'", "").replace(".", "").lower()
+    ext = filename.split('.')[-1]
+    return os.path.join(folder_name, f'Convene.{ext}') # Asumsi nama file adalah 'Convene'
+
+
+class Resonator(models.Model):
     character = models.CharField(max_length=100, unique=True)
+    
+    icon_gambar = models.ImageField(upload_to=get_resonator_icon_path, blank=True, null=True)
+    render_gambar = models.ImageField(upload_to=get_resonator_render_path, blank=True, null=True)
+    convene_gambar = models.ImageField(upload_to=get_resonator_convene_path, blank=True, null=True)
+
     rarity = models.CharField(max_length=10, blank=True, null=True)
     weapon = models.CharField(max_length=50, blank=True, null=True)
     sex = models.CharField(max_length=10, blank=True, null=True)
@@ -26,6 +52,6 @@ class Character(models.Model):
         return self.character
     
     class Meta:
-        verbose_name = 'Character'
-        verbose_name_plural = 'Characters'
+        verbose_name = 'Resonator'
+        verbose_name_plural = 'Resonators'
 

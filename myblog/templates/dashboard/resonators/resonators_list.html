@@ -1,0 +1,49 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Daftar Resonator{% endblock %}
+{% block page_title %}Daftar Resonator{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'dashboard:resonator_create' %}" class="btn btn-add">Tambah Resonator Baru</a>
+
+    {% if resonators %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Rarity</th>
+                <th>Tipe Senjata</th>
+                <th>Elemen</th>
+                <th>Peran</th>
+                <th>HP</th>
+                <th>ATK</th>
+                <th>Crit Rate</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resonator in resonators %}
+            <tr>
+                <td>{{ resonator.character }}</td>
+                <td>{{ resonator.rarity }}</td>
+                <td>{{ resonator.weapon_type }}</td>
+                <td>{{ resonator.attribute }}</td>
+                <td>{{ resonator.role }}</td>
+                <td>{{ resonator.hp }}</td>
+                <td>{{ resonator.atk }}</td>
+                <td>{{ resonator.crit_rate }}%</td>
+                <td>{{ resonator.crit_dmg }}%</td>
+                <td class="actions">
+                    <a href="{% url 'dashboard:resonator_detail_update' resonator.pk %}" class="btn btn-edit">Edit</a>
+                    <a href="{% url 'dashboard:resonator_delete' resonator.pk %}" class="btn btn-delete">Hapus</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Belum ada resonator yang terdaftar.</p>
+    {% endif %}
+</div>
+{% endblock %}

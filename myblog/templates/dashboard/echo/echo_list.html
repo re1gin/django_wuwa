@@ -1,0 +1,38 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Daftar Echo Set{% endblock %}
+{% block page_title %}Daftar Echo Set{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'dashboard:echo_create' %}" class="btn btn-add">Tambah Echo Set Baru</a>
+
+    {% if echoes %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Set</th>
+                <th>Bonus 2-Piece</th>
+                <th>Bonus 5-Piece</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for echo in echoes %}
+            <tr>
+                <td>{{ echo.nama }}</td>
+                <td>{{ echo.set_bonus_2pc|truncatechars:70 }}</td>
+                <td>{{ echo.set_bonus_5pc|truncatechars:70 }}</td>
+                <td class="actions">
+                    <a href="{% url 'dashboard:echo_detail_update' echo.pk %}" class="btn btn-edit">Edit</a>
+                    <a href="{% url 'dashboard:echo_delete' echo.pk %}" class="btn btn-delete">Hapus</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Belum ada Echo Set yang terdaftar.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -27,6 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'resonators',
+    'echo',
+    'weapon',
+    'build',
+    'dashboard',
+    
 
 ]
 

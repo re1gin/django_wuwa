@@ -1,9 +1,11 @@
 import os
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.urls import reverse
-from .models import Character
+from .models import Resonator
+
+
 
 def format_folder(name):
     formatted_name = name.replace(' ', '_')
@@ -11,15 +13,15 @@ def format_folder(name):
     
     return formatted_name
 
-# --- View character_selection
-def character_selection(request):
-    all_characters = Character.objects.all().order_by('character')
+
+def resonator_selection(request):
+    all_characters = Resonator.objects.all().order_by('character')
 
     char_cards = []
     for char_obj in all_characters:
         folder_name = format_folder(char_obj.character)
 
-        wallpaper_path = f"{settings.STATIC_URL}assets/character/{folder_name}/Wallpaper.png"
+        wallpaper_path = f"{settings.MEDIA_URL}{folder_name}/Wallpaper.png"
         
         detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': char_obj.character})
 
@@ -35,11 +37,11 @@ def character_selection(request):
         'characters': char_cards,
         'page_title': 'Pilih Resonator Anda' 
     }
-    return render(request, 'resonators_selection.html', context) 
+    return render(request, 'landingpage/resonators_selection.html', context) 
 
 
 def resonators(request, character_name):
-    char_obj = get_object_or_404(Character, character=character_name)
+    char_obj = get_object_or_404(Resonator, character=character_name)
 
     # --- Bagian untuk Memuat Data JSON ---
     json_filepath = os.path.join(settings.BASE_DIR, 'data', 'character_quote.json') 
@@ -68,7 +70,7 @@ def resonators(request, character_name):
 
     # Logika Gambar Karakter yang Sedang Dilihat.
     folder_name = format_folder(char_obj.character)
-    image_path = f"{settings.STATIC_URL}assets/character/{folder_name}/"
+    image_path = f"{settings.MEDIA_URL}{folder_name}/"
     
     # Membuat dictionary 'images' menggunakan path dasar
     images = {
@@ -79,11 +81,11 @@ def resonators(request, character_name):
     icon_chars_data = [] 
     
     if "rover -" in char_obj.character.lower(): 
-        rover_variants = Character.objects.filter(character__icontains='Rover - ').order_by('character')
+        rover_variants = Resonator.objects.filter(character__icontains='Rover - ').order_by('character')
         
         for variant in rover_variants:
             icon_folder = format_folder(variant.character)
-            icon_url = f"{settings.STATIC_URL}assets/character/{icon_folder}/Icon.png" 
+            icon_url = f"{settings.MEDIA_URL}/{icon_folder}/Icon.png" 
             
             icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': variant.character})
             is_active_icon = (variant.character == char_obj.character)
@@ -96,7 +98,7 @@ def resonators(request, character_name):
             })
     else: 
         icon_folder = format_folder(char_obj.character)
-        icon_url = f"{settings.STATIC_URL}assets/character/{icon_folder}/Icon.png"
+        icon_url = f"{settings.MEDIA_URL}{icon_folder}/Icon.png"
         icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': char_obj.character})
 
         icon_chars_data.append({
@@ -112,4 +114,4 @@ def resonators(request, character_name):
         "json_data": char_quotes,
         "all_characters_for_icons": icon_chars_data, 
     }
-    return render(request, 'resonator.html', context)
+    return render(request, 'landingpage/resonator.html', context)

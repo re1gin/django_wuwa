@@ -7,6 +7,16 @@ from . import views as main_views     # Impor views dari aplikasi utama (untuk h
 
 urlpatterns = [
     path('admin/', admin.site.urls), # URL untuk halaman admin Django
+    
     path('', main_views.home, name='home'),
     path('', include('resonators.urls')),
+    path('', include('build.urls')),
+    path('', include('weapon.urls')),
+    path('', include('echo.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Tambahkan juga ini untuk memastikan static files terlayani (jika ada)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

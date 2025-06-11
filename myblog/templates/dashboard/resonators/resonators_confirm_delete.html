@@ -1,0 +1,16 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Konfirmasi Hapus Resonator{% endblock %}
+{% block page_title %}Konfirmasi Hapus Resonator{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Konfirmasi Hapus</h1>
+    <p>Apakah Anda yakin ingin menghapus resonator "{{ resonator.nama }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-delete">Ya, Hapus</button>
+        <a href="{% url 'dashboard:resonator_detail_update' resonator.pk %}" class="btn btn-back">Batal</a>
+    </form>
+</div>
+{% endblock %}

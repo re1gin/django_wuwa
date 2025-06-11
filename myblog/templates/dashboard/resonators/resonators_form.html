@@ -1,0 +1,211 @@
+
+
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">{{ page_title }}</h3>
+                </div>
+                <div class="card-body p-4">
+                    {# PENTING: Tambahkan enctype="multipart/form-data" di sini agar form bisa mengupload file #}
+                    {# PERBAIKAN: URL action form diubah untuk mengarah ke dashboard dan menangani create/update #}
+                    <form method="post" enctype="multipart/form-data" action="{% if object %}{% url 'dashboard:resonator_detail_update' object.pk %}{% else %}{% url 'dashboard:resonator_create' %}{% endif %}">
+                        {% csrf_token %} {# Wajib untuk keamanan formulir Django #}
+
+                        {# Menampilkan non-field errors jika ada #}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.character.id_for_label }}" class="form-label">{{ form.character.label }}</label>
+                                    {{ form.character }}
+                                    {% if form.character.help_text %}<div class="form-text">{{ form.character.help_text }}</div>{% endif %}
+                                    {% for error in form.character.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.rarity.id_for_label }}" class="form-label">{{ form.rarity.label }}</label>
+                                    {{ form.rarity }}
+                                    {% for error in form.rarity.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.weapon.id_for_label }}" class="form-label">{{ form.weapon.label }}</label>
+                                    {{ form.weapon }}
+                                    {% for error in form.weapon.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.sex.id_for_label }}" class="form-label">{{ form.sex.label }}</label>
+                                    {{ form.sex }}
+                                    {% for error in form.sex.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.codename.id_for_label }}" class="form-label">{{ form.codename.label }}</label>
+                            {{ form.codename }}
+                            {% for error in form.codename.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.birthday.id_for_label }}" class="form-label">{{ form.birthday.label }}</label>
+                                    {{ form.birthday }}
+                                    {% for error in form.birthday.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.birthplace.id_for_label }}" class="form-label">{{ form.birthplace.label }}</label>
+                                    {{ form.birthplace }}
+                                    {% for error in form.birthplace.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.affiliation.id_for_label }}" class="form-label">{{ form.affiliation.label }}</label>
+                            {{ form.affiliation }}
+                            {% for error in form.affiliation.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.attribute.id_for_label }}" class="form-label">{{ form.attribute.label }}</label>
+                                    {{ form.attribute }}
+                                    {% for error in form.attribute.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.role.id_for_label }}" class="form-label">{{ form.role.label }}</label>
+                                    {{ form.role }}
+                                    {% for error in form.role.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Statistik Dasar</h5>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.hp.id_for_label }}" class="form-label">{{ form.hp.label }}</label>
+                                    {{ form.hp }}
+                                    {% for error in form.hp.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.atk.id_for_label }}" class="form-label">{{ form.atk.label }}</label>
+                                    {{ form.atk }}
+                                    {% for error in form.atk.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.defense.id_for_label }}" class="form-label">{{ form.defense.label }}</label>
+                                    {{ form.defense }}
+                                    {% for error in form.defense.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.energy.id_for_label }}" class="form-label">{{ form.energy.label }}</label>
+                                    {{ form.energy }}
+                                    {% for error in form.energy.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.crit_rate.id_for_label }}" class="form-label">{{ form.crit_rate.label }}</label>
+                                    {{ form.crit_rate }}
+                                    {% for error in form.crit_rate.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.crit_dmg.id_for_label }}" class="form-label">{{ form.crit_dmg.label }}</label>
+                                    {{ form.crit_dmg }}
+                                    {% for error in form.crit_dmg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {# --- PENAMBAHAN UNTUK GAMBAR DIMULAI DI SINI --- #}
+                        <hr class="my-4">
+                        <h5 class="mb-3">Gambar Karakter</h5>
+
+                        <div class="mb-3">
+                            <label for="{{ form.icon_gambar.id_for_label }}" class="form-label">{{ form.icon_gambar.label }}</label>
+                            {{ form.icon_gambar }}
+                            {# Menampilkan gambar saat ini jika ada (untuk form edit) #}
+                            {% if object and object.icon_gambar %}
+                                <p class="mt-2">Gambar Icon saat ini: <br><img src="{{ object.icon_gambar.url }}" alt="Icon {{ object.character }}" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd;"></p>
+                            {% endif %}
+                            {% for error in form.icon_gambar.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.render_gambar.id_for_label }}" class="form-label">{{ form.render_gambar.label }}</label>
+                            {{ form.render_gambar }}
+                            {# Menampilkan gambar saat ini jika ada (untuk form edit) #}
+                            {% if object and object.render_gambar %}
+                                <p class="mt-2">Gambar Render saat ini: <br><img src="{{ object.render_gambar.url }}" alt="Render {{ object.character }}" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd;"></p>
+                            {% endif %}
+                            {% for error in form.render_gambar.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.convene_gambar.id_for_label }}" class="form-label">{{ form.convene_gambar.label }}</label>
+                            {{ form.convene_gambar }}
+                            {# Menampilkan gambar saat ini jika ada (untuk form edit) #}
+                            {% if object and object.convene_gambar %}
+                                <p class="mt-2">Gambar Convene saat ini: <br><img src="{{ object.convene_gambar.url }}" alt="Convene {{ object.character }}" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd;"></p>
+                            {% endif %}
+                            {% for error in form.convene_gambar.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        {# --- PENAMBAHAN UNTUK GAMBAR SELESAI DI SINI --- #}
+
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Simpan Karakter</button>
+                            {# PERBAIKAN: URL untuk tombol Reset/Batal juga diubah ke dashboard #}
+                            <a href="{% url 'dashboard:resonator_list' %}" class="btn btn-outline-secondary">Batal / Kembali ke Daftar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
