@@ -1,5 +1,6 @@
     .container {
     width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -8,8 +9,8 @@
     background-repeat: no-repeat;
     background-position: center;
     }
-    
-.hero {
+
+    .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,4 +46,27 @@
     .platform-icon:hover{
     transform: scale(1.1);
     transition: all 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Atau translateX untuk slide dari samping */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    .container {
+    animation: fadeIn 1s ease-out forwards;
+    }
+
+    .hero {
+    animation: fadeIn 1s ease-out forwards;
+    }
+
+    .logo-game{
+        animation: fadeIn 1s ease-out forwards;
     }

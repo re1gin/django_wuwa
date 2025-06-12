@@ -1,0 +1,142 @@
+{# build/templates/build/compare_build.html #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/resonator.css' %}"> {# Gunakan CSS yang relevan #}
+    <style>
+        /* Tambahkan CSS khusus untuk halaman perbandingan jika diperlukan */
+        .comparison-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 8px;
+            color: white;
+        }
+        .comparison-section h2 {
+            color: #ffd700; /* Gold color */
+            margin-bottom: 20px;
+        }
+        .stat-comparison p {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+        .stat-comparison span.label {
+            flex-basis: 30%;
+        }
+        .stat-comparison span.value {
+            flex-basis: 20%;
+            text-align: right;
+        }
+        .stat-comparison span.diff {
+            flex-basis: 20%;
+            text-align: right;
+            font-weight: bold;
+        }
+        .stat-comparison span.diff.positive { color: #28a745; } /* Green */
+        .stat-comparison span.diff.negative { color: #dc3545; } /* Red */
+
+        .overall-rating {
+            margin-top: 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #ffd700;
+        }
+        .return-btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="hero">
+        <div class="left">
+            {# Anda bisa menampilkan gambar karakter di sini jika mau #}
+            <div class="image-container">
+                {% comment %}
+                Asumsi Anda memiliki gambar render di media/character_folder/Render.png
+                Jika Anda ingin menampilkannya, Anda perlu mengirimkan 'images' context dari compare_build_view juga
+                atau membentuk URL gambar di sini.
+                {% endcomment %}
+                <img src="{% static 'assets/ikon/Default_Icon.png' %}" alt="{{ character.character }}" class="character-splash" style="max-width: 300px; border-radius: 8px;"/>
+                <h1 style="color: white; text-align: center; margin-top: 20px;">{{ character.character }}</h1>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="content">
+                <div class="block-name">
+                    <span class="title-name">Hasil Penilaian Build</span>
+                    <span class="name-character">{{ character.character|upper }}</span>
+                </div>
+
+                <div class="comparison-section">
+                    <h2>Perbandingan Stat Dasar</h2>
+                    <div class="stat-comparison">
+                        <p>
+                            <span class="label">Stat</span>
+                            <span class="value">Ideal</span>
+                            <span class="value">Input Anda</span>
+                            <span class="diff">Selisih</span>
+                        </p>
+                        {% for stat, values in comparison_results.items %}
+                            <p>
+                                <span class="label">{{ stat|upper }}</span>
+                                <span class="value">{{ values.ideal|floatformat:"0" }}</span>
+                                <span class="value">{{ values.user|floatformat:"0" }}</span>
+                                <span class="diff {% if values.difference >= 0 %}positive{% else %}negative{% endif %}">{{ values.difference|floatformat:"0" }}</span>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="comparison-section" style="margin-top: 20px;">
+                    <h2>Input Bonus Stat Anda</h2>
+                    <div class="stat-comparison">
+                        {% for stat, value in bonus_stats_from_user.items %}
+                            <p>
+                                <span class="label">{{ stat|replace:"_"|" "|title }}</span> {# Filter untuk format nama stat #}
+                                <span class="value">{{ value|floatformat:"1" }}</span>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="overall-rating">
+                    Penilaian Keseluruhan: {{ overall_rating }} (Skor: {{ rating_score|floatformat:"2" }})
+                </div>
+
+                <div class="return-btn-container">
+                    <a href="{% url 'build:character_builder' character_name=character.character %}" class="btn black">Kembali ke Builder</a>
+                    <a href="{% url 'resonators:resonator_detail' character_name=character.character %}" class="btn white">Lihat Detail Karakter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {# Anda mungkin perlu custom templatetag 'replace' jika belum ada #}
+    {% comment %}
+    Jika Anda mendapatkan error tentang filter 'replace', buat file custom_filters.py
+    di dalam folder templatetags di salah satu app Anda:
+
+    # myapp/templatetags/custom_filters.py
+    from django import template
+
+    register = template.Library()
+
+    @register.filter(name='replace')
+    def replace(value, arg):
+        return value.replace(arg, ' ')
+
+    Lalu di template: {% load custom_filters %}
+    {% endcomment %}
+{% endblock %}

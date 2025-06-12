@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Builder Karakter: {{ character.character }}{% endblock %} {# Tambahkan nama karakter di title #}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/character_builder.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="hero">
+        <div class="left">
+            <div class="image-container">
+                <img src="{{ images.render }}" alt="{{ character.character }}" class="character-splash"/>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="content">
+                <div class="icon-container">
+                    {% for icon_char in all_characters_for_icons %}
+                        <a href="{{ icon_char.detail_url }}"> 
+                            <img src="{{ icon_char.icon_url }}"
+                                class="character-icon {% if icon_char.is_active %}active{% endif %}"
+                                alt="{{ icon_char.character_name|default:'Icon' }}" /> 
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <div class="character-block">
+                    <div class="block-name">
+                        <span class="title-name">NAME</span>
+                        <span class="name-character">{{ character.character|upper }}</span>
+                    </div>
+
+                    {% if character.attribute %} 
+                        <img src="{% static 'assets/ikon/attribute/' %}{{ character.attribute }}.png" 
+                            class="attribute-icon" 
+                            alt="{{ character.attribute|default:'Attribute' }}" 
+                            title="{{ character.attribute|default:'Attribute' }}" />
+                    {% endif %}
+                </div>
+
+                <div class="form-block"> {# Mengubah dari input-block agar lebih spesifik #}
+                    <form method="POST" action="{% url 'build:character_builder' character_name=character.character %}">
+                        {% csrf_token %}
+
+                        <div class="input-block">
+                            <div class="block">
+                                <span class="title-block">MAIN STAT </span> {# Label diubah agar lebih jelas #}
+                                <div class="stat">
+                                    {# Input untuk stat dasar #}
+                                    <p>HP: <input type="number" name="hp" placeholder="0" value="{{ user_input_stats.hp|floatformat:'0' }}"></p>
+                                    {# Perhatikan perubahan nama dari 'atk' menjadi 'attack' untuk konsistensi dengan view dan model #}
+                                    <p>ATK: <input type="number" name="attack" placeholder="0" value="{{ user_input_stats.attack|floatformat:'0' }}"></p>
+                                    {# Perhatikan perubahan nama dari 'def' menjadi 'defense' #}
+                                    <p>DEF: <input type="number" name="defense" placeholder="0" value="{{ user_input_stats.defense|floatformat:'0' }}"></p>
+                                    {# Perhatikan perubahan nama dari 'energy_regen' menjadi 'energy' #}
+                                    <p>ENERGY REGEN: <input type="number" name="energy" step="0.1" placeholder="0.0" value="{{ user_input_stats.energy|floatformat:'1' }}"></p>
+                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_rate|floatformat:'1' }}"></p>
+                                    {# Perhatikan perubahan nama dari 'crit_damage' menjadi 'crit_dmg' #}
+                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_dmg|floatformat:'1' }}"></p>
+                                </div>
+                            </div>
+
+                            <div class="block">
+                                <span class="title-block">BONUS STAT</span> {# Label diubah agar lebih jelas #}
+                                <div class="stat">
+                                    <p>Basic Attack DMG: <input type="number" name="basic_atk_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg|floatformat:'1' }}"></p>
+                                    <p>Resonance Skill DMG: <input type="number" name="resonance_skill_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg|floatformat:'1' }}"></p>
+                                    <p>Resonance Liberation DMG: <input type="number" name="resonance_lib_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg|floatformat:'1' }}"></p>
+                                    <p>Defense Interruption: <input type="number" name="def_interruption" step="0.1" placeholder="0.0" value="{{ user_input_stats.def_interruption|floatformat:'1' }}"></p>
+                                    <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|floatformat:'1' }}"></p>
+                                    <p>Attribute DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Attribute RES: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|floatformat:'1' }}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-grup">
+                            <button type="submit" class="btn black">NILAI BUILD</button> {# Teks tombol diubah #}
+                            <button type="reset" class="btn white">RESET INPUT</button> {# type="reset" untuk mengosongkan form #}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+
+            numberInputs.forEach(input => {
+                input.addEventListener('keypress', function(event) {
+                    const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '-'];
+                    if (!allowedKeys.includes(event.key) &&
+                        event.key !== 'Backspace' &&
+                        event.key !== 'Delete' &&
+                        event.key !== 'Tab' &&
+                        event.key !== 'Enter' &&
+                        event.key !== 'ArrowLeft' &&
+                        event.key !== 'ArrowRight') {
+                        event.preventDefault();
+                    }
+
+                    if (event.key === '.' && input.value.includes('.')) {
+                        event.preventDefault();
+                    }
+
+                    if (event.key === '-' && (input.value.includes('-') || input.selectionStart !== 0)) {
+                        event.preventDefault();
+                    }
+                });
+
+                input.addEventListener('paste', function(event) {
+                    const pasteData = event.clipboardData.getData('text');
+                    if (!/^-?\d*\.?\d+$/.test(pasteData)) {
+                        event.preventDefault();
+                    }
+                });
+            });
+
+            // JavaScript untuk menambahkan efek pada ikon aktif
+            const activeIcon = document.querySelector('.character-icon.active');
+            if (activeIcon) {
+                activeIcon.style.border = '2px solid gold';
+                activeIcon.style.transform = 'scale(1.1)';
+                activeIcon.style.boxShadow = '0 0 10px gold';
+            }
+        });
+    </script>
+{% endblock %}

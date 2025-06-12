@@ -109,9 +109,11 @@ def resonators(request, character_name):
         })
 
     context = {
+
         "character": char_obj,
         "images": images,
         "json_data": char_quotes,
-        "all_characters_for_icons": icon_chars_data, 
+        "all_characters_for_icons": icon_chars_data,
+        "builder_url": reverse('build:character_builder', kwargs={'character_name': char_obj.character}), # Tambahkan ini
     }
     return render(request, 'landingpage/resonator.html', context)
