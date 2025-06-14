@@ -11,8 +11,6 @@ urlpatterns = [
     path('', main_views.home, name='home'),
     path('', include('resonators.urls')),
     path('', include('build.urls')),
-    path('', include('weapon.urls')),
-    path('', include('echo.urls')),
     path('dashboard/', include('dashboard.urls')),
 ]
 

@@ -1,21 +1,22 @@
+# build/management/commands/import_builds.py
+
 import csv
 import os
-import re # Untuk regex parsing
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from resonators.models import Resonator
 from build.models import Build
 
 class Command(BaseCommand):
-    help = 'Imports ideal build data for characters from a CSV file.'
+    help = 'Mengimpor data build ideal untuk karakter dari file CSV tanpa atribut dan parsing persen.'
 
     def handle(self, *args, **options):
-        csv_filepath = os.path.join(settings.BASE_DIR, 'data', 'character_stats.csv')
+        csv_filepath = os.path.join(settings.BASE_DIR, 'data', 'resonator_stats.csv')
 
         if not os.path.exists(csv_filepath):
-            raise CommandError(f'CSV file not found at: {csv_filepath}')
+            raise CommandError(f'File CSV tidak ditemukan di: {csv_filepath}')
 
-        self.stdout.write(self.style.SUCCESS(f'Starting import from {csv_filepath}'))
+        self.stdout.write(self.style.SUCCESS(f'Memulai import dari {csv_filepath}'))
 
         with open(csv_filepath, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
@@ -23,79 +24,84 @@ class Command(BaseCommand):
             updated_count = 0
             skipped_count = 0
 
-            for row in reader:
-                character_name = row['Character'].strip()
-                attribute_name = row['Attribute'].strip()
+            # --- Validasi Kolom CSV ---
+            required_columns = ['Character', 'hp', 'atk', 'def', 'energy', 'crit rate', 'crit dmg']
+            if not all(col in reader.fieldnames for col in required_columns):
+                missing_columns = [col for col in required_columns if col not in reader.fieldnames]
+                raise CommandError(f"File CSV tidak memiliki kolom yang diperlukan: {', '.join(missing_columns)}. Pastikan header CSV Anda benar.")
 
-                # 1. Pastikan Resonator ada atau buat jika tidak ada
-                resonator, created = Resonator.objects.get_or_create(
-                    character=character_name,
-                    defaults={'attribute': attribute_name}
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Created new Resonator: {character_name}'))
+            # --- Fungsi Helper untuk Parsing Nilai Stat (TANPA PERSEN) ---
+            def parse_stat_value(value_str):
+            
+                cleaned_value = value_str.strip().replace('>', '')
                 
-                try:
-                    hp = float(row['hp'])
-                except ValueError:
-                    hp = 0.0 # Default jika ada masalah parsing
+                if not cleaned_value: # Tangani string kosong setelah pembersihan
+                    return 0.0
 
-                # Fungsi helper untuk membersihkan nilai stat non-numerik
-                def parse_stat_value(value_str):
-                    value_str = value_str.strip()
-                    if value_str.startswith('>'):
-                        # Contoh: ">1900" -> 1900.0
-                        return float(value_str[1:])
-                    elif '%' in value_str:
-                        # Contoh: ">50%" -> 0.50, "100%" -> 1.00
-                        num_part = re.sub(r'[^\d.]', '', value_str) # Hapus non-digit kecuali .
-                        return float(num_part) / 100.0
-                    elif '-' in value_str:
-                        # Contoh: "1000-1500" -> (1000+1500)/2 = 1250.0
-                        parts = value_str.split('-')
-                        if len(parts) == 2:
-                            try:
-                                return (float(parts[0]) + float(parts[1])) / 2.0
-                            except ValueError:
-                                return 0.0
-                        return 0.0
-                    else:
-                        # Angka biasa
+                if '-' in cleaned_value:
+                    parts = cleaned_value.split('-')
+                    if len(parts) == 2:
                         try:
-                            return float(value_str)
+                            # Mengambil rata-rata dari rentang
+                            return (float(parts[0]) + float(parts[1])) / 2.0
                         except ValueError:
                             return 0.0
+                    return 0.0 # Jika format '-' tidak valid
+                else:
+                    try:
+                        # Angka biasa
+                        return float(cleaned_value)
+                    except ValueError:
+                        return 0.0
 
-                attack = parse_stat_value(row['atk'])
-                defense = parse_stat_value(row['def'])
-                energy = parse_stat_value(row['energy'])
-                crit_rate = parse_stat_value(row['crit rate']) # Perhatikan "crita rate" di CSV
-                crit_dmg = parse_stat_value(row['crit dmg'])
+            for row in reader:
+                character_name_from_csv = row.get('Character', '').strip()
 
-                # 3. Buat atau perbarui objek Build
+                if not character_name_from_csv:
+                    self.stderr.write(self.style.WARNING(f"Melewatkan baris: Nama karakter kosong."))
+                    skipped_count += 1
+                    continue
+
+                # 1. Pastikan Resonator ada atau buat jika tidak ada
+                resonator, created_resonator = Resonator.objects.get_or_create(
+                    character_name=character_name_from_csv,
+                    defaults={} # Defaults kosong
+                )
+                if created_resonator:
+                    self.stdout.write(self.style.SUCCESS(f'Membuat Resonator baru: {character_name_from_csv}'))
+                
+                # Mengambil dan parsing nilai stat dari baris CSV
+                parsed_hp = parse_stat_value(row.get('hp', '0'))
+                parsed_attack = parse_stat_value(row.get('atk', '0'))
+                parsed_defense = parse_stat_value(row.get('def', '0'))
+                parsed_energy = parse_stat_value(row.get('energy', '0'))
+                parsed_crit_rate = parse_stat_value(row.get('crit rate', '0'))
+                parsed_crit_dmg = parse_stat_value(row.get('crit dmg', '0'))
+
+                # 2. Buat atau perbarui objek Build
                 try:
-                    build, created = Build.objects.update_or_create(
-                        character=resonator, # Menggunakan objek Resonator
+                    build, created_build = Build.objects.update_or_create(
+                        character=resonator,
                         defaults={
-                            'hp': hp,
-                            'attack': attack,
-                            'defense': defense,
-                            'energy': energy,
-                            'crit_rate': crit_rate,
-                            'crit_dmg': crit_dmg,
+                            'hp': parsed_hp,
+                            'attack': parsed_attack,
+                            'defense': parsed_defense,
+                            'energy': parsed_energy,
+                            'crit_rate': parsed_crit_rate,
+                            'crit_dmg': parsed_crit_dmg,
                         }
                     )
-                    if created:
+                    if created_build:
                         imported_count += 1
-                        self.stdout.write(self.style.SUCCESS(f'Successfully imported ideal build for {character_name}'))
+                        self.stdout.write(self.style.SUCCESS(f'Berhasil mengimpor build ideal untuk {character_name_from_csv}'))
                     else:
                         updated_count += 1
-                        self.stdout.write(self.style.WARNING(f'Successfully updated ideal build for {character_name}'))
+                        self.stdout.write(self.style.WARNING(f'Berhasil memperbarui build ideal untuk {character_name_from_csv}'))
                 except Exception as e:
                     skipped_count += 1
-                    self.stdout.write(self.style.ERROR(f'Error importing build for {character_name}: {e}'))
+                    self.stdout.write(self.style.ERROR(f'Error mengimpor/memperbarui build untuk {character_name_from_csv}: {e}'))
 
-        self.stdout.write(self.style.SUCCESS(f'Import process finished.'))
-        self.stdout.write(self.style.SUCCESS(f'Total imported: {imported_count}'))
-        self.stdout.write(self.style.SUCCESS(f'Total updated: {updated_count}'))
-        self.stdout.write(self.style.WARNING(f'Total skipped (errors): {skipped_count}'))
+        self.stdout.write(self.style.SUCCESS(f'\nProses impor selesai.'))
+        self.stdout.write(self.style.SUCCESS(f'Total diimpor: {imported_count}'))
+        self.stdout.write(self.style.SUCCESS(f'Total diperbarui: {updated_count}'))
+        self.stdout.write(self.style.WARNING(f'Total dilewati (error): {skipped_count}'))

@@ -30,17 +30,14 @@ def format_folder(name):
     formatted_name = formatted_name.replace('’', '').replace(',', '')
     return formatted_name
 
-# --- Helper function (format_folder, tetap sama) ---
 def format_folder(name):
     formatted_name = name.replace(' ', '_')
     formatted_name = formatted_name.replace('’', '').replace(',', '')
     return formatted_name
 
-def get_icon_chars_data(current_char_obj=None): # Parameter current_char_obj sekarang opsional
+def get_icon_chars_data(current_char_obj=None):
     icon_chars_data = []
     
-    # Ambil semua objek Resonator dari database
-    # Anda mungkin ingin mengurutkannya, misalnya berdasarkan nama karakter
     all_resonators = Resonator.objects.all().order_by('character')
 
     for resonator in all_resonators:
