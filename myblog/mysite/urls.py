@@ -18,5 +18,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    # Tambahkan juga ini untuk memastikan static files terlayani (jika ada)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

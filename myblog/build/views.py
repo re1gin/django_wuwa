@@ -30,12 +30,6 @@ def format_folder(name):
     formatted_name = formatted_name.replace('’', '').replace(',', '')
     return formatted_name
 
-# build/views.py atau resonators/views.py (tergantung di mana fungsi ini berada)
-
-from django.urls import reverse # Pastikan ini sudah diimpor
-from django.conf import settings
-from resonators.models import Resonator # Pastikan model Resonator diimpor
-
 # --- Helper function (format_folder, tetap sama) ---
 def format_folder(name):
     formatted_name = name.replace(' ', '_')
@@ -107,10 +101,6 @@ def character_builder_view(request, character_name):
             messages.error(request, "Input stat harus berupa angka.")
             # Lalu render ulang halaman dengan nilai yang diinput (yang valid) atau nilai default
 
-        # --- TERUSKAN DATA KE HALAMAN PERBANDINGAN/PENILAIAN ---
-        # Kita akan menggunakan session untuk meneruskan data, karena data ini tidak disimpan ke DB.
-        # Atau, kita bisa meneruskannya sebagai query parameters (jika datanya tidak terlalu banyak)
-        # Session lebih baik untuk data yang lebih banyak atau sensitif.
 
         request.session['user_input_stats'] = user_input_stats
         request.session['character_name_for_comparison'] = char_obj.character # Simpan nama karakter juga

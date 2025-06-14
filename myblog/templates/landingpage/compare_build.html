@@ -1,11 +1,12 @@
 {# build/templates/build/compare_build.html #}
 {% extends 'base.html' %}
 {% load static %}
+{% load build_filters %}
 
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/resonator.css' %}"> {# Gunakan CSS yang relevan #}
+    <link rel="stylesheet" href="{% static 'css/character_build.css' %}"> {# Gunakan CSS yang relevan #}
     <style>
         /* Tambahkan CSS khusus untuk halaman perbandingan jika diperlukan */
         .comparison-section {
@@ -102,7 +103,7 @@
                     <div class="stat-comparison">
                         {% for stat, value in bonus_stats_from_user.items %}
                             <p>
-                                <span class="label">{{ stat|replace:"_"|" "|title }}</span> {# Filter untuk format nama stat #}
+                                <span class="label">{{ stat|replace:"_"|title }}</span>
                                 <span class="value">{{ value|floatformat:"1" }}</span>
                             </p>
                         {% endfor %}

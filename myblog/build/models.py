@@ -12,8 +12,6 @@ class Build(models.Model):
     crit_dmg = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        # Mengakses atribut 'character' dari objek Resonator yang terkait
-        # Ini akan mengembalikan nama karakter dari objek Resonator
         return f"Stat Final for {self.character.character}" # <--- PERBAIKAN DI SINI!
 
     class Meta:

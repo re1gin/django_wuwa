@@ -6,7 +6,7 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-    path('', views.home_dashboard, name='home'), # Halaman utama dashboard
+    path('home/', views.home_dashboard, name='home'), # Halaman utama dashboard
     # Resonators
     path('resonators/', views.resonator_list, name='resonator_list'),
     path('resonators/add/', views.resonator_create, name='resonator_create'),
