@@ -12,7 +12,7 @@ class Build(models.Model):
     crit_dmg = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return f"Stat Final for {self.character.character}" # <--- PERBAIKAN DI SINI!
+        return f"Stat Final for {self.character.character}"
 
     class Meta:
         verbose_name_plural = "Final Builds"
