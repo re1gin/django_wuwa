@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Builder Karakter: {{ character.character }}{% endblock %} {# Tambahkan nama karakter di title #}
+{# PERBAIKAN: Gunakan character.character_name #}
+{% block title %}Builder Karakter: {{ character.character_name }}{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/character_builder.css' %}">
@@ -11,7 +12,8 @@
     <div class="hero">
         <div class="left">
             <div class="image-container">
-                <img src="{{ images.render }}" alt="{{ character.character }}" class="character-splash"/>
+                {# PERBAIKAN: Gunakan character.character_name #}
+                <img src="{{ images.render }}" alt="{{ character.character_name }}" class="character-splash"/>
             </div>
         </div>
 
@@ -19,6 +21,7 @@
             <div class="content">
                 <div class="icon-container">
                     {% for icon_char in all_characters_for_icons %}
+                        {# URL detail seharusnya sudah benar dari views.py (menggunakan character_name) #}
                         <a href="{{ icon_char.detail_url }}"> 
                             <img src="{{ icon_char.icon_url }}"
                                 class="character-icon {% if icon_char.is_active %}active{% endif %}"
@@ -30,41 +33,54 @@
                 <div class="character-block">
                     <div class="block-name">
                         <span class="title-name">NAME</span>
-                        <span class="name-character">{{ character.character|upper }}</span>
+                        {# PERBAIKAN: Gunakan character.character_name #}
+                        <span class="name-character">{{ character.character_name|upper }}</span>
                     </div>
 
+                    {# PERBAIKAN: Hapus blok ini jika field 'attribute' sudah dihapus dari model Resonator #}
+                    {# Karena di Python kita sudah menghapus logikanya, lebih baik ini juga dihapus dari template #}
+                    {# agar tidak ada error jika 'character.attribute' diakses dan tidak ada. #}
+                    {% comment %}
                     {% if character.attribute %} 
                         <img src="{% static 'assets/ikon/attribute/' %}{{ character.attribute }}.png" 
                             class="attribute-icon" 
                             alt="{{ character.attribute|default:'Attribute' }}" 
                             title="{{ character.attribute|default:'Attribute' }}" />
                     {% endif %}
+                    {% endcomment %}
                 </div>
 
-                <div class="form-block"> {# Mengubah dari input-block agar lebih spesifik #}
-                    <form method="POST" action="{% url 'build:character_builder' character_name=character.character %}">
+                <div class="form-block">
+                    {# PERBAIKAN: Gunakan character.character_name untuk URL di form action #}
+                    <form method="POST" action="{% url 'build:character_builder' character_name=character.character_name %}">
                         {% csrf_token %}
+
+                        {# Untuk menampilkan pesan error dari Django (misal: "Input stat harus berupa angka.") #}
+                        {# Pastikan base.html Anda sudah menyertakan {% include 'messages.html' %} atau sejenisnya #}
+                        {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
 
                         <div class="input-block">
                             <div class="block">
-                                <span class="title-block">MAIN STAT </span> {# Label diubah agar lebih jelas #}
+                                <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
-                                    {# Input untuk stat dasar #}
                                     <p>HP: <input type="number" name="hp" placeholder="0" value="{{ user_input_stats.hp|floatformat:'0' }}"></p>
-                                    {# Perhatikan perubahan nama dari 'atk' menjadi 'attack' untuk konsistensi dengan view dan model #}
+                                    {# PERBAIKAN: Pastikan name attribute di sini cocok dengan kunci di user_input_stats di views.py #}
                                     <p>ATK: <input type="number" name="attack" placeholder="0" value="{{ user_input_stats.attack|floatformat:'0' }}"></p>
-                                    {# Perhatikan perubahan nama dari 'def' menjadi 'defense' #}
                                     <p>DEF: <input type="number" name="defense" placeholder="0" value="{{ user_input_stats.defense|floatformat:'0' }}"></p>
-                                    {# Perhatikan perubahan nama dari 'energy_regen' menjadi 'energy' #}
                                     <p>ENERGY REGEN: <input type="number" name="energy" step="0.1" placeholder="0.0" value="{{ user_input_stats.energy|floatformat:'1' }}"></p>
                                     <p>CRITICAL RATE: <input type="number" name="crit_rate" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_rate|floatformat:'1' }}"></p>
-                                    {# Perhatikan perubahan nama dari 'crit_damage' menjadi 'crit_dmg' #}
                                     <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_dmg|floatformat:'1' }}"></p>
                                 </div>
                             </div>
 
                             <div class="block">
-                                <span class="title-block">BONUS STAT</span> {# Label diubah agar lebih jelas #}
+                                <span class="title-block">BONUS STAT</span>
                                 <div class="stat">
                                     <p>Basic Attack DMG: <input type="number" name="basic_atk_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg|floatformat:'1' }}"></p>
                                     <p>Resonance Skill DMG: <input type="number" name="resonance_skill_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg|floatformat:'1' }}"></p>
@@ -78,8 +94,8 @@
                         </div>
 
                         <div class="btn-grup">
-                            <button type="submit" class="btn black">NILAI BUILD</button> {# Teks tombol diubah #}
-                            <button type="reset" class="btn white">RESET INPUT</button> {# type="reset" untuk mengosongkan form #}
+                            <button type="submit" class="btn black">NILAI BUILD</button>
+                            <button type="reset" class="btn white">RESET INPUT</button>
                         </div>
                     </form>
                 </div>

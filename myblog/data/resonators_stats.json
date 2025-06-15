@@ -1,0 +1,35 @@
+{
+  "Carlotta": {
+    "final_attack": null,
+    "crit_rate": 0.05,
+    "crit_damage": 1.50,
+    "glacio_damage_bonus": null,
+    "damage_data": {
+      "Basic Attack Stage 1": {"percentage": 0.5408, "hits": 1},
+      "Basic Attack Stage 2": {"percentage": [0.3955, 0.3955, 0.5273], "hits": 3},
+      "Necessary Measures Stage 1": {"percentage": 0.6591, "hits": 1},
+      "Necessary Measures Stage 2": {"percentage": [0.6008, 0.7343], "hits": 2},
+      "Necessary Measures Stage 3": {"percentage": [1.3993, 0.2333, 0.2333, 0.2333, 0.2333], "hits": 5},
+      
+      "Heavy Attack Phase 1": {"percentage": 0.2282, "hits": 2},
+      "Heavy Attack Phase 2": {"percentage": 0.2282, "hits": 2},
+      "Heavy Attack Phase 3": {"percentage": 0.6084, "hits": 1},
+      "Heavy Attack Imminent Oblivion": {"percentage": [0.6685, 0.6685, 0.6685, 0.6685, 0.6685, 5.0118], "hits": 6},
+      
+      "Mid-air Attack": {"percentage": 1.0478, "hits": 1},
+      "Customary Greetings": {"percentage": [1.0799, 1.3199], "hits": 2},
+      "Dodge Counter": {"percentage": [1.0377, 1.3755], "hits": 2},
+      
+      "Resonance Skill Art of Violence": {"percentage": [1.4411, 1.4411], "hits": 2},
+      "Resonance Skill Chromatic Splendor": {"percentage": [1.1273, 1.1273, 3.3818], "hits": 3},
+      
+      "Resonance Liberation Skill DMG": {"percentage": 4.0271, "hits": 1},
+      "Death Knell Base": {"percentage": 1.8364, "hits": 1},
+      "Death Knell Crystal Shard": {"percentage": [0.145, 0.145, 0.145, 0.145], "hits": 4},
+      "Fatal Finale": {"percentage": 6.4433, "hits": 1},
+
+      "Intro Skill Wintertime Aria": {"percentage": [1.7905, 0.5968, 0.5968], "hits": 3},
+      "Outro Skill Closing Remark": {"percentage": 15.787, "hits": 1}
+    }
+  }
+}

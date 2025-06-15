@@ -10,5 +10,5 @@ urlpatterns = [
     
     path('resonator/', views.resonator_selection, name='resonator_selection'),
 
-    path('resonator/<str:character_id>/', views.resonators, name='resonator_detail'),   
+    path('resonator/<str:character_name>/', views.resonators, name='resonator_detail'),   
 ]

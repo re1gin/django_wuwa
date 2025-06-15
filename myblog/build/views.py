@@ -20,51 +20,39 @@ def add_build(request):
     }
     return render(request, 'dashboard/build_form.html', context)
 
-def build_success(request):
-    return render(request, 'dashboard/success_page.html', {'message': 'Stat rekomendasi berhasil ditambahkan!', 'back_url_name': 'build_app:add_stat_final'})
-
-
-# --- Helper functions (tetap sama) ---
-def format_folder(name):
-    formatted_name = name.replace(' ', '_')
-    formatted_name = formatted_name.replace('’', '').replace(',', '')
-    return formatted_name
 
 def format_folder(name):
     formatted_name = name.replace(' ', '_')
-    formatted_name = formatted_name.replace('’', '').replace(',', '')
     return formatted_name
 
 def get_icon_chars_data(current_char_obj=None):
+    """
+    Mengambil data ikon untuk semua karakter resonator, digunakan di sidebar atau daftar.
+    Menandai ikon karakter yang sedang aktif/dilihat.
+    """
     icon_chars_data = []
     
-    all_resonators = Resonator.objects.all().order_by('character')
+    # PERBAIKAN: Gunakan 'character_name' sebagai field untuk ordering
+    all_resonators = Resonator.objects.all().order_by('character_name')
 
     for resonator in all_resonators:
-        icon_folder = format_folder(resonator.character)
-        icon_url = f"{settings.MEDIA_URL}{icon_folder}/Icon.png"
+        # Nama folder akan persis sama dengan character_name dari database/JSON
+        icon_folder = format_folder(resonator.character_name)
         
-        # URL detail harus mengarah ke halaman detail resonator yang sesuai
-        icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': resonator.character})
-        attribute_icon_url = ''
-        if resonator.attribute:
-            attribute_icon_url = f"{settings.STATIC_URL}assets/ikon/attribute/{resonator.attribute}.png"
-        else:
-            # Opsional: Ikon default jika elemen tidak ada
-            attribute_icon_url = f"{settings.STATIC_URL}assets/ikon/attribute/Default.png"
-        # Tentukan apakah ikon ini adalah karakter yang sedang aktif/dilihat
-        # Jika current_char_obj diberikan dan cocok, maka set is_active menjadi True
+        # PERBAIKAN: Gunakan settings.STATIC_URL untuk aset statis
+        icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png"
+        icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': resonator.character_name})
+        
         is_active_icon = False
-        if current_char_obj and resonator.character == current_char_obj.character:
+        # PERBAIKAN: Bandingkan berdasarkan character_name
+        if current_char_obj and resonator.character_name == current_char_obj.character_name:
             is_active_icon = True
 
         icon_chars_data.append({
             'icon_url': icon_url,
-            'character_name': resonator.character,
+            'character_name': resonator.character_name, # PERBAIKAN: Gunakan character_name
             'detail_url': icon_detail_url,
             'is_active': is_active_icon,
-            'attribute_icon_url': attribute_icon_url,
-            'attribute_name': resonator.attribute,
         })
         
     return icon_chars_data
@@ -72,15 +60,27 @@ def get_icon_chars_data(current_char_obj=None):
 
 # --- VIEW UNTUK HALAMAN BUILDER ---
 def character_builder_view(request, character_name):
-    char_obj = get_object_or_404(Resonator, character=character_name)
+    """
+    Menampilkan halaman builder karakter, memungkinkan pengguna memasukkan statistik
+    dan kemudian membandingkannya.
+    """
+    # PERBAIKAN: Mengatasi FieldError. Gunakan 'character_name' untuk mencari di model Resonator.
+    # Karena URL Anda juga menggunakan 'character_name' secara mentah (dari re_path),
+    # Anda bisa langsung mencocokkannya. Gunakan __iexact untuk pencarian case-insensitive.
+    char_obj = get_object_or_404(Resonator, character_name__iexact=character_name)
 
-    folder_name = format_folder(char_obj.character)
-    image_path = f"{settings.MEDIA_URL}{folder_name}/"
+    # Nama folder akan persis sama dengan character_name dari DB (karena format_folder tidak mengubahnya)
+    folder_name = format_folder(char_obj.character_name)
+    
+    # PERBAIKAN: Gunakan settings.STATIC_URL untuk aset statis
+    image_path = f"{settings.STATIC_URL}resonator/{folder_name}/"
     images = {"render": f"{image_path}Render.png"}
 
+    # Mengambil data ikon untuk sidebar
+    # Pastikan get_icon_chars_data sudah didefinisikan atau diimpor di file ini
     icon_chars_data = get_icon_chars_data(char_obj)
 
-    # Inisialisasi dictionary untuk menyimpan nilai input pengguna (akan diisi dari POST atau default)
+    # Inisialisasi dictionary untuk menyimpan nilai input pengguna
     user_input_stats = {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
@@ -91,20 +91,30 @@ def character_builder_view(request, character_name):
         # Ambil semua nilai input dari request.POST
         try:
             for stat_name in user_input_stats.keys():
+                # Gunakan float() dan default 0.0 jika input kosong atau tidak valid
                 user_input_stats[stat_name] = float(request.POST.get(stat_name, 0.0))
         except ValueError:
-            # Jika ada input yang bukan angka, Anda bisa menambahkan pesan error
-            print("Error: Semua input stat harus berupa angka.")
-            messages.error(request, "Input stat harus berupa angka.")
-            # Lalu render ulang halaman dengan nilai yang diinput (yang valid) atau nilai default
+            # Jika ada input yang bukan angka, tambahkan pesan error
+            print("Error: Semua input stat harus berupa angka.") # Untuk debug konsol
+            messages.error(request, "Input stat harus berupa angka.") # Untuk ditampilkan di template
+            # Tetap render ulang halaman dengan nilai yang diinput (yang valid) atau nilai default
+            context = {
+                "character": char_obj,
+                "images": images,
+                "all_characters_for_icons": icon_chars_data,
+                "user_input_stats": user_input_stats, # Kirimkan dictionary yang sudah diproses
+            }
+            return render(request, 'landingpage/character_builder.html', context)
 
 
+        # Simpan input pengguna dan nama karakter ke session untuk perbandingan selanjutnya
         request.session['user_input_stats'] = user_input_stats
-        request.session['character_name_for_comparison'] = char_obj.character # Simpan nama karakter juga
+        # PERBAIKAN: Simpan 'character_name' dari char_obj
+        request.session['character_name_for_comparison'] = char_obj.character_name 
 
         # Redirect ke halaman penilaian (misalnya, 'build:compare_build')
-        # URL ini harus dibuat di build/urls.py
-        return redirect('build:compare_build', character_name=character_name)
+        # URL ini harus dibuat di build/urls.py dan akan menerima nama karakter mentah
+        return redirect('build:compare_build', character_name=character_name) # character_name adalah nama mentah dari URL
 
     # Untuk GET request, kirimkan nilai default (0.0) ke template
     context = {

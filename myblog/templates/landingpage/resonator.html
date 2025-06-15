@@ -30,8 +30,8 @@
                         <div class="value">{{ character.codename }}</div>
                     </div>
                     <div class="profile-item">
-                        <div class="label">Alias:</div>
-                        <div class="value">{{ json_data.Gelar|default:"N/A" }}</div>
+                        <div class="label">Title:</div>
+                        <div class="value">{{ character.title}}</div>
                     </div>
                     <div class="profile-item">
                         <div class="label">Birthday:</div>
@@ -61,9 +61,9 @@
             <img src="{{ images.render }}" alt="{{ character.character }}" class="character-render" />
 
             <div class="stars">
-                {% if character.rarity == '5 Star' %}
+                {% if character.rarity == '5' %}
                     <img src="{% static 'assets/ikon/Star5.png' %}" alt="5 Stars" class="stars-img" />
-                {% elif character.rarity == '4 Star' %}
+                {% elif character.rarity == '4' %}
                     <img src="{% static 'assets/ikon/logo/Star_4.png' %}" alt="4 Stars" class="stars-img" />
                 {% else %}
                     <img src="{% static 'ikon/logo/Star_default.png' %}" alt="Stars" class="stars-img" />
@@ -75,7 +75,7 @@
             <div class="content">
                 <div class="block">
                     <span class="title-block">NAME</span>
-                    <span class="name-character">{{ character.character|upper }}</span>
+                    <span class="name-character">{{ character.name|upper }}</span>
                 </div>
 
                 <div class="tags">
