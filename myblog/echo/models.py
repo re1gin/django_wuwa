@@ -1,8 +1,6 @@
-# echo/models.py
 
 from django.db import models
 
-# Model untuk Sonata (tidak berubah)
 class Sonata(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -17,7 +15,7 @@ class Sonata(models.Model):
 class Echo(models.Model):
     name = models.CharField(max_length=100, unique=True)
     cost = models.IntegerField()
-    sonata = models.ManyToManyField(Sonata, related_name='echos')
+    sonatas = models.ManyToManyField(Sonata, related_name='echos')
     # Bidang 'skill' telah dihapus dari sini
 
     def __str__(self):

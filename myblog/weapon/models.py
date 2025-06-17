@@ -1,5 +1,3 @@
-# build/models.py
-
 from django.db import models
 
 class Weapon(models.Model):
