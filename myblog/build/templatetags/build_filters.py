@@ -1,40 +1,46 @@
 # build/templatetags/build_filters.py
-
 from django import template
+from django.conf import settings # Import settings
+from django.contrib.staticfiles.storage import staticfiles_storage # Import staticfiles_storage
 
-# Ini adalah instance dari template.Library yang digunakan untuk mendaftarkan tag dan filter.
 register = template.Library()
 
 @register.filter
-def get_item_by_name(collection, item_name):
+def format_filename(value):
     """
-    Mengambil objek dari sebuah koleksi (list atau QuerySet)
-    berdasarkan atribut 'name', 'Echo_name', atau 'weapon_name'.
+    Mengganti spasi dengan underscore untuk nama file.
     """
-    for item in collection:
-        # Coba cari berdasarkan Echo_name (untuk Echos)
-        if hasattr(item, 'Echo_name') and item.Echo_name == item_name:
-            return item
-        # Coba cari berdasarkan name (untuk Sonatas)
-        if hasattr(item, 'name') and item.name == item_name:
-            return item
-        # Coba cari berdasarkan weapon_name (untuk Weapons)
-        if hasattr(item, 'weapon_name') and item.weapon_name == item_name:
-            return item
-    return None # Mengembalikan None jika tidak ditemukan
+    if value is None:
+        return ""
+    formatted_value = value.replace(' ', '_')
+    return formatted_value
 
 @register.filter
-def replace_spaces(value, replacement=''):
+def get_icon_url(item_name, item_type):
     """
-    Mengganti spasi dengan karakter pengganti.
-    Digunakan untuk membuat nama file URL yang valid.
+    Mengembalikan URL lengkap untuk ikon berdasarkan tipe item dan namanya.
+    item_type diharapkan 'weapon', 'echo', atau 'sonata'.
     """
-    return value.replace(' ', replacement)
+    if not item_name or not item_type:
+        return staticfiles_storage.url("assets/ikon/default.png") # Atau gambar default spesifik
 
-@register.filter
-def replace_hashes(value, replacement=''):
-    """
-    Mengganti karakter '#' dengan karakter pengganti.
-    Digunakan untuk membersihkan nama file URL yang valid.
-    """
-    return value.replace('#', replacement)
+    # Format nama file
+    formatted_name = format_filename(item_name) # Panggil filter format_filename yang sudah ada
+
+    # Tentukan sub-folder berdasarkan item_type
+    folder_path = ""
+    if item_type == 'weapon':
+        folder_path = "weapon"
+    elif item_type == 'echo':
+        folder_path = "echo"
+    elif item_type == 'sonata':
+        folder_path = "sonata"
+    else:
+        # Tipe tidak dikenal, kembalikan default atau kosong
+        return staticfiles_storage.url("assets/ikon/default.png")
+
+    # Bangun path relatif ke file statis
+    relative_path = f"{settings.STATIC_URL}assets/ikon/{folder_path}/{formatted_name}.png"
+
+    # Gunakan staticfiles_storage untuk mendapatkan URL lengkap
+    return staticfiles_storage.url(relative_path)

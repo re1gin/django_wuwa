@@ -8,7 +8,8 @@ from django.http import Http404
 from .models import Resonator 
 
 def format_folder(name):
-    formatted_name = name.replace(' ', '_')
+    # PERBAIKAN: Tambahkan penanganan tanda hubung jika ada di nama folder Anda
+    formatted_name = name.replace(' ', '_').replace('-', '_') 
     return formatted_name
 
 def load_resonator_data():
@@ -32,21 +33,22 @@ def resonator_selection(request):
     Menampilkan halaman pemilihan karakter, menampilkan semua resonator
     yang ada di database sebagai kartu.
     """
-    all_resonators_db = Resonator.objects.all().order_by('character_name')
+    all_resonators_db = Resonator.objects.all().order_by('name')
     char_cards = []
     for char_db_obj in all_resonators_db:
-        # Nama folder akan persis sama dengan character_name
-        folder_name = format_folder(char_db_obj.character_name) 
+        # Nama folder akan persis sama dengan nama dari DB
+        folder_name = format_folder(char_db_obj.name) 
         
         # Path URL untuk wallpaper karakter
         wallpaper_path = f"{settings.STATIC_URL}resonator/{folder_name}/Wallpaper.png"
         
         # URL detail akan menggunakan nama karakter mentah
-        # Django akan otomatis meng-URL-encode spasi dan karakter khusus lainnya.
-        detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': char_db_obj.character_name})
+        # PERBAIKAN: Gunakan 'name' sebagai keyword argument
+        detail_url = reverse('resonators:resonator_detail', kwargs={'name': char_db_obj.name})
+        # ^^^ character_name diubah menjadi name ^^^
 
         char_cards.append({
-            'name': char_db_obj.character_name,
+            'name': char_db_obj.name,
             'wallpaper_url': wallpaper_path,
             'detail_url': detail_url,
         })
@@ -57,18 +59,19 @@ def resonator_selection(request):
     }
     return render(request, 'landingpage/resonators_selection.html', context)
 
-def resonators(request, character_name):
+def resonators(request, name): # <--- Parameter fungsi view ini sudah benar: 'name'
     """
     Menampilkan halaman detail untuk satu karakter resonator.
     Mengambil data dari database dan detail lengkap dari file JSON.
     """
-    # 1. Cari karakter di database berdasarkan character_name (persis dari URL)
+    # 1. Cari karakter di database berdasarkan nama (dari URL)
     # Gunakan __exact atau tanpa itu jika Anda yakin case-sensitive cocok.
     # __iexact (case-insensitive exact) tetap aman jika ada variasi kapitalisasi.
     try:
-        char_db_obj = Resonator.objects.get(character_name__iexact=character_name)
-    except Resonator.DoesNotExist:
-        raise Http404(f"Karakter '{character_name}' tidak ditemukan di database.")
+        # PERBAIKAN: Gunakan name=name atau name__iexact=name
+        char_db_obj = get_object_or_404(Resonator, name__iexact=name) 
+    except Http404: # Menggunakan Http404 karena get_object_or_404 melemparkannya
+        raise Http404(f"Karakter '{name}' tidak ditemukan di database.")
 
     # 2. Muat SEMUA data detail dari resonators_data.json
     all_resonators_json_data = load_resonator_data()
@@ -77,13 +80,13 @@ def resonators(request, character_name):
     char_obj_raw = None
     for data_from_json in all_resonators_json_data:
         # Bandingkan nama karakter dari DB dengan 'Name' di JSON (case-insensitive)
-        if data_from_json.get('Name', '').lower() == char_db_obj.character_name.lower(): 
+        if data_from_json.get('Name', '').lower() == char_db_obj.name.lower(): # PERBAIKAN: Tambahkan .lower() untuk perbandingan case-insensitive
             char_obj_raw = data_from_json
             break
     
     if not char_obj_raw:
         # Jika karakter ada di DB tapi tidak ada di JSON, lempar Http404
-        print(f"ERROR: Data detail JSON untuk karakter '{char_db_obj.character_name}' tidak ditemukan di resonators_data.json.")
+        print(f"ERROR: Data detail JSON untuk karakter '{char_db_obj.name}' tidak ditemukan di resonators_data.json.")
         raise Http404("Detail karakter tidak ditemukan.") 
 
     # --- Proses char_obj_raw untuk membuat kamus yang ramah template ---
@@ -109,11 +112,13 @@ def resonators(request, character_name):
     character_for_template['energy'] = char_obj_raw.get('Energy', 0)
     character_for_template['role'] = char_obj_raw.get('Role', 'N/A')
     character_for_template['rarity'] = char_obj_raw.get('Rarity', 0)
-    character_for_template['title'] = char_obj_raw['Title'][0]
+    # PERBAIKAN: Pastikan 'Title' ada sebelum diakses sebagai list
+    character_for_template['title'] = char_obj_raw.get('Title', [''])[0] if isinstance(char_obj_raw.get('Title'), list) else char_obj_raw.get('Title', 'N/A')
     character_for_template['quote'] = char_obj_raw.get("Quote", "No description available.")
 
     # Path untuk gambar render akan menggunakan nama mentah
-    folder_name_for_images = char_obj_raw.get('Name', 'unknown') 
+    # PERBAIKAN: Gunakan format_folder di sini juga untuk konsistensi
+    folder_name_for_images = format_folder(char_obj_raw.get('Name', 'unknown')) 
     images = {
         "render": f"{settings.STATIC_URL}resonator/{folder_name_for_images}/Render.png",
     }
@@ -129,14 +134,19 @@ def resonators(request, character_name):
 
         for variant_json_data in rover_variants:
             # Folder ikon akan menggunakan nama mentah varian
-            icon_folder = variant_json_data.get('Name', '')
+            # PERBAIKAN: Gunakan format_folder
+            icon_folder = format_folder(variant_json_data.get('Name', ''))
             icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png" 
             
             # URL reverse akan menggunakan nama mentah varian
-            icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': variant_json_data.get('Name', '')})
+            # PERBAIKAN: Gunakan 'name' sebagai keyword argument
+            icon_detail_url = reverse('resonators:resonator_detail', kwargs={'name': variant_json_data.get('Name', '')})
+            # ^^^ character_name diubah menjadi name ^^^
             
             # Periksa apakah ikon ini adalah karakter yang sedang aktif ditampilkan
-            is_active_icon = (variant_json_data.get('Name', '').lower() == char_db_obj.character_name.lower()) 
+            # PERBAIKAN: Bandingkan dengan char_db_obj.name
+            is_active_icon = (variant_json_data.get('Name', '').lower() == char_db_obj.name.lower()) 
+            # ^^^ character_name diubah menjadi name ^^^
 
             icon_chars_data.append({
                 'icon_url': icon_url,
@@ -146,11 +156,14 @@ def resonators(request, character_name):
             })
     else: 
         # Jika bukan Rover, hanya tampilkan ikon karakter saat ini
-        icon_folder = char_obj_raw.get('Name', '')
+        # PERBAIKAN: Gunakan format_folder
+        icon_folder = format_folder(char_obj_raw.get('Name', ''))
         icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png"
         
         # URL reverse akan menggunakan nama mentah karakter saat ini
-        icon_detail_url = reverse('resonators:resonator_detail', kwargs={'character_name': char_obj_raw.get('Name', '')})
+        # PERBAIKAN: Gunakan 'name' sebagai keyword argument
+        icon_detail_url = reverse('resonators:resonator_detail', kwargs={'name': char_obj_raw.get('Name', '')})
+        # ^^^ character_name diubah menjadi name ^^^
 
         icon_chars_data.append({
             'icon_url': icon_url,
@@ -164,6 +177,8 @@ def resonators(request, character_name):
         "images": images,
         "all_characters_for_icons": icon_chars_data,
         # Untuk URL builder, juga gunakan nama mentah
-        "builder_url": reverse('build:character_builder', kwargs={'character_name': char_obj_raw.get('Name', '')}), 
+        # PERBAIKAN: Gunakan 'name' sebagai keyword argument
+        "builder_url": reverse('build:character_builder', kwargs={'name': char_obj_raw.get('Name', '')}), 
+        # ^^^ character_name diubah menjadi name ^^^
     }
     return render(request, 'landingpage/resonator.html', context)

@@ -1,4 +1,4 @@
-    .container {
+.container {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -8,349 +8,403 @@
     background-repeat: no-repeat;
     background-position: center;
     background-color: aliceblue;
-    }
+}
 
-    .hero {
+.hero {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
     height: 100vh;
-    } 
+}
 
-    .left {
+.left {
     display: flex;
-    width: 40%;
+    width: 40%; /* 40% * 0.9 */
     height: 100%;
     justify-content: center;
     align-items: center;
-    }
+}
 
-    .image-container {
-    width: 400px;
+.image-container {
+    width: 360px; /* 400px * 0.9 */
     height: 100%;
     display: flex;
     align-items: end;
     justify-content: center;
     position: relative;
-    box-shadow: 0 0 15px #343434;
-    }
+    box-shadow: 0 0 13.5px #343434; /* 15px * 0.9 */
+}
 
-    .character-splash {
-    width: 120%;
+.character-splash {
+    width: 130%; /* Proporsi tetap, ini mengatur splash relatif terhadap container */
     object-fit: cover;
-    }
+}
 
-    .right{
-    width: 50%;
+.right {
+    width: 50%; /* 50% * 0.9 */
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    }
+    gap: 9px; /* 10px * 0.9 */
+}
 
-    .content {
-    padding-top: 100px;
+.content {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 20px;
+    gap: 18px; /* 20px * 0.9 */
     align-items: center;
-    }
+}
 
-    .icon-container {
+.icon-container {
     display: flex;
     flex-direction: row;
-    width: 300px;
+    width: 270px; /* 300px * 0.9 */
     overflow-x: auto;
     white-space: nowrap;
-    padding: 0 20px;
+    padding: 0 18px; /* 20px * 0.9 */
     margin-left: auto;
-    gap: 15px;
+    gap: 13.5px; /* 15px * 0.9 */
     scroll-snap-type: x mandatory;
 
     mask-image: linear-gradient(
-    to right,
-    transparent 0%, /* Mulai transparan di paling kiri */
-    black 10%,      /* Sepenuhnya terlihat (opaque) pada 10% dari kiri */
-    black 90%,      /* Tetap terlihat hingga 90% dari kiri */
-    transparent 100% /* Mulai transparan lagi di paling kanan */
+        to right,
+        transparent 0%,
+        black 10%,
+        black 90%,
+        transparent 100%
     );
 
-    scroll-padding-left: 10px; /* Sesuaikan dengan seberapa jauh mask masuk dari kiri */
-    scroll-padding-right: 10px; /* Sesuaikan dengan seberapa jauh mask masuk dari kanan */
-    }
+    scroll-padding-left: 9px; /* 10px * 0.9 */
+    scroll-padding-right: 9px; /* 10px * 0.9 */
+}
 
-    .icon-container::-webkit-scrollbar {
+.icon-container::-webkit-scrollbar {
     display: none;
-    }
-    .icon-container {
+}
+.icon-container {
     scrollbar-width: none;
     -ms-overflow-style: none;
-    }
+}
 
-    .character-icon {
-    width: 60px;
-    height: 60px;
+.character-icon {
+    width: 54px; /* 60px * 0.9 */
+    height: 54px; /* 60px * 0.9 */
     border-radius: 50%;
     object-fit: cover;
-    margin: 10px 0px; 
-    border: 1px solid #ffffff;
+    margin: 9px 0px; /* 10px * 0.9 */
+    border: 0.9px solid #ffffff; /* 1px * 0.9 */
     transition: all 0.2s ease-in-out;
     cursor: pointer;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 
     scroll-snap-align: start;
-    }
+}
 
-    .character-icon.active {
-    border: 2px solid gold;
-    transform: scale(1.1);
-    box-shadow: 0 0 10px gold;
-    }
+.character-icon.active {
+    border: 1.8px solid gold; /* 2px * 0.9 */
+    transform: scale(1.1); /* Skala tetap, ini adalah efek, bukan ukuran dasar */
+    box-shadow: 0 0 9px gold; /* 10px * 0.9 */
+}
 
-    .character-icon:hover:not(.active) {
-    transform: scale(1.05);
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-    }
+.character-icon:hover:not(.active) {
+    transform: scale(1.05); /* Skala tetap */
+    box-shadow: 0 0 4.5px rgba(255, 215, 0, 0.5); /* 5px * 0.9 */
+}
 
-    .form-block{
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    }
-
-    .character-block {
+.character-block {
     width: 100%;
     height: auto;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
-    }
-    .block-name {
+}
+.block-name {
     display: flex;
     flex-direction: column;
     width: fit-content;
     align-items: start;
-    }
+}
 
-    .title-name {
+.title-name {
     display: flex;
     background-color: #000000;
     color: hsl(0, 0%, 100%);
-    padding: 3px 8px;
-    font-size: 15px;
-    }
+    padding: 2.7px 7.2px; /* 3px * 0.9, 8px * 0.9 */
+    font-size: 13.5px; /* 15px * 0.9 */
+}
 
-    .attribute-icon {
-    width: 10%;
+.attribute-icon {
+    width: 10%; /* Proporsi tetap */
     position: relative;
     object-fit: cover;
+}
 
-    }
-
-    .name-character {
+.name-character {
     display: flex;
     width: max-content;
-    font-size: 25px;
+    font-size: 22.5px; /* 25px * 0.9 */
     font-weight: bold;
     color: #000000;
     background-color: #ffffff;
-    padding: 2px 8px;
+    padding: 1.8px 7.2px; /* 2px * 0.9, 8px * 0.9 */
     text-transform: uppercase;
-    }
+}
 
-    .input-block {
+.form-block {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.input-block {
     display: flex;
     flex-direction: row;
     width: 100%;
     align-items: flex-start;
-    gap: 15px;
+    gap: 13.5px; /* 15px * 0.9 */
     justify-content: space-between;
-    }
+}
 
-    .input-stat-block {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        margin: 0;
-        padding: 0;
-    }
+.input-left-block {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
 
-    .block {
+.input-right-block {
+    width: 50%;
+    gap: 18px; /* 20px * 0.9 */
+    display: flex;
+    flex-direction: column;
+}
+
+.block {
     display: flex;
     flex-direction: column;
     width: 100%;
-    align-items: flex-start; /* Diubah dari 'start' ke 'flex-start' */
-    }
+    align-items: flex-start;
+}
 
-    .title-block {
+.title-block {
     display: flex;
     background-color: #b7b7b7;
     color: #000000;
-    padding: 3px 10px;
-    font-size: 14px;
-    }
+    padding: 2.7px 9px; /* 3px * 0.9, 10px * 0.9 */
+    font-size: 12.6px; /* 14px * 0.9 */
+}
 
-    .stat {
+.stat {
     display: flex;
     flex-direction: column;
     font-family: "Open Sans", sans-serif;
-    font-size: 12px;
+    font-size: 10.8px; /* 12px * 0.9 */
     color: #ffffff;
     width: 100%;
-    border-top: 1px solid #ffffff95;
-    border-bottom: 1px solid #ffffff95;
-    }
+    border-top: 0.9px solid #ffffff95; /* 1px * 0.9 */
+    border-bottom: 0.9px solid #ffffff95; /* 1px * 0.9 */
+}
 
-    .stat p {
-    padding: 5px 10px;
+.stat p {
+    padding: 4.5px 9px; /* 5px * 0.9, 10px * 0.9 */
     width: 100%;
     text-align: start;
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    }
+}
 
-    .stat p:nth-child(odd) {
+.stat p:nth-child(odd) {
     background-color: #0000007c;
-    }
+}
 
-    .stat p:nth-child(even) {
+.stat p:nth-child(even) {
     background-color: #ffffff38;
-    }
+}
 
-    .stat p input[type="number"] {
+.stat p input[type="number"] {
     text-align: right;
     width: auto;
-    min-width: 30px;
-    max-width: 70px;
-    color: #ffffff; /* Sesuaikan warna teks jika defaultnya transparan atau putih di atas putih */
+    min-width: 27px; /* 30px * 0.9 */
+    max-width: 63px; /* 70px * 0.9 */
+    color: #ffffff;
     font-family: inherit;
     font-size: inherit;
-    padding: 0 5px; /* Tambahkan sedikit padding agar teks tidak terlalu mepet */
+    padding: 0 4.5px; /* 5px * 0.9 */
 
     background-color: transparent;
     border: none;
     outline: none;
 
-    border-radius: 3px; /* Sedikit lengkungan pada sudut input */
-    outline: none; /* Hilangkan outline saat focus jika tidak diinginkan */
+    border-radius: 2.7px; /* 3px * 0.9 */
+    outline: none;
 
     appearance: none;
     -webkit-appearance: none;
-    -moz-appearance: textfield; 
+    -moz-appearance: textfield;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-    /* background-color: transparent; */ /* Ini bisa dipertahankan atau dihapus tergantung efek akhir */
-    pointer-events: none; /* Mencegah interaksi mouse pada panah */
+        -webkit-appearance: none;
+        margin: 0;
+        pointer-events: none;
     }
 
     /* Styling saat input dalam kondisi hover/focus */
     &:hover,
     &:focus {
-    background-color: #ffffff; /* Pastikan tetap putih saat hover/focus */
-    color: #000;
-    border-color: #ffc400; /* Contoh: border berubah warna saat focus */
-    box-shadow: 0 0 0 0.2rem rgba(255, 225, 0, 0.539); /* Contoh: sedikit shadow saat focus */
+        background-color: #ffffff;
+        color: #000;
+        border-color: #ffc400;
+        box-shadow: 0 0 0 0.18rem rgba(255, 225, 0, 0.539); /* 0.2rem * 0.9 */
     }
 
     &::placeholder {
-    color: #888; /* Warna abu-abu yang jelas untuk placeholder */
-    opacity: 1; /* Pastikan opacity default */
+        color: #888;
+        opacity: 1;
     }
-    }
+}
 
-    .sonata_echo_block{
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-    }
+.sonata-echo-block {
+    display: flex;
+    width: 100%;
+    margin-top: 18px; /* 20px * 0.9 */
+    box-sizing: border-box;
+    text-align: center;
+}
 
-    .echo {
-        display: flex;
-        width: 70px;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+.sonata {
+    display: flex;
+    width: 50%;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
 
-    }
+.echo {
+    display: flex;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
 
-    .btn-grup {
+.block-icon {
+    width: 72px; /* 80px * 0.9 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-img {
+    width: 63px; /* 70px * 0.9 */
+    position: relative;
+    object-fit: cover;
+    padding-top: 18px; /* 20px * 0.9 */
+    border-radius: 9px; /* 10px * 0.9 */
+}
+
+.weapons {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    border: 1px solid #b7b7b7;
+}
+
+.weapon-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Sesuaikan sesuai tata letak yang diinginkan */
+    margin-left: 10px; /* Jarak dari icon senjata */
+
+    font-size: 14px; /* Ukuran font, sesuaikan */
+}
+
+.weapon-details p {
+    margin: 2px 0; /* Jarak antar baris info */
+}
+
+/* Jika Anda ingin gaya rarity bintang */
+.weapon-details p strong:first-child {
+    min-width: 60px; /* Agar label rarity dll. rata */
+    display: inline-block;
+}
+
+.btn-grup {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    margin-top: 30px;
-    gap: 7px;
-    }
+    margin-top: 27px; /* 30px * 0.9 */
+    gap: 6.3px; /* 7px * 0.9 */
+}
 
-    .btn {
+.btn {
     display: flex;
-    padding: 7px;
-    font-size: 11px;
+    padding: 6.3px; /* 7px * 0.9 */
+    font-size: 9.9px; /* 11px * 0.9 */
     font-weight: bold;
     border: none;
-    }
+}
 
-    .btn.white{
+.btn.white {
     background-color: #282828;
     color: #efefef;
-    }
+}
 
-    .btn.black{
+.btn.black {
     background-color: #ffffff;
     color: #000;
-    }
+}
 
-    @media (max-width: 900px) {
+@media (max-width: 900px) {
     .hero {
-    height: auto;
-    padding: 15px;
-    flex-wrap: wrap;
+        height: auto;
+        padding: 13.5px; /* 15px * 0.9 */
+        flex-wrap: wrap;
     }
 
     .left, .right {
-    width: 100%;
-    align-items: center;
+        width: 100%;
+        align-items: center;
     }
 
     .character-profile {
-    width: 67%;
+        width: 67%; /* Proporsi tetap */
     }
 
     .content {
-    width: 67%;
+        width: 67%; /* Proporsi tetap */
     }
-    }
+}
 
-    @keyframes fadeIn {
+@keyframes fadeIn {
     from {
-    opacity: 0;
-    transform: translateY(20px); /* Atau translateX untuk slide dari samping */
+        opacity: 0;
+        transform: translateY(18px); /* 20px * 0.9 */
     }
     to {
-    opacity: 1;
-    transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-    }
+}
 
-    .container {
+.container {
     animation: fadeIn 1s ease-out forwards;
-    }
+}
 
-    .hero {
+.hero {
     animation: fadeIn 1s ease-out forwards;
-    }
-
-
+}
