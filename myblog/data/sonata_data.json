@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Freezing Frost",
+    "two_set_effect": "Glacio DMG +10%",
+    "five_set_effect": "Glacio DMG +10% after Basic or Heavy Attack (stacks up to 3, 15s each)"
+  },
+  {
+    "name": "Molten Rift",
+    "two_set_effect": "Fusion DMG +10%",
+    "five_set_effect": "Fusion DMG +30% for 15s after Resonance Skill"
+  },
+  {
+    "name": "Void Thunder",
+    "two_set_effect": "Electro DMG +10%",
+    "five_set_effect": "Electro DMG +15% after Heavy Attack or Resonance Skill (stacks up to 2, 15s each)"
+  },
+  {
+    "name": "Sierra Gale",
+    "two_set_effect": "Aero DMG +10%",
+    "five_set_effect": "Aero DMG +30% for 15s after Intro Skill"
+  },
+  {
+    "name": "Celestial Light",
+    "two_set_effect": "Spectro DMG +10%",
+    "five_set_effect": "Spectro DMG +30% for 15s after Intro Skill"
+  },
+  {
+    "name": "Havoc Eclipse",
+    "two_set_effect": "Havoc DMG +10%",
+    "five_set_effect": "Havoc DMG +7.5% after Basic or Heavy Attack (stacks up to 4, 15s each)"
+  },
+  {
+    "name": "Rejuvenating Glow",
+    "two_set_effect": "Healing Bonus +10%",
+    "five_set_effect": "After healing allies, increases all party ATK by 15% for 30s"
+  },
+  {
+    "name": "Moonlit Clouds",
+    "two_set_effect": "Energy Regen +10%",
+    "five_set_effect": "After Outro Skill, next Resonator ATK +22.5% for 15s"
+  },
+  {
+    "name": "Lingering Tunes",
+    "two_set_effect": "ATK +10%",
+    "five_set_effect": "On field: ATK +5% per 1.5s (up to 4 stacks), Outro Skill DMG +60%"
+  },
+  {
+    "name": "Frosty Resolve",
+    "two_set_effect": "Resonance Skill DMG +12%",
+    "five_set_effect": "Casting Resonance Liberation grants +22.5% Glacio DMG for 15s and Resonance Skill DMG +18% for 5s (up to 2 stacks)"
+  },
+  {
+    "name": "Eternal Radiance",
+    "two_set_effect": "Spectro DMG +10%",
+    "five_set_effect": "Inflicting Spectro Frazzle: Crit Rate +20% for 15s; at 10 stacks: Spectro DMG +15% for 15s"
+  },
+  {
+    "name": "Midnight Veil",
+    "two_set_effect": "Havoc DMG +10%",
+    "five_set_effect": "Outro Skill deals +480% Havoc DMG to nearby enemies, and grants incoming Resonator +15% Havoc DMG for 15s"
+  },
+  {
+    "name": "Empyrean Anthem",
+    "two_set_effect": "Energy Regen +10%",
+    "five_set_effect": "Coordinated Attack DMG +80%; on crit: active Resonator ATK +20% for 4s"
+  },
+  {
+    "name": "Tidebreaking Courage",
+    "two_set_effect": "Energy Regen +10%",
+    "five_set_effect": "ATK +15%; at 250% Energy Regen: all Attribute DMG +30%"
+  },
+  {
+    "name": "Gusts of Welkin",
+    "two_set_effect": "Aero DMG +10%",
+    "five_set_effect": "Inflicting Aero Erosion: team Aero DMG +15%, triggering Resonator +extra 15% for 20s"
+  },
+  {
+    "name": "Windward Pilgrimage",
+    "two_set_effect": "Aero DMG +10%",
+    "five_set_effect": "Hitting with Aero Erosion: Crit Rate +10% and Aero DMG +30% for 10s"
+  },
+  {
+    "name": "Flaming Clawprint",
+    "two_set_effect": "Fusion DMG +10%",
+    "five_set_effect": "After Resonance Liberation: Fusion DMG +15% to team and +20% to caster for 35s"
+  }
+]

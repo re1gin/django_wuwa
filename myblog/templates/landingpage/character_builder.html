@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load build_filters %} {# TAMBAHKAN BARIS INI #}
 
-{# PERBAIKAN: Gunakan character.character_name #}
 {% block title %}Builder Karakter: {{ character.character_name }}{% endblock %}
 
 {% block extra_head %}
@@ -12,7 +12,6 @@
     <div class="hero">
         <div class="left">
             <div class="image-container">
-                {# PERBAIKAN: Gunakan character.character_name #}
                 <img src="{{ images.render }}" alt="{{ character.character_name }}" class="character-splash"/>
             </div>
         </div>
@@ -21,7 +20,6 @@
             <div class="content">
                 <div class="icon-container">
                     {% for icon_char in all_characters_for_icons %}
-                        {# URL detail seharusnya sudah benar dari views.py (menggunakan character_name) #}
                         <a href="{{ icon_char.detail_url }}"> 
                             <img src="{{ icon_char.icon_url }}"
                                 class="character-icon {% if icon_char.is_active %}active{% endif %}"
@@ -33,30 +31,15 @@
                 <div class="character-block">
                     <div class="block-name">
                         <span class="title-name">NAME</span>
-                        {# PERBAIKAN: Gunakan character.character_name #}
                         <span class="name-character">{{ character.character_name|upper }}</span>
                     </div>
-
-                    {# PERBAIKAN: Hapus blok ini jika field 'attribute' sudah dihapus dari model Resonator #}
-                    {# Karena di Python kita sudah menghapus logikanya, lebih baik ini juga dihapus dari template #}
-                    {# agar tidak ada error jika 'character.attribute' diakses dan tidak ada. #}
-                    {% comment %}
-                    {% if character.attribute %} 
-                        <img src="{% static 'assets/ikon/attribute/' %}{{ character.attribute }}.png" 
-                            class="attribute-icon" 
-                            alt="{{ character.attribute|default:'Attribute' }}" 
-                            title="{{ character.attribute|default:'Attribute' }}" />
-                    {% endif %}
-                    {% endcomment %}
                 </div>
 
                 <div class="form-block">
-                    {# PERBAIKAN: Gunakan character.character_name untuk URL di form action #}
+                    {# Form ini yang akan disubmit #}
                     <form method="POST" action="{% url 'build:character_builder' character_name=character.character_name %}">
                         {% csrf_token %}
 
-                        {# Untuk menampilkan pesan error dari Django (misal: "Input stat harus berupa angka.") #}
-                        {# Pastikan base.html Anda sudah menyertakan {% include 'messages.html' %} atau sejenisnya #}
                         {% if messages %}
                             <ul class="messages">
                                 {% for message in messages %}
@@ -66,29 +49,135 @@
                         {% endif %}
 
                         <div class="input-block">
-                            <div class="block">
-                                <span class="title-block">MAIN STAT </span>
-                                <div class="stat">
-                                    <p>HP: <input type="number" name="hp" placeholder="0" value="{{ user_input_stats.hp|floatformat:'0' }}"></p>
-                                    {# PERBAIKAN: Pastikan name attribute di sini cocok dengan kunci di user_input_stats di views.py #}
-                                    <p>ATK: <input type="number" name="attack" placeholder="0" value="{{ user_input_stats.attack|floatformat:'0' }}"></p>
-                                    <p>DEF: <input type="number" name="defense" placeholder="0" value="{{ user_input_stats.defense|floatformat:'0' }}"></p>
-                                    <p>ENERGY REGEN: <input type="number" name="energy" step="0.1" placeholder="0.0" value="{{ user_input_stats.energy|floatformat:'1' }}"></p>
-                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_rate|floatformat:'1' }}"></p>
-                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_dmg|floatformat:'1' }}"></p>
+                            <div class="input-stat-block">
+                                <div class="block">
+                                    <span class="title-block">MAIN STAT </span>
+                                    <div class="stat">
+                                        <p>HP: <input type="number" name="hp" step="0.1" placeholder="0.0" value="{{ user_input_stats.hp|floatformat:'1' }}"></p>
+                                        <p>ATK: <input type="number" name="attack" step="0.1" placeholder="0.0" value="{{ user_input_stats.attack|floatformat:'1' }}"></p>
+                                        <p>DEF: <input type="number" name="defense" step="0.1" placeholder="0.0" value="{{ user_input_stats.defense|floatformat:'1' }}"></p>
+                                        <p>ENERGY REGEN: <input type="number" name="energy" step="0.1" placeholder="0.0" value="{{ user_input_stats.energy|floatformat:'1' }}"></p>
+                                        <p>CRITICAL RATE: <input type="number" name="crit_rate" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_rate|floatformat:'1' }}"></p>
+                                        <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.crit_dmg|floatformat:'1' }}"></p>
+                                    </div>
+                                </div>
+
+                                <div class="sonata_echo_block">
+                                    <div class="echo">
+                                        <span class="title-block">ECHO</span>
+                                        <select name="selected_echo" id="echo-select" onchange="this.form.submit()"> {# TAMBAHKAN INI #}
+                                            <option value="">Pilih Echo</option>
+                                            {% for echo in echos_data %}
+                                                <option value="{{ echo.Echo_name }}"
+                                                        {% if echo.Echo_name == user_input_stats.selected_echo %}selected{% endif %}>
+                                                    {{ echo.Echo_name }} (Cost: {{ echo.Cost }})
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="block-icon">
+                                            {# Tampilkan gambar dan detail berdasarkan pilihan terakhir dari user_input_stats #}
+                                            {% if user_input_stats.selected_echo %}
+                                                {% with selected_echo_obj=echos_data|get_item_by_name:user_input_stats.selected_echo %}
+                                                    {% if selected_echo_obj %}
+                                                        <img src="{% static 'ikon/Echo/' %}{{ selected_echo_obj.Echo_name|replace_spaces:'_'|replace_hashes:'' }}.png" alt="{{ selected_echo_obj.Echo_name }} Preview" class="icon-img"/>
+                                                        <p>Rarity: {{ selected_echo_obj.Rarity }}*, Primary Stat: {{ selected_echo_obj.Primary_Stat }}, Cost: {{ selected_echo_obj.Cost }}</p>
+                                                    {% else %}
+                                                        <img src="{% static 'ikon/Echo/default.png' %}" alt="Echo Preview" class="icon-img"/>
+                                                        <p></p>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <img src="{% static 'ikon/Echo/default.png' %}" alt="Echo Preview" class="icon-img"/>
+                                                <p></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="sonata">
+                                        <span class="title-block">SONATA EFFECT</span>
+                                        <select name="selected_sonata" id="sonata-select" onchange="this.form.submit()"> {# TAMBAHKAN INI #}
+                                            <option value="">Pilih Sonata</option>
+                                            {% for sonata in sonatas_data %}
+                                                <option value="{{ sonata.name }}" {# TETAP 'name' SESUAI JSON #}
+                                                        {% if sonata.name == user_input_stats.selected_sonata %}selected{% endif %}>
+                                                    {{ sonata.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="block-icon">
+                                            {# Tampilkan gambar dan detail berdasarkan pilihan terakhir dari user_input_stats #}
+                                            {% if user_input_stats.selected_sonata %}
+                                                {% with selected_sonata_obj=sonatas_data|get_item_by_name:user_input_stats.selected_sonata %}
+                                                    {% if selected_sonata_obj %}
+                                                        <img src="{% static 'ikon/sonata/' %}{{ selected_sonata_obj.name|replace_spaces:'_'|replace_hashes:'' }}.png" alt="{{ selected_sonata_obj.name }} Preview" class="icon-img"/>
+                                                        <p>2-PC: {{ selected_sonata_obj.two_set_effect }}</p> {# PASTIKAN NAMA KUNCI INI SESUAI DENGAN YANG DI PROSES/DI JSON #}
+                                                        <p>5-PC: {{ selected_sonata_obj.five_set_effect }}</p> {# PASTIKAN NAMA KUNCI INI SESUAI DENGAN YANG DI PROSES/DI JSON #}
+                                                    {% else %}
+                                                        <img src="{% static 'ikon/sonata/default.png' %}" alt="Sonata Preview" class="icon-img"/>
+                                                        <p></p>
+                                                        <p></p>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <img src="{% static 'ikon/sonata/default.png' %}" alt="Sonata Preview" class="icon-img"/>
+                                                <p></p>
+                                                <p></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="block">
-                                <span class="title-block">BONUS STAT</span>
-                                <div class="stat">
-                                    <p>Basic Attack DMG: <input type="number" name="basic_atk_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg|floatformat:'1' }}"></p>
-                                    <p>Resonance Skill DMG: <input type="number" name="resonance_skill_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg|floatformat:'1' }}"></p>
-                                    <p>Resonance Liberation DMG: <input type="number" name="resonance_lib_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg|floatformat:'1' }}"></p>
-                                    <p>Defense Interruption: <input type="number" name="def_interruption" step="0.1" placeholder="0.0" value="{{ user_input_stats.def_interruption|floatformat:'1' }}"></p>
-                                    <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|floatformat:'1' }}"></p>
-                                    <p>Attribute DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|floatformat:'1' }}"></p>
-                                    <p>Attribute RES: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|floatformat:'1' }}"></p>
+                            <div class="input-stat-block">
+                                <div class="block">
+                                    <span class="title-block">WEAPON</span>
+                                    <div class="weapons">
+                                        <select name="selected_weapon" id="weapon-select" onchange="this.form.submit()"> {# TAMBAHKAN INI #}
+                                            <option value="">Pilih Senjata</option>
+                                            {% for weapon in weapons_data %}
+                                                <option value="{{ weapon.weapon_name }}"
+                                                        {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
+                                                    {{ weapon.weapon_name }} ({{ weapon.rarity }}*)
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="block-icon">
+                                            {# Tampilkan gambar dan detail berdasarkan pilihan terakhir dari user_input_stats #}
+                                            {% if user_input_stats.selected_weapon %}
+                                                {% with selected_weapon_obj=weapons_data|get_item_by_name:user_input_stats.selected_weapon %}
+                                                    {% if selected_weapon_obj %}
+                                                        <img src="{% static 'weapon/' %}{{ character.weapon_type|lower }}/{{ selected_weapon_obj.weapon_name|replace_spaces:'_'|replace_hashes:'' }}.png" alt="{{ selected_weapon_obj.weapon_name }} Preview" class="icon-img"/>
+                                                        <p id="selected-weapon-name">{{ selected_weapon_obj.weapon_name }}</p>
+                                                        <p id="selected-weapon-stats">Base ATK: {{ selected_weapon_obj.base_atk }}, {{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
+                                                        <p id="selected-weapon-passive">Passive: {{ selected_weapon_obj.passive_skill_description }}</p>
+                                                    {% else %}
+                                                        <img src="{% static 'weapon/default.png' %}" alt="Weapon Preview" class="icon-img"/>
+                                                        <p id="selected-weapon-name">Pilih Senjata</p>
+                                                        <p id="selected-weapon-stats"></p>
+                                                        <p id="selected-weapon-passive"></p>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <img src="{% static 'weapon/default.png' %}" alt="Weapon Preview" class="icon-img"/>
+                                                <p id="selected-weapon-name">Pilih Senjata</p>
+                                                <p id="selected-weapon-stats"></p>
+                                                <p id="selected-weapon-passive"></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="block">
+                                    <span class="title-block">BONUS STAT</span>
+                                    <div class="stat">
+                                        <p>Basic Attack DMG: <input type="number" name="basic_atk_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg|floatformat:'1' }}"></p>
+                                        <p>Resonance Skill DMG: <input type="number" name="resonance_skill_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg|floatformat:'1' }}"></p>
+                                        <p>Resonance Liberation DMG: <input type="number" name="resonance_lib_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg|floatformat:'1' }}"></p>
+                                        <p>Defense Interruption: <input type="number" name="def_interruption" step="0.1" placeholder="0.0" value="{{ user_input_stats.def_interruption|floatformat:'1' }}"></p>
+                                        <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|floatformat:'1' }}"></p>
+                                        <p>Attribute DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|floatformat:'1' }}"></p>
+                                        <p>Attribute RES: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|floatformat:'1' }}"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -105,47 +194,4 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const numberInputs = document.querySelectorAll('input[type="number"]');
-
-            numberInputs.forEach(input => {
-                input.addEventListener('keypress', function(event) {
-                    const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '-'];
-                    if (!allowedKeys.includes(event.key) &&
-                        event.key !== 'Backspace' &&
-                        event.key !== 'Delete' &&
-                        event.key !== 'Tab' &&
-                        event.key !== 'Enter' &&
-                        event.key !== 'ArrowLeft' &&
-                        event.key !== 'ArrowRight') {
-                        event.preventDefault();
-                    }
-
-                    if (event.key === '.' && input.value.includes('.')) {
-                        event.preventDefault();
-                    }
-
-                    if (event.key === '-' && (input.value.includes('-') || input.selectionStart !== 0)) {
-                        event.preventDefault();
-                    }
-                });
-
-                input.addEventListener('paste', function(event) {
-                    const pasteData = event.clipboardData.getData('text');
-                    if (!/^-?\d*\.?\d+$/.test(pasteData)) {
-                        event.preventDefault();
-                    }
-                });
-            });
-
-            // JavaScript untuk menambahkan efek pada ikon aktif
-            const activeIcon = document.querySelector('.character-icon.active');
-            if (activeIcon) {
-                activeIcon.style.border = '2px solid gold';
-                activeIcon.style.transform = 'scale(1.1)';
-                activeIcon.style.boxShadow = '0 0 10px gold';
-            }
-        });
-    </script>
 {% endblock %}

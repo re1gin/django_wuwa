@@ -1,0 +1,461 @@
+[
+  {
+    "weapon_name": "Abyss Surges",
+    "rarity": 5,
+    "type": "Gauntlets",
+    "base_atk": 587,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Meningkatkan Energy Regen sebesar 12.8%. Saat mengenai target dengan Resonance Skill, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 8 d."
+  },
+  {
+    "weapon_name": "Ages of Harvest",
+    "rarity": 5,
+    "type": "Broadblade",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Memberikan 12% Bonus DMG Atribut. Menggunakan Skill Intro memberikan Ageless Marking kepada equipper, yang memberikan 24% Bonus DMG Skill Resonance selama 12 d. Menggunakan Skill Resonance memberikan Ethereal Endowment kepada equipper, yang memberikan 24% Bonus DMG Skill Resonance selama 12 d."
+  },
+  {
+    "weapon_name": "Amity Accord",
+    "rarity": 4,
+    "type": "Gauntlets",
+    "base_atk": 337,
+    "secondary_stat": "DEF%",
+    "secondary_value": "61.50%",
+    "passive_skill_description": "Saat Intro Skill digunakan, meningkatkan Resonance Liberation DMG Bonus sebesar 40% selama 15 detik."
+  },
+  {
+    "weapon_name": "Augment",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 412,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "20.20%",
+    "passive_skill_description": "Menggunakan Resonance Liberation meningkatkan ATK sebesar 15% selama 15 detik."
+  },
+  {
+    "weapon_name": "Autumntrace",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 412,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "20.20%",
+    "passive_skill_description": "Meningkatkan ATK sebesar 4% saat memberikan Basic atau Heavy Attack DMG, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik."
+  },
+  {
+    "weapon_name": "Blazing Brilliance",
+    "rarity": 5,
+    "type": "Sword",
+    "base_atk": 587,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Meningkatkan ATK sebesar 12%. Mendapatkan 1 stack Searing Feather saat memberikan damage (maks 1 stack setiap 0.5 detik) dan 5 stack saat menggunakan Resonance Skill. Setiap stack memberikan 4% tambahan Resonance Skill DMG Bonus, hingga 14 stack. Semua stack akan hilang dalam 12 detik setelah mencapai jumlah maksimum."
+  },
+  {
+    "weapon_name": "Broadblade#41",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 412,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "32.30%",
+    "passive_skill_description": "Saat HP Resonator di atas 80%, meningkatkan ATK sebesar 12%. Saat HP di bawah 40%, memberikan penyembuhan sebesar 5% saat memberikan Basic atau Heavy Attack DMG. Efek ini dapat dipicu setiap 8 detik."
+  },
+  {
+    "weapon_name": "Cadenza",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 412,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Saat Resonance Skill digunakan, memulihkan 16 Concerto Energy. Efek ini dapat dipicu setiap 20 detik."
+  },
+  {
+    "weapon_name": "Call of the Abyss",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 338,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Setelah menggunakan Resonance Skill, meningkatkan ATK sebesar 10% selama 16 detik dan memberikan 6 Resonance Energy."
+  },
+  {
+    "weapon_name": "Celestial Spiral",
+    "rarity": 4,
+    "type": "Gauntlet",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik."
+  },
+  {
+    "weapon_name": "Comet Flare",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 412,
+    "secondary_stat": "HP%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Saat mengenai target dengan Basic atau Heavy Attack, meningkatkan Healing Bonus sebesar 3%, dapat ditumpuk hingga 3 kali. Efek berlangsung selama 8 detik dan dapat dipicu setiap 0.6 detik."
+  },
+  {
+    "weapon_name": "Commando of Conviction",
+    "rarity": 4,
+    "type": "Sword",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Saat menggunakan Intro Skill, meningkatkan ATK sebesar 15% selama 15 detik."
+  },
+  {
+    "weapon_name": "Cosmic Ripples",
+    "rarity": 5,
+    "type": "Rectifier",
+    "base_atk": 500,
+    "secondary_stat": "ATK%",
+    "secondary_value": "54.00%",
+    "passive_skill_description": "Meningkatkan Energy Regen sebesar 12.8%. Saat memberikan Basic Attack DMG, meningkatkan Basic Attack DMG Bonus sebesar 3.2%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 8 detik dan dapat dipicu setiap 0.5 detik."
+  },
+  {
+    "weapon_name": "Dauntless Evernight",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 337,
+    "secondary_stat": "DEF%",
+    "secondary_value": "61.60%",
+    "passive_skill_description": "Saat menggunakan Intro Skill, meningkatkan ATK sebesar 8% dan DEF sebesar 15% selama 15 detik."
+  },
+  {
+    "weapon_name": "Discord",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 462,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Saat mengenai musuh dengan Basic atau Heavy Attack, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik."
+  },
+  {
+    "weapon_name": "Emerald of Genesis",
+    "rarity": 5,
+    "type": "Sword",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Meningkatkan Energy Regen sebesar 12.8%. Saat menggunakan Resonance Skill, meningkatkan ATK sebesar 6%, dapat ditumpuk hingga 2 kali. Efek berlangsung selama 10 detik."
+  },
+  {
+    "weapon_name": "Endless Collapse",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Saat menggunakan Resonance Liberation, meningkatkan Healing Bonus sebesar 16% selama 15 detik."
+  },
+  {
+    "weapon_name": "Fables of Wisdom",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Saat mengenai musuh dengan Basic atau Heavy Attack, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik."
+  },
+  {
+    "weapon_name": "Fusion Accretion",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik."
+  },
+  {
+    "weapon_name": "Gauntlets#21D",
+    "rarity": 4,
+    "type": "Gauntlet",
+    "base_atk": 387,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "38.80%",
+    "passive_skill_description": "Saat Resonator melakukan dash atau dodge, meningkatkan ATK sebesar 16% dan Counter Attack DMG sebesar 100% selama 8 detik. Saat melakukan Counter Attack, memulihkan HP sebesar 10%. Efek ini dapat dipicu setiap 6 detik."
+  },
+  {
+    "weapon_name": "Helios Cleaver",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Dalam 12 detik setelah Skill Resonansi digunakan, ATK meningkat sebesar 3% setiap 2 detik, dapat ditumpuk hingga 4 kali. Efek ini dapat dipicu 1 kali setiap 12 detik. Saat jumlah tumpukan mencapai 4, semua tumpukan akan diatur ulang dalam 6 detik."
+  },
+  {
+    "weapon_name": "Hollow Mirage",
+    "rarity": 4,
+    "type": "Gauntlets",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Saat Resonance Liberation dilepaskan, memberikan 3 tumpukan Iron Armor. Setiap tumpukan meningkatkan ATK dan DEF sebesar 3% , menumpuk hingga 3 kali. Saat Resonator menerima kerusakan, mengurangi jumlah tumpukan sebanyak 1."
+  },
+  {
+    "weapon_name": "Jinzhou Keeper",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 387,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Saat Skill Intro dilepaskan, tingkatkan ATK penggunanya sebanyak 8% dan HP sebanyak 10% , berlangsung selama 15 d."
+  },
+  {
+    "weapon_name": "Legend of Drunken Hero",
+    "rarity": 4,
+    "type": "Gauntlets",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Memberikan DMG ke musuh dengan Status Negatif meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu sekali setiap detik, dapat ditumpuk hingga 4 kali."
+  },
+  {
+    "weapon_name": "Lumingloss",
+    "rarity": 4,
+    "type": "Sword",
+    "base_atk": 388,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.45%",
+    "passive_skill_description": "Saat Resonance Skill digunakan, meningkatkan Basic dan Heavy Attack DMG sebesar 20% selama 10 detik. Efek ini dapat dipicu sekali setiap detik."
+  },
+  {
+    "weapon_name": "Lunar Cutter",
+    "rarity": 4,
+    "type": "Sword",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.38%",
+    "passive_skill_description": "Resonator yang dilengkapi memperoleh 6 tumpukan Oath saat memasuki medan perang. Setiap tumpukan meningkatkan ATK sebesar 2% , hingga 6 tumpukan. Efek ini dapat dipicu 1 kali setiap 12 detik. Oath berkurang 1 tumpukan setiap 2 detik. Resonator yang dilengkapi memperoleh 6 tumpukan Oath tambahan saat mengalahkan musuh."
+  },
+  {
+    "weapon_name": "Lustrous Razor",
+    "rarity": 5,
+    "type": "Broadblade",
+    "base_atk": 587,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Meningkatkan regenerasi energi sebesar 12.8%. Setelah menggunakan Resonance Skill, meningkatkan DMG Resonance Liberation sebesar 7%, dapat ditumpuk hingga 3 kali."
+  },
+  {
+    "weapon_name": "Marcato",
+    "rarity": 4,
+    "type": "Gauntlets",
+    "base_atk": 338,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.84%",
+    "passive_skill_description": "Saat Skill Resonansi dilepaskan, memulihkan Energi Konserto sebesar 8. Efek ini dapat dipicu 1 kali setiap 20 detik."
+  },
+  {
+    "weapon_name": "Meditations on Mercy",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Memberikan DMG ke musuh dengan Status Negatif meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu sekali setiap detik, dapat ditumpuk hingga 4 kali."
+  },
+  {
+    "weapon_name": "Novaburst",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Saat Resonator melakukan dash atau dodge, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 3 kali. Efek ini berlangsung selama 8 detik."
+  },
+  {
+    "weapon_name": "Overture",
+    "rarity": 4,
+    "type": "Sword",
+    "base_atk": 337,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Menawarkan keseimbangan antara kemampuan ofensif dan regenerasi energi, cocok untuk karakter yang sering menggunakan Resonance Skills dan Ultimates."
+  },
+  {
+    "weapon_name": "Pistols#26",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 387,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Saat Resonator tidak menerima damage selama 5 detik, meningkatkan ATK sebesar 6%, dapat ditumpuk hingga 2 kali. Efek ini berlangsung selama 8 detik. Jika Resonator menerima damage, satu stack akan hilang dan memulihkan HP sebesar 6.25%."
+  },
+  {
+    "weapon_name": "Rectifier#25",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 337,
+    "secondary_stat": "ATK%",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Jika HP Resonator di atas 60%, meningkatkan ATK sebesar 12% selama 10 detik. Jika HP di bawah 60%, menggunakan Resonance Skill akan memulihkan 5% dari Max HP. Efek ini dapat dipicu setiap 8 detik."
+  },
+  {
+    "weapon_name": "Red Spring",
+    "rarity": 5,
+    "type": "Sword",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Meningkatkan ATK sebesar 12%. Saat memberikan Basic Attack DMG, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 14 detik, dapat ditumpuk hingga 3 kali. Ketika Concerto Energy digunakan, memberikan tambahan 40% Basic DMG Bonus selama 10 detik."
+  },
+  {
+    "weapon_name": "Relativistic Jet",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik."
+  },
+  {
+    "weapon_name": "Rime-Draped Sprouts",
+    "rarity": 5,
+    "type": "Rectifier",
+    "base_atk": 500,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "72.00%",
+    "passive_skill_description": "Meningkatkan Basic ATK DMG saat berada di lapangan dan meningkatkan serangan terkoordinasi saat menggunakan Outro Skill."
+  },
+  {
+    "weapon_name": "Romance in Farewell",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Menampilkan peningkatan ATK% sebagai statistik sekunder, cocok untuk karakter DPS."
+  },
+  {
+    "weapon_name": "Static Mist",
+    "rarity": 5,
+    "type": "Pistols",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Meningkatkan Energy Regen sebesar 12.8%. Saat mengenai target dengan Resonance Skill, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 8 detik."
+  },
+  {
+    "weapon_name": "Stellar Symphony",
+    "rarity": 5,
+    "type": "Rectifier",
+    "base_atk": 412,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "72.00%",
+    "passive_skill_description": "Meningkatkan Basic ATK DMG saat berada di lapangan dan meningkatkan serangan terkoordinasi saat menggunakan Outro Skill."
+  },
+  {
+    "weapon_name": "Stonard",
+    "rarity": 4,
+    "type": "Gauntlets",
+    "base_atk": 412,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "20.20%",
+    "passive_skill_description": "Saat Resonance Skill digunakan, meningkatkan ATK sebesar 6% selama 10 detik. Efek ini dapat ditumpuk hingga 2 kali."
+  },
+  {
+    "weapon_name": "Stringmaster",
+    "rarity": 5,
+    "type": "Rectifier",
+    "base_atk": 500,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "36.00%",
+    "passive_skill_description": "Memberikan 12% Attribute DMG Bonus. Saat memberikan Resonance Skill DMG, meningkatkan ATK sebesar 12%, dapat ditumpuk hingga 2 kali selama 5 detik. Saat pengguna tidak berada di medan perang, meningkatkan ATK sebesar 12%."
+  },
+  {
+    "weapon_name": "Sword#18",
+    "rarity": 4,
+    "type": "Sword",
+    "base_atk": 388,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.45%",
+    "passive_skill_description": "Saat HP pengguna turun di bawah 40%, meningkatkan Heavy Attack DMG sebesar 18% dan memulihkan HP sebesar 5% saat memberikan Heavy Attack DMG. Efek ini dapat dipicu sekali setiap 8 detik."
+  },
+  {
+    "weapon_name": "The Last Dance",
+    "rarity": 5,
+    "type": "Pistols",
+    "base_atk": 500,
+    "secondary_stat": "Crit DMG",
+    "secondary_value": "72.00%",
+    "passive_skill_description": "Meningkatkan ATK sebesar 12%. Setiap kali Intro Skill atau Resonance Liberation digunakan, meningkatkan Resonance Skill DMG Bonus sebesar 48% selama 5 detik."
+  },
+  {
+    "weapon_name": "Thunderbolt",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 387,
+    "secondary_stat": "ATK%",
+    "secondary_value": "36.40%",
+    "passive_skill_description": "Saat mengenai target dengan Basic atau Heavy Attack, meningkatkan Resonance Skill DMG Bonus sebesar 7%, dapat ditumpuk hingga 3 kali. Efek ini berlangsung selama 10 detik dan dapat dipicu setiap detik."
+  },
+  {
+    "weapon_name": "Tragicomedy",
+    "rarity": 5,
+    "type": "Gauntlets",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Meningkatkan ATK sebesar 12%. Setiap kali Basic Attack atau Intro Skill digunakan, meningkatkan Heavy Attack DMG Bonus sebesar 48% selama 3 detik."
+  },
+  {
+    "weapon_name": "Undying Flame",
+    "rarity": 4,
+    "type": "Pistols",
+    "base_atk": 412,
+    "secondary_stat": "ATK%",
+    "secondary_value": "30.30%",
+    "passive_skill_description": "Saat Intro Skill digunakan, meningkatkan Resonance Skill DMG Bonus sebesar 20% selama 15 detik."
+  },
+  {
+    "weapon_name": "Variation",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 388,
+    "secondary_stat": "Energy Regen",
+    "secondary_value": "51.80%",
+    "passive_skill_description": "Saat Resonance Skill digunakan, memulihkan 8 Concerto Energy. Efek ini dapat dipicu sekali setiap 20 detik."
+  },
+  {
+    "weapon_name": "Verdant Summit",
+    "rarity": 5,
+    "type": "Broadblade",
+    "base_atk": 587,
+    "secondary_stat": "Crit DMG",
+    "secondary_value": "48.60%",
+    "passive_skill_description": "Meningkatkan DMG Bonus dari semua Resonance Attributes sebesar 12%. Setiap kali Intro Skill atau Resonance Liberation digunakan, meningkatkan Heavy Attack DMG Bonus sebesar 24%, dapat ditumpuk hingga 2 kali."
+  },
+  {
+    "weapon_name": "Verity's Handle",
+    "rarity": 5,
+    "type": "Gauntlets",
+    "base_atk": 587,
+    "secondary_stat": "Crit Rate",
+    "secondary_value": "24.30%",
+    "passive_skill_description": "Dapatkan Bonus DMG Atribut sebesar 12% . Saat menggunakan Resonance Liberation, pengguna mendapatkan Bonus DMG Resonance Liberation sebesar 48% selama 8 detik. Efek ini dapat diperpanjang selama 5 detik setiap kali Skill Resonance digunakan, hingga 3 kali."
+  },
+  {
+    "weapon_name": "Waltz in Masquerade",
+    "rarity": 4,
+    "type": "Rectifier",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Memberikan DMG ke musuh dengan Status Negatif akan meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu 1 kali per detik, dapat ditumpuk hingga 4 kali."
+  },
+  {
+    "weapon_name": "Waning Redshift",
+    "rarity": 4,
+    "type": "Broadblade",
+    "base_atk": 462,
+    "secondary_stat": "ATK%",
+    "secondary_value": "18.20%",
+    "passive_skill_description": "Menggunakan Skill Resonansi akan memberikan 6 Energi Resonansi dan meningkatkan ATK sebesar 10% , berlangsung selama 16 detik. Efek ini dapat dipicu sekali setiap 20 detik."
+  }
+]

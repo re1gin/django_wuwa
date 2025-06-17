@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Thundering Mephis",
+    "cost": 4,
+    "sonatas": ["Void Thunder"],
+    "skill": "Transform into Thundering Mephis, rapid assault up to 6 Electro strikes. After final hit, grants +12% Electro DMG and +12% Resonance Liberation DMG for 15s."
+  },
+  {
+    "name": "Hecate",
+    "cost": 4,
+    "sonatas": ["Empyrean Anthem"],
+    "skill": "Summon 3 Crescent Servants that attack dealing Havoc DMG (~40–45% per hit depending on rarity). Counterattacks reset duration. Equipping gives +40% Coordinated Attack DMG."
+  },
+  {
+    "name": "Impermanence Heron",
+    "cost": 4,
+    "sonatas": ["Moonlit Clouds"],
+    "skill": "Transform into Heron and deal Havoc DMG; long press for continuous flame attack that restores Resonance Energy. Grants next character damage bonus."
+  },
+  {
+    "name": "Inferno Rider",
+    "cost": 4,
+    "sonatas": ["Molten Rift"],
+    "skill": "Transform into Inferno Rider, perform 3-hit Fusion assault; last hit is slow but buffing Fusion and Basic Attack."
+  },
+  {
+    "name": "Bell-Borne Geochelone",
+    "cost": 4,
+    "sonatas": ["Rejuvenating Glow", "Moonlit Clouds"],
+    "skill": "Activate protection, dealing Glacio DMG based on DEF, reduce incoming damage and increase damage dealt."
+  },
+  {
+    "name": "Crownless",
+    "cost": 4,
+    "sonatas": ["Havoc Eclipse"],
+    "skill": "Transform into Crownless and deal Havoc DMG; increases Havoc DMG and Resonance Skill DMG."
+  },
+  {
+    "name": "Feilian Beringal",
+    "cost": 4,
+    "sonatas": ["Sierra Gale"],
+    "skill": "Transform into Feilian Beringal, continuously attack dealing Aero DMG; increases Aero DMG and Heavy Attack DMG."
+  },
+  {
+    "name": "Fallacy of No Return",
+    "cost": 4,
+    "sonatas": ["Rejuvenating Glow"],
+    "skill": "Summon a fraction of mind's power; simple summon, grants Energy Regen and ATK buff."
+  },
+  {
+    "name": "Mech Abomination",
+    "cost": 4,
+    "sonatas": ["Lingering Tunes"],
+    "skill": "Transform Echo dealing damage; specifics vary per build."
+  },
+  {
+    "name": "Mourning Aix",
+    "cost": 4,
+    "sonatas": ["Celestial Light"],
+    "skill": "Transform Echo, medium damage; easy to swap out."
+  },
+  {
+    "name": "Tempest Mephis",
+    "cost": 4,
+    "sonatas": ["Gusts of Welkin"],
+    "skill": "Overlord Transform dealing Aero DMG; buffs Aero and Glacio DMG."
+  },
+  {
+    "name": "Dragon of Dirge",
+    "cost": 4,
+    "sonatas": ["Shield Support"],
+    "skill": "Summon Echo with shield and HP-scale damage."
+  },
+  {
+    "name": "Lampylumen Myriad",
+    "cost": 4,
+    "sonatas": ["Freezing Frost"],
+    "skill": "Overlord Echo; likely frost-element burst with scaling effects."
+  },
+  {
+    "name": "Lorelei",
+    "cost": 4,
+    "sonatas": ["Celestial Light"],
+    "skill": "Support-type Echo; provides team buffs and minor burst damage."
+  }
+]
