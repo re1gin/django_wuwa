@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Builder Karakter: {{ character.character_name }}{% endblock %}
+{% block title %}Builder Karakter: {{ character.name }}{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/character_builder.css' %}">
@@ -105,15 +105,13 @@
                                             {% for weapon in weapons_data %}
                                                 <option value="{{ weapon.weapon_name }}"
                                                         {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
-                                                    {{ weapon.weapon_name }}
+                                                    {{ weapon.weapon_name }} 
                                                 </option>
                                             {% endfor %}
                                         </select>
 
                                         {% if selected_weapon_obj %}
                                             <p><strong>Nama:</strong> {{ selected_weapon_obj.weapon_name }}</p>
-                                            <p><strong>Rarity:</strong> {{ selected_weapon_obj.rarity }} Bintang</p>
-                                            <p><strong>Tipe:</strong> {{ selected_weapon_obj.weapon_type }}</p>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -146,6 +144,7 @@
 
 {% block extra_js %}
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             const weaponSelect = document.getElementById('weapon-select');
             const echoSelect = document.getElementById('echo-select');
@@ -189,8 +188,6 @@
                                 ).join('')}
                             </select>
                             <p><strong>Nama:</strong> ${data.details.name}</p>
-                            <p><strong>Rarity:</strong> ${data.details.rarity} Bintang</p>
-                            <p><strong>Tipe:</strong> ${data.details.type}</p>
                         `;
                     } else {
                         weaponIcon.src = "{% static 'assets/ikon/weapon/default.png' %}";
@@ -209,10 +206,10 @@
                 } else if (itemType === 'echo') {
                     if (data.details && data.details.name) {
                         echoIcon.src = data.image_url;
-                        echoDetailsContainer.innerHTML = `
-                        `;
+                        echoDetailsContainer.innerHTML = ``;
                     } else {
                         echoIcon.src = "{% static 'assets/ikon/echo/default.png' %}";
+                        echoDetailsContainer.innerHTML = ``;
                     }
 
                     // Update Sonata dropdown berdasarkan filtered_sonatas
@@ -234,9 +231,8 @@
                     if (!sonataStillValid) {
                         sonataSelect.value = ""; // Reset pilihan sonata
                         sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
-                        user_input_stats_js.selected_sonata = ""; // Update state JS
+                        user_input_stats_js.selected_sonata = ""; 
                     } else {
-                        // Jika Sonata masih valid, update detailnya (jika ada)
                         fetchDetails('sonata', currentSelectedSonata, currentSelectedEcho); // Panggil ulang untuk sonata
                     }
 
@@ -253,7 +249,6 @@
 
 
             async function fetchDetails(itemType, itemName, selectedEchoName = '') {
-                // Buat FormData untuk mengirim data POST (termasuk CSRF token)
                 const formData = new FormData();
                 formData.append('item_type', itemType);
                 formData.append('item_name', itemName);
@@ -263,10 +258,7 @@
                 try {
                     const response = await fetch("{% url 'build:get_item_details_ajax' %}", {
                         method: 'POST', // Ubah ke POST
-                        body: formData, // Kirim FormData
-                        // headers: { // Tidak perlu 'Content-Type' header jika menggunakan FormData
-                        //     'X-CSRFToken': csrfToken,
-                        // },
+                        body: formData,
                     });
 
                     if (!response.ok) {
@@ -290,13 +282,10 @@
                     // Handle error: show default image/details
                     if (itemType === 'weapon') {
                         weaponIcon.src = "{% static 'assets/ikon/weapon/default.png' %}";
-                        weaponDetailsContainer.innerHTML = `<select name="selected_weapon" id="weapon-select"><option value="">Pilih Senjata</option></select><p>Error memuat detail senjata.</p>`;
                     } else if (itemType === 'echo') {
                         echoIcon.src = "{% static 'assets/ikon/echo/default.png' %}";
-                        echoDetailsContainer.innerHTML = `<p>Error memuat detail Echo.</p>`;
                     } else if (itemType === 'sonata') {
                         sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
-                        sonataDetailsContainer.innerHTML = `<p>Error memuat detail Sonata.</p>`;
                     }
                 }
             }
@@ -334,8 +323,6 @@
             echoSelect.addEventListener('change', handleSelectChange);
             sonataSelect.addEventListener('change', handleSelectChange);
 
-            // Inisialisasi tampilan saat halaman dimuat
-            // Ini penting agar gambar dan detail sudah terisi jika ada pilihan dari sesi
             if (user_input_stats_js.selected_weapon) {
                 fetchDetails('weapon', user_input_stats_js.selected_weapon);
             }
@@ -349,27 +336,4 @@
             }
         });
     </script>
-
-    {# Tambahkan sedikit CSS untuk detail weapon/echo/sonata #}
-    <style>
-        .weapon-details, .echo-details, .sonata-details {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-left: 10px;
-            color: #000;
-            font-size: 14px;
-        }
-
-        .weapon-details p, .echo-details p, .sonata-details p {
-            margin: 2px 0;
-        }
-
-        .weapon-details p strong:first-child,
-        .echo-details p strong:first-child,
-        .sonata-details p strong:first-child {
-            min-width: 60px;
-            display: inline-block;
-        }
-    </style>
 {% endblock %}

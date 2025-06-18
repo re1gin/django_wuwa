@@ -9,7 +9,7 @@ from .models import Resonator
 
 def format_folder(name):
     # PERBAIKAN: Tambahkan penanganan tanda hubung jika ada di nama folder Anda
-    formatted_name = name.replace(' ', '_').replace('-', '_') 
+    formatted_name = name.replace(' ', '_')
     return formatted_name
 
 def load_resonator_data():

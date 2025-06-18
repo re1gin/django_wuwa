@@ -185,6 +185,25 @@
     flex-direction: column;
 }
 
+select {
+    opacity: 1;
+    border: none;
+    width: auto;
+    background-color: #fefefe8e;
+}
+
+select:hover {
+    opacity: 1;
+    width: 50px;
+    background-color: rgba(255, 5, 5, 0.661);
+    color: black;
+}
+
+option {
+    display: flex;
+    text-align: center;
+}
+
 .block {
     display: flex;
     flex-direction: column;
@@ -325,20 +344,14 @@
 .weapon-details {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Sesuaikan sesuai tata letak yang diinginkan */
-    margin-left: 10px; /* Jarak dari icon senjata */
+    align-items: flex-start;
+    margin-left: 10px;
 
-    font-size: 14px; /* Ukuran font, sesuaikan */
+    font-size: 14px;
 }
 
 .weapon-details p {
-    margin: 2px 0; /* Jarak antar baris info */
-}
-
-/* Jika Anda ingin gaya rarity bintang */
-.weapon-details p strong:first-child {
-    min-width: 60px; /* Agar label rarity dll. rata */
-    display: inline-block;
+    margin: 2px 0; 
 }
 
 .btn-grup {
@@ -347,8 +360,8 @@
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    margin-top: 27px; /* 30px * 0.9 */
-    gap: 6.3px; /* 7px * 0.9 */
+    margin-top: 27px;
+    gap: 6.3px;
 }
 
 .btn {
@@ -401,9 +414,6 @@
     }
 }
 
-.container {
-    animation: fadeIn 1s ease-out forwards;
-}
 
 .hero {
     animation: fadeIn 1s ease-out forwards;
