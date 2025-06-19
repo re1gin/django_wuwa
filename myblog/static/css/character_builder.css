@@ -38,7 +38,7 @@
 }
 
 .character-splash {
-    width: 130%; /* Proporsi tetap, ini mengatur splash relatif terhadap container */
+    width: 135%; /* Proporsi tetap, ini mengatur splash relatif terhadap container */
     object-fit: cover;
 }
 
@@ -189,18 +189,18 @@ select {
     opacity: 1;
     border: none;
     width: auto;
-    background-color: #fefefe8e;
+    color: #ffffff;
+    background-color: #00000000;
 }
 
 select:hover {
     opacity: 1;
-    width: 50px;
-    background-color: rgba(255, 5, 5, 0.661);
-    color: black;
+    color: rgb(255, 187, 0);
 }
 
 option {
-    display: flex;
+    background-color: #ffffffc2;
+    color: #3e3e3e;
     text-align: center;
 }
 

@@ -3,11 +3,14 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from build.models import UserBuild
 from resonators.models import Resonator
 from .forms import Build
 from weapon.models import Weapon
-from echo.models import Sonata, Echo # Pastikan Sonata dan Echo sudah diimpor
-
+from echo.models import Sonata, Echo
+from .calculations import compare_stats, calculate_character_stats 
 
 def format_folder(name):
     formatted_name = name.replace(' ', '_')
@@ -45,6 +48,14 @@ def get_item_details_ajax(request):
         if weapon_obj:
             details = {
                 'name': weapon_obj.weapon_name,
+                # Tambahkan detail lain yang relevan dari weapon_obj yang ingin Anda kirim ke frontend
+                'rarity': weapon_obj.rarity,
+                'base_atk': weapon_obj.base_atk,
+                'sub_stat_type': weapon_obj.sub_stat_type,
+                'sub_stat_value': weapon_obj.sub_stat_value,
+                'effect_name': weapon_obj.effect_name,
+                'effect_description': weapon_obj.effect_description,
+                'weapon_type': weapon_obj.weapon_type,
             }
             image_url = f"{settings.STATIC_URL}assets/ikon/weapon/{format_folder(weapon_obj.weapon_name)}.png"
 
@@ -53,6 +64,13 @@ def get_item_details_ajax(request):
         if echo_obj:
             details = {
                 'name': echo_obj.name,
+                # Tambahkan detail lain yang relevan dari echo_obj
+                'cost': echo_obj.cost,
+                'rarity': echo_obj.rarity,
+                'main_stat_type': echo_obj.main_stat_type,
+                'main_stat_value': echo_obj.main_stat_value,
+                'sub_stats': list(echo_obj.sub_stats.all().values('stat_type', 'stat_value')), # Asumsi ada model terkait
+                'effect_description': echo_obj.effect_description,
             }
             image_url = f"{settings.STATIC_URL}assets/ikon/echo/{format_folder(echo_obj.name)}_Icon.png"
 
@@ -61,8 +79,10 @@ def get_item_details_ajax(request):
         if sonata_obj:
             details = {
                 'name': sonata_obj.name,
+                # Tambahkan detail lain yang relevan dari sonata_obj
+                'effect_2_piece': sonata_obj.effect_2_piece,
+                'effect_5_piece': sonata_obj.effect_5_piece,
             }
-            
             image_url = f"{settings.STATIC_URL}assets/ikon/sonata/{format_folder(sonata_obj.name)}.png"
 
     # --- Bagian Baru untuk Validasi Echo -> Sonata (dengan ManyToManyField) ---
@@ -86,7 +106,6 @@ def get_item_details_ajax(request):
         'filtered_sonatas': filtered_sonatas_data,
     })
     
-    
 def character_builder_view(request, name):
     char_obj = get_object_or_404(Resonator, name__iexact=name)
 
@@ -96,7 +115,7 @@ def character_builder_view(request, name):
 
     icon_chars_data = get_icon_chars_data(char_obj)
 
-    weapons_data_db = Weapon.objects.filter(weapon_type__iexact=char_obj.weapon).order_by('weapon_name')
+    weapons_data_db = Weapon.objects.filter(weapon_type__iexact=char_obj.weapon_type).order_by('weapon_name')
     echos_data_db = Echo.objects.all().order_by('name')
     sonatas_data_db = Sonata.objects.all().order_by('name') 
 
@@ -105,25 +124,11 @@ def character_builder_view(request, name):
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
         'def_interruption': 0.0, 'healing_bonus': 0.0, 'attribute_dmg_bonus': 0.0, 'attribute_res': 0.0,
+        
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
     }
-
-    # Ambil nilai dari session jika ini BUKAN GET request,
-    # atau jika Anda ingin mempertahankan session pada GET (tapi bukan untuk echo/sonata default)
-    if request.method == 'GET':
-        # Pada GET request (refresh atau akses langsung), secara eksplisit kosongkan pilihan.
-        # Ini MENGABAIKAN apa pun di session untuk tampilan awal Echo/Sonata.
-        user_input_stats['selected_weapon'] = '' # Mungkin Anda ingin weapon tetap dari session
-        user_input_stats['selected_echo'] = ''
-        user_input_stats['selected_sonata'] = ''
-        # Jika Anda ingin weapon tetap dari session, hapus baris di atas dan ganti dengan:
-        # user_input_stats['selected_weapon'] = request.session.get('user_input_stats', {}).get('selected_weapon', '')
-
-    elif 'user_input_stats' in request.session:
-        # Untuk POST request atau jika ingin memuat dari session pada GET (kecuali Echo/Sonata default)
-        user_input_stats.update(request.session['user_input_stats'])
 
 
     selected_weapon_obj = None
@@ -176,7 +181,7 @@ def character_builder_view(request, name):
         request.session['character_name_for_comparison'] = char_obj.name
 
         if 'NILAI BUILD' in request.POST:
-            return redirect('build:compare_build', name=char_obj.name)
+            return redirect('build:compare_stats', character_name=char_obj.name)
         
    
     if user_input_stats['selected_weapon']:
@@ -186,14 +191,14 @@ def character_builder_view(request, name):
 
     if user_input_stats['selected_echo']:
         selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-        if not selected_echo_obj: # JIKA NAMA ECHO DI SESI/POST TIDAK DITEMUKAN DI DB
+        if not selected_echo_obj:
             user_input_stats['selected_echo'] = '' # RESET NILAI DI user_input_stats
             user_input_stats['selected_sonata'] = '' # RESET SONATA JUGA
             selected_echo_obj = None # PASTIKAN OBJEKNYA NONE
     else: # JIKA selected_echo DARI SESI/INPUT SUDAH KOSONG DARI AWAL
-        user_input_stats['selected_sonata'] = '' # PASTIKAN SONATA JUGA KOSONG
-        selected_echo_obj = None # PASTIKAN INI NONE
-        selected_sonata_obj = None # PASTIKAN INI NONE
+        user_input_stats['selected_sonata'] = ''
+        selected_echo_obj = None
+        selected_sonata_obj = None
 
 
     # --- Filtering data untuk dropdown Sonata berdasarkan Echo yang dipilih ---
@@ -246,111 +251,97 @@ def character_builder_view(request, name):
     }
     return render(request, 'landingpage/character_builder.html', context)
 
-def compare_build_view(request, name):
-    char_obj = get_object_or_404(Resonator, name__iexact=name)
-    ideal_build = get_object_or_404(Build, character=char_obj)
-
-    user_input_stats = request.session.get('user_input_stats', {})
-    if not user_input_stats:
-        return redirect('build:character_builder', name=char_obj.name)
-
-    selected_weapon_obj = None
-    selected_echo_obj = None
-    selected_sonata_obj = None
-
-    selected_weapon_json_detail = None
-    selected_echo_json_detail = None
-    selected_sonata_json_detail = None
-
-    if user_input_stats.get('selected_weapon'):
-        selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
-        if selected_weapon_obj:
-            selected_weapon_obj.image_url = f"{settings.STATIC_URL}assets/ikon/weapon/{format_folder(char_obj.weapon)}/{format_folder(selected_weapon_obj.weapon_name)}.png"
-
-    if user_input_stats.get('selected_echo'):
-        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-        if selected_echo_obj:
-            selected_echo_obj.image_url = f"{settings.STATIC_URL}assets/ikon/echo/{format_folder(selected_echo_obj.name)}_Icon.png"
-
-    if user_input_stats.get('selected_sonata'):
-        selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
-        if selected_sonata_obj:
-            selected_sonata_obj.image_url = f"{settings.STATIC_URL}assets/ikon/sonata/{format_folder(selected_sonata_obj.name)}.png"
-
-    # --- Lakukan Logika Perbandingan dan Penilaian di sini ---
-    comparison_results = {}
-    rating_score = 0
-
-    base_stats_to_compare = ['hp', 'attack', 'defense', 'energy', 'crit_rate', 'crit_dmg']
-    for stat in base_stats_to_compare:
-        ideal_val = getattr(ideal_build, stat)
-        user_val = user_input_stats.get(stat, 0.0)
-        comparison_results[stat] = {
-            'ideal': ideal_val,
-            'user': user_val,
-            'difference': user_val - ideal_val
-        }
-        if ideal_val > 0:
-            score_contribution = min(1.0, user_val / ideal_val) * 10
-            rating_score += score_contribution
-        else:
-            if user_val > 0:
-                rating_score += 5
-
-    if selected_weapon_obj:
-        if selected_weapon_obj.rarity == 5:
-            rating_score += 15
-        elif selected_weapon_obj.rarity == 4:
-            rating_score += 10
-
-    if selected_echo_obj:
-        # Menambahkan penilaian berdasarkan cost (jika relevan) atau rarity
-        # Contoh: Echo cost 4 bisa beri bonus lebih
-        if selected_echo_obj.rarity == 5:
-            rating_score += 10
-        if selected_echo_obj.cost == 4: # Misalnya jika cost 4 echo adalah yang paling bagus
-            rating_score += 5
-
-    if selected_sonata_obj:
-        # Contoh: penilaian berdasarkan nama sonata atau efek set
-        if selected_sonata_obj.name == 'Molten Rift': # Contoh sonata yang ideal untuk karakter DPS api
-            rating_score += 10
-        elif selected_sonata_obj.name == 'Lingering Tunes':
-            rating_score += 5
-
-    bonus_stats_from_user = {
-        'basic_atk_dmg': user_input_stats.get('basic_atk_dmg', 0.0),
-        'resonance_skill_dmg': user_input_stats.get('resonance_skill_dmg', 0.0),
-        'resonance_lib_dmg': user_input_stats.get('resonance_lib_dmg', 0.0),
-        'def_interruption': user_input_stats.get('def_interruption', 0.0),
-        'healing_bonus': user_input_stats.get('healing_bonus', 0.0),
-        'attribute_dmg_bonus': user_input_stats.get('attribute_dmg_bonus', 0.0),
-        'attribute_res': user_input_stats.get('attribute_res', 0.0),
-    }
-
-    overall_rating = "Bad"
-    if rating_score > 70:
-        overall_rating = "Average"
-    if rating_score > 120:
-        overall_rating = "Good"
-    if rating_score > 180:
-        overall_rating = "Excellent!"
+@login_required
+def build_history_view(request):
+    user_builds = UserBuild.objects.filter(user=request.user).order_by('-created_at')
 
     context = {
-        'character': char_obj,
-        'ideal_build': ideal_build,
-        'user_input_stats': user_input_stats,
-        'comparison_results': comparison_results,
-        'bonus_stats_from_user': bonus_stats_from_user,
-        'overall_rating': overall_rating,
-        'rating_score': round(rating_score, 2),
-        'page_title': f"Hasil Penilaian Build untuk {char_obj.name}",
-        'selected_weapon_obj': selected_weapon_obj,
-        'selected_echo_obj': selected_echo_obj,
-        'selected_sonata_obj': selected_sonata_obj,
-        'selected_weapon_json_detail': selected_weapon_json_detail,
-        'selected_echo_json_detail': selected_echo_json_detail,
-        'selected_sonata_json_detail': selected_sonata_json_detail,
+        'user_builds': user_builds
     }
+    return render(request, 'landingpage/build_history.html', context)
 
-    return render(request, 'landingpage/compare_build.html', context)
+@login_required
+def view_saved_build_detail(request, build_id):
+    build = get_object_or_404(UserBuild, id=build_id, user=request.user)
+    
+    # Prepare user_input_data for calculation/comparison from the saved build
+    user_input_data_for_calc = {
+        'hp': build.hp,
+        'attack': build.attack,
+        'defense': build.defense,
+        'energy': build.energy,
+        'crit_rate': build.crit_rate,
+        'crit_dmg': build.crit_dmg,
+        'basic_atk_dmg': build.basic_atk_dmg,
+        'resonance_skill_dmg': build.resonance_skill_dmg,
+        'resonance_lib_dmg': build.resonance_lib_dmg,
+        'def_interruption': build.def_interruption,
+        'healing_bonus': build.healing_bonus,
+        'attribute_dmg_bonus': build.attribute_dmg_bonus,
+        'attribute_res': build.attribute_res,
+        'selected_weapon': build.selected_weapon.weapon_name if build.selected_weapon else '',
+        'selected_echo': build.selected_echo.name if build.selected_echo else '',
+        'selected_sonata': build.selected_sonata.name if build.selected_sonata else '',
+    }
+    
+    calculated_results_for_display = calculate_character_stats(user_input_data_for_calc)
+    
+    # Juga tampilkan perbandingan dengan ideal build di detail view
+    # Ini akan memanggil fuzzy logic
+    try:
+        ideal_build = Build.objects.get(character=build.resonator)
+        comparison_results = compare_stats(user_input_data_for_calc, ideal_build)
+    except Build.DoesNotExist:
+        ideal_build = None
+        comparison_results = {'recommendations': ["No ideal build found for this character."], 'item_recommendations': {}, 'priority_stat': 'N/A', 'overall_priority_val': 0}
+
+    context = {
+        'build': build,
+        'calculated_results': calculated_results_for_display,
+        'ideal_build': ideal_build,
+        'comparison_results': comparison_results,
+        'images': {"render": f"{request.build_absolute_uri('/')}static/resonator/{format_folder(build.resonator.name)}/Render.png"},
+    }
+    return render(request, 'landingpage/build_detail.html', context)
+
+@login_required
+@require_POST
+def delete_saved_build(request, build_id):
+    build = get_object_or_404(UserBuild, id=build_id, user=request.user)
+    build.delete()
+    messages.success(request, f"Build '{build.build_name}' deleted successfully.")
+    return redirect('build:build_history')
+
+def compare_stats_view(request, character_name):
+    character = get_object_or_404(Resonator, name__iexact=character_name)
+    
+    # Ambil user_input_stats dari sesi (ini adalah stat yang baru saja di-submit dari builder)
+    user_stats = request.session.get('user_input_stats', {})
+    
+    if not user_stats:
+        messages.warning(request, "No stats found for comparison. Please create a build first.")
+        return redirect('build:character_builder', name=character_name)
+
+    ideal_build = None
+    try:
+        ideal_build = Build.objects.get(character=character)
+    except Build.DoesNotExist:
+        messages.error(request, f"No ideal build defined for {character.name}. Cannot compare stats.")
+        # Anda bisa redirect atau menampilkan halaman kosong
+        return render(request, 'landingpage/compare_stats.html', {
+            'character': character,
+            'user_stats': user_stats,
+            'ideal_build': None,
+            'comparison_results': {'recommendations': ["No ideal build found."], 'item_recommendations': {}, 'priority_stat': 'N/A', 'overall_priority_val': 0}
+        })
+    
+    # Panggil fungsi compare_stats yang sudah menggunakan fuzzy logic
+    comparison_results = compare_stats(user_stats, ideal_build)
+
+    context = {
+        'character': character,
+        'ideal_build': ideal_build,
+        'user_stats': user_stats,
+        'comparison_results': comparison_results,
+    }
+    return render(request, 'landingpage/compare_stats.html', context)

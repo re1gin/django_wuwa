@@ -12,6 +12,7 @@ urlpatterns = [
     path('', include('resonators.urls')),
     path('', include('build.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('accounts/', include('django.contrib.auth.urls'))
 ]
 
 if settings.DEBUG:

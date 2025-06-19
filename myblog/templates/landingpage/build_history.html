@@ -1,0 +1,37 @@
+{% extends 'landingpage/base.html' %}
+{% load static %}
+
+{% block title %}Your Build History{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Build History</h1>
+
+    {% if user_builds %}
+        <div class="build-list">
+            {% for build in user_builds %}
+            <div class="build-item" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                <h3><a href="{% url 'build:view_saved_build_detail' build_id=build.id %}" style="text-decoration: none; color: #007bff;">{{ build.build_name }}</a></h3>
+                <p>Character: <strong>{{ build.resonator.name }}</strong></p>
+                <p>Created: {{ build.created_at|date:"F j, Y, P" }}</p>
+                <p>Weapon: {{ build.selected_weapon.weapon_name|default:"N/A" }}</p>
+                <p>Echo: {{ build.selected_echo.name|default:"N/A" }}</p>
+                <p>Sonata: {{ build.selected_sonata.name|default:"N/A" }}</p>
+                
+                <div class="build-actions" style="margin-top: 10px;">
+                    <a href="{% url 'build:character_builder' name=build.resonator.name %}?build_id={{ build.id }}" class="btn btn-primary">Load & Edit</a>
+                    <a href="{% url 'build:view_saved_build_detail' build_id=build.id %}" class="btn btn-info">View Details</a>
+                    <form action="{% url 'build:delete_saved_build' build_id=build.id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this build?');">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You haven't saved any builds yet. Go to a character's builder page to create one!</p>
+        <a href="{% url 'build:character_builder' name='Jianxin' %}" class="btn btn-primary">Start Building (Example: Jianxin)</a> {# Ganti dengan link ke daftar karakter #}
+    {% endif %}
+</div>
+{% endblock %}

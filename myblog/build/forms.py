@@ -1,4 +1,3 @@
-# build_app/forms.py
 from django import forms
 from .models import Build
 
