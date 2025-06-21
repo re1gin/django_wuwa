@@ -26,3 +26,6 @@ class ResonatorAdmin(admin.ModelAdmin):
         ResonatorRecommendedEchoInline,
         ResonatorRecommendedSonataInline,
     ]
+admin.site.register(ResonatorRecommendedWeapon)
+admin.site.register(ResonatorRecommendedEcho)
+admin.site.register(ResonatorRecommendedSonata)

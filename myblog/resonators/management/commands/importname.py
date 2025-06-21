@@ -1,115 +1,118 @@
-# resonator/management/commands/import_resonators.py
-
+# resonators/management/commands/import_resonator_data.py
 import csv
 import os
-from django.core.management.base import BaseCommand, CommandError
+
+from django.core.management.base import BaseCommand
+from django.conf import settings
+from combat.models import Attribute, Role
 from resonators.models import Resonator
+from region.models import Region
+from weapon.models import WeaponType
+
+
 
 class Command(BaseCommand):
-    help = 'Mengimpor data Resonator (Name, Rarity, Weapon, Attribute, Birthplace, Role) dari file CSV.'
-
-    def add_arguments(self, parser):
-        parser.add_argument('csv_file', type=str, nargs='?',
-                            # Mengubah nama default file CSV
-                            default=os.path.join(os.getcwd(), 'data', 'resonator_names.csv'),
-                            help='Path ke file CSV yang berisi data Resonator (Name, Rarity, Weapon, Attribute, Birthplace, Role). Default: <project_root>/data/resonator_minimal_data.csv')
+    help = 'Mengimpor data Resonator, rekomendasinya, dan gambar-gambarnya dari file CSV dan folder static.'
 
     def handle(self, *args, **options):
-        csv_file_path = options['csv_file']
+        csv_data_dir = os.path.join(settings.BASE_DIR, 'data', 'csv')
+        self.stdout.write(self.style.NOTICE(f'Mencari file CSV di: {csv_data_dir}'))
 
-        if not os.path.exists(csv_file_path):
-            raise CommandError(f'File "{csv_file_path}" tidak ditemukan. Harap berikan path yang valid.')
-
-        self.stdout.write(self.style.SUCCESS(f'Memulai impor data Resonator dari: {csv_file_path}'))
-
+        # --- Impor Data Resonator (Bagian ini tidak perlu kolom gambar di CSV lagi) ---
+        path_csv_resonators = os.path.join(csv_data_dir, 'resonators.csv')
+        self.stdout.write(self.style.SUCCESS(f'Mengimpor Resonator dari {path_csv_resonators}...'))
         try:
-            with open(csv_file_path, mode='r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-
-                # HANYA header yang diminta (sesuai dengan CSV yang Anda berikan)
-                expected_headers = ['Character', 'Rarity', 'Weapon', 'Attribute', 'Birthplace', 'Role']
-
-                # Periksa apakah semua header yang diharapkan ada di CSV
-                if not all(header in reader.fieldnames for header in expected_headers):
-                    missing_headers = [h for h in expected_headers if h not in reader.fieldnames]
-                    raise CommandError(
-                        f"CSV harus memiliki header berikut: {', '.join(expected_headers)}. "
-                        f"Header yang hilang: {', '.join(missing_headers)}. "
-                        f"Header yang ditemukan: {', '.join(reader.fieldnames)}"
-                    )
-
-                created_count = 0
-                updated_count = 0
-                skipped_count = 0
-
-                for row_num, row in enumerate(reader, start=2): # Mulai dari baris 2 untuk pesan error
-                    resonator_name = row['Character'].strip()
-
-                    if not resonator_name:
-                        self.stderr.write(self.style.WARNING(
-                            f"Melewatkan baris {row_num}: Nama karakter kosong. Data: {row}"
-                        ))
-                        skipped_count += 1
-                        continue
-
+            with open(path_csv_resonators, 'r', encoding='utf-8') as file_csv:
+                csv_reader = csv.DictReader(file_csv)
+                for no_baris, baris_data in enumerate(csv_reader, 1):
                     try:
-                        # --- Pembersihan Data dan Konversi Tipe ---
+                        name = baris_data['name']
+                        rarity = int(baris_data['rarity'])
+                        weapon_type= baris_data.get('weapon_type')
+                        attribute= baris_data.get('attribute')
+                        birthplace= baris_data.get('birthplace')
+                        role_name = baris_data.get('role_name')
+
+                        weapon_type = None
+                        if weapon_type:
+                            try:
+                                weapon_type = WeaponType.objects.get(name=weapon_type)
+                            except WeaponType.DoesNotExist:
+                                self.stdout.write(self.style.ERROR(f"Error baris {no_baris}: WeaponType '{weapon_type}' tidak ditemukan untuk Resonator '{name}'."))
+
+                        attribute = None
+                        if attribute:
+                            try:
+                                attribute = Attribute.objects.get(name=attribute)
+                            except Attribute.DoesNotExist:
+                                self.stdout.write(self.style.ERROR(f"Error baris {no_baris}: Attribute '{attribute}' tidak ditemukan untuk Resonator '{name}'."))
+
+                        birthplace = None
+                        if birthplace:
+                            try:
+                                birthplace = Region.objects.get(name=birthplace)
+                            except Region.DoesNotExist:
+                                self.stdout.write(self.style.ERROR(f"Error baris {no_baris}: Region '{birthplace}' tidak ditemukan untuk Resonator '{name}'."))
                         
-                        # Rarity: Konversi "X Star" menjadi integer X
-                        rarity_str = row['Rarity'].replace(' Star', '').strip()
-                        rarity = int(rarity_str)
-
-                        # Ambil nilai string untuk weapon, attribute, birthplace, dan role langsung
-                        weapon_val = row['Weapon'].strip()
-                        attribute_val = row['Attribute'].strip()
-                        birthplace_val = row['Birthplace'].strip() # Pastikan ini ada di CSV
-                        role_val = row['Role'].strip()             # Pastikan ini ada di CSV
-
-                        # Siapkan data untuk update_or_create
-                        defaults = {
-                            'rarity': rarity,
-                            'weapon': weapon_val,
-                            'attribute': attribute_val,
-                            'birthplace': birthplace_val, # Tambahkan ini
-                            'role': role_val,             # Tambahkan ini
-                        }
+                        role = None
+                        if role_name:
+                            try:
+                                role = Role.objects.get(name=role_name)
+                            except Role.DoesNotExist:
+                                self.stdout.write(self.style.ERROR(f"Error baris {no_baris}: Role '{role_name}' tidak ditemukan untuk Resonator '{name}'."))
 
                         # Buat atau perbarui objek Resonator
-                        # Pastikan 'name' cocok dengan field di model Anda
-                        resonator_obj, created = Resonator.objects.update_or_create(
-                            name=resonator_name,
-                            defaults=defaults
+                        # Field gambar akan diisi di langkah terpisah setelah ini
+                        resonator_obj, created = Resonator.objects.get_or_create(
+                            name=name,
+                            defaults={
+                                'rarity': rarity,
+                                'weapon_type': weapon_type,
+                                'attribute': attribute,
+                                'birthplace': birthplace,
+                                'role': role,
+                            }
                         )
 
-                        if created:
-                            created_count += 1
-                            self.stdout.write(self.style.SUCCESS(f'Dibuat: {resonator_obj.name} (Rarity: {resonator_obj.rarity})'))
+                        if not created:
+                            updated = False
+                            if resonator_obj.rarity != rarity:
+                                resonator_obj.rarity = rarity
+                                updated = True
+                            if resonator_obj.weapon_type != weapon_type:
+                                resonator_obj.weapon_type = weapon_type
+                                updated = True
+                            if resonator_obj.attribute != attribute:
+                                resonator_obj.attribute = attribute
+                                updated = True
+                            if resonator_obj.birthplace != birthplace:
+                                resonator_obj.birthplace = birthplace
+                                updated = True
+                            if resonator_obj.role != role:
+                                resonator_obj.role = role
+                                updated = True
+                            
+                            if updated:
+                                resonator_obj.save()
+                                self.stdout.write(self.style.SUCCESS(f'Updated Resonator: {name}'))
+                            else:
+                                self.stdout.write(self.style.WARNING(f'Resonator exists: {name} (no updates)'))
                         else:
-                            updated_count += 1
-                            self.stdout.write(self.style.MIGRATE_HEADING(f'Diperbarui: {resonator_obj.name} (Rarity: {resonator_obj.rarity})'))
+                            self.stdout.write(self.style.SUCCESS(f'Created Resonator: {name}'))
 
-                    except ValueError as ve:
-                        self.stderr.write(self.style.ERROR(
-                            f"Error konversi data untuk '{resonator_name}' di baris {row_num}: {ve}. Dilewati."
-                        ))
-                        skipped_count += 1
-                    except KeyError as ke:
-                         self.stderr.write(self.style.ERROR(
-                            f"Kolom CSV yang diharapkan tidak ada untuk '{resonator_name}' di baris {row_num}: {ke}. Periksa header CSV. Dilewati."
-                        ))
-                         skipped_count += 1
+                    except KeyError as e:
+                        self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Kolom "{e}" hilang di resonators.csv.'))
+                    except ValueError as e:
+                        self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Invalid value ({e}) di resonators.csv.'))
                     except Exception as e:
-                        self.stderr.write(self.style.ERROR(
-                            f"Terjadi error tak terduga untuk '{resonator_name}' di baris {row_num}: {e}. Dilewati."
-                        ))
-                        skipped_count += 1
-
-            self.stdout.write(self.style.SUCCESS('\n--- Ringkasan Impor Resonator ---'))
-            self.stdout.write(self.style.SUCCESS(f'Total Resonator Dibuat: {created_count}'))
-            self.stdout.write(self.style.SUCCESS(f'Total Resonator Diperbarui: {updated_count}'))
-            self.stdout.write(self.style.WARNING(f'Total Baris Dilewati (Error): {skipped_count}'))
-
+                        self.stdout.write(self.style.ERROR(f'Error tak terduga baris {no_baris}: {e} di resonators.csv.'))
+            self.stdout.write(self.style.SUCCESS('Selesai impor Resonator.'))
         except FileNotFoundError:
-            raise CommandError(f'Error: File CSV tidak ditemukan di {csv_file_path}')
+            self.stdout.write(self.style.ERROR(f'Error: {path_csv_resonators} tidak ditemukan.'))
+            return
         except Exception as e:
-            raise CommandError(f'Terjadi error saat pengaturan impor Resonator: {e}')
+            self.stdout.write(self.style.ERROR(f'Error persiapan impor Resonator: {e}'))
+
+        self.stdout.write("\n")
+
+       

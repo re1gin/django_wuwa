@@ -1,0 +1,25 @@
+Role,Description,icon_role
+Support and Healer,Improve team survivability,Icon_Support_and_Healer.png
+Main Damage Dealer,Powerful damage dealer,Icon_Main_Damage_Dealer.png
+Concerto Efficiency,Quick Concerto Energy regeneration,Icon_Concerto_Efficiency.png
+Basic Attack Damage,Deal higher Basic Attack DMG,Icon_Basic_Attack_Damage.png
+Heavy Attack Damage,Deal higher Heavy Attack DMG,Icon_Heavy_Attack_Damage.png
+Resonance Skill Damage,Deal higher Resonance Skill DMG,Icon_Resonance_Skill_Damage.png
+Resonance Liberation Damage,Deal higher Resonance Liberation DMG,Icon_Resonance_Liberation_Damage.png
+Traction,Pull targets in range towards a specific position,Icon_Traction.png
+Coordinated Attack,Excel at Coordinated Attacks,Icon_Coordinated_Attack.png
+Stagnation,Slow down targets within a certain range,Icon_Stagnation.png
+Resonance Liberation Regeneration,Restore the Resonance Energy of a specific teammate,Icon_Resonance_Liberation_Regeneration.png
+Vibration Strength Reduction,Reduce the Vibration Strength of targets more effectively,Icon_Vibration_Strength_Reduction.png
+DMG Amplification,Provides DMG Amplification for a specific teammate,Icon_DMG_Amplification.png
+Havoc DMG Amplification,Provides Havoc DMG Amplification for a specific teammate,Icon_Havoc_DMG_Amplification.png
+Aero DMG Amplification,Provides Aero DMG Amplification for a specific teammate,Icon_Aero_DMG_Amplification.png
+Electro DMG Amplification,Provides Electro DMG Amplification for a specific teammate,Icon_Electro_DMG_Amplification.png
+Fusion DMG Amplification,Provides Fusion DMG Amplification for a specific teammate,Icon_Fusion_DMG_Amplification.png
+Glacio DMG Amplification,Provides Glacio DMG Amplification for a specific teammate,Icon_Glacio_DMG_Amplification.png
+Spectro DMG Amplification,Provides Spectro DMG Amplification for a specific teammate,Icon_Spectro_DMG_Amplification.png
+Basic Attack DMG Amplification,Provides Basic Attack DMG Amplification for a specific teammate,Icon_Basic_Attack_DMG_Amplification.png
+Heavy Attack DMG Amplification,Provides Heavy Attack DMG Amplification for a specific teammate,Icon_Heavy_Attack_DMG_Amplification.png
+Resonance Skill DMG Amplification,Provides Resonance Skill DMG Amplification for a specific teammate,Icon_Resonance_Skill_DMG_Amplification.png
+Resonance Liberation DMG Amplification,Provides Resonance Liberation DMG Amplification for a specific teammate,Icon_Resonance_Liberation_DMG_Amplification.png
+Interruption Resistance Boost,Boost the interruption resistance of a specific teammate,Icon_Interruption_Resistance_Boost.png
