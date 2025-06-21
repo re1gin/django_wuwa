@@ -40,7 +40,7 @@ def resonator_selection(request):
         folder_name = format_folder(char_db_obj.name) 
         
         # Path URL untuk wallpaper karakter
-        wallpaper_path = f"{settings.STATIC_URL}resonator/{folder_name}/Wallpaper.png"
+        wallpaper_path = f"{settings.MEDIA_URL}resonator/{folder_name}/Wallpaper.png"
         
         # URL detail akan menggunakan nama karakter mentah
         # PERBAIKAN: Gunakan 'name' sebagai keyword argument
@@ -116,11 +116,10 @@ def resonators(request, name): # <--- Parameter fungsi view ini sudah benar: 'na
     character_for_template['title'] = char_obj_raw.get('Title', [''])[0] if isinstance(char_obj_raw.get('Title'), list) else char_obj_raw.get('Title', 'N/A')
     character_for_template['quote'] = char_obj_raw.get("Quote", "No description available.")
 
-    # Path untuk gambar render akan menggunakan nama mentah
-    # PERBAIKAN: Gunakan format_folder di sini juga untuk konsistensi
+    
     folder_name_for_images = format_folder(char_obj_raw.get('Name', 'unknown')) 
     images = {
-        "render": f"{settings.STATIC_URL}resonator/{folder_name_for_images}/Render.png",
+        "render": f"{settings.MEDIA_URL}resonator/{folder_name_for_images}/Render.png",
     }
 
     icon_chars_data = [] 
@@ -136,7 +135,7 @@ def resonators(request, name): # <--- Parameter fungsi view ini sudah benar: 'na
             # Folder ikon akan menggunakan nama mentah varian
             # PERBAIKAN: Gunakan format_folder
             icon_folder = format_folder(variant_json_data.get('Name', ''))
-            icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png" 
+            icon_url = f"{settings.MEDIA_URL}resonator/{icon_folder}/Icon.png" 
             
             # URL reverse akan menggunakan nama mentah varian
             # PERBAIKAN: Gunakan 'name' sebagai keyword argument
@@ -158,7 +157,7 @@ def resonators(request, name): # <--- Parameter fungsi view ini sudah benar: 'na
         # Jika bukan Rover, hanya tampilkan ikon karakter saat ini
         # PERBAIKAN: Gunakan format_folder
         icon_folder = format_folder(char_obj_raw.get('Name', ''))
-        icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png"
+        icon_url = f"{settings.MEDIA_URL}resonator/{icon_folder}/Icon.png"
         
         # URL reverse akan menggunakan nama mentah karakter saat ini
         # PERBAIKAN: Gunakan 'name' sebagai keyword argument

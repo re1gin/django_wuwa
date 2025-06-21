@@ -9,9 +9,9 @@ from echo.models import Echo, Sonata
 class Resonator(models.Model):
     name = models.CharField(max_length=100, unique=True, help_text="The official name of the Resonator.")
     rarity = models.IntegerField(help_text="The star rarity of the Resonator (e.g., 4 or 5).")
-    weapon_type = models.ForeignKey(WeaponType, on_delete=models.SET_NULL, null=True, blank=True)
-    attribute = models.ForeignKey(Attribute, on_delete=models.SET_NULL, null=True, blank=True)
-    birthplace = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
+    weapon_type = models.ForeignKey(WeaponType, on_delete=models.CASCADE, null=True, blank=True)
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True, blank=True)
+    birthplace = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
 
     
@@ -48,8 +48,7 @@ class ResonatorRecommendedWeapon(models.Model):
         verbose_name_plural = "Resonator Recommended Weapons"
 
     def __str__(self):
-        # Changed to weapon.name assuming Weapon model has a 'name' field
-        return f"{self.resonator.name} - {self.weapon.name} ({self.get_priority_level_display()})"
+        return f"{self.resonator.name} - {self.weapon.weapon_name} ({self.get_priority_level_display()})"
 
 class ResonatorRecommendedEcho(models.Model):
     resonator = models.ForeignKey(Resonator, on_delete=models.CASCADE)

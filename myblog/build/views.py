@@ -21,7 +21,7 @@ def get_icon_chars_data(current_char_obj=None):
     all_resonators = Resonator.objects.all().order_by('name')
     for resonator in all_resonators:
         icon_folder = format_folder(resonator.name)
-        icon_url = f"{settings.STATIC_URL}resonator/{icon_folder}/Icon.png"
+        icon_url = f"{settings.MEDIA_URL}resonator/{icon_folder}/Icon.png"
         icon_detail_url = reverse('resonators:resonator_detail', kwargs={'name': resonator.name})
         is_active_icon = False
         if current_char_obj and resonator.name == current_char_obj.name:
@@ -45,45 +45,32 @@ def get_item_details_ajax(request):
 
     if item_type == 'weapon':
         weapon_obj = Weapon.objects.filter(weapon_name=item_name).first()
-        if weapon_obj:
+        if weapon_obj: # Pastikan weapon_obj ditemukan
             details = {
                 'name': weapon_obj.weapon_name,
-                # Tambahkan detail lain yang relevan dari weapon_obj yang ingin Anda kirim ke frontend
                 'rarity': weapon_obj.rarity,
-                'base_atk': weapon_obj.base_atk,
-                'sub_stat_type': weapon_obj.sub_stat_type,
-                'sub_stat_value': weapon_obj.sub_stat_value,
-                'effect_name': weapon_obj.effect_name,
-                'effect_description': weapon_obj.effect_description,
-                'weapon_type': weapon_obj.weapon_type,
+                'weapon_type': weapon_obj.weapon_type.name
             }
-            image_url = f"{settings.STATIC_URL}assets/ikon/weapon/{format_folder(weapon_obj.weapon_name)}.png"
+            image_url = weapon_obj.icon_image.url
+        else:
+            return
 
     elif item_type == 'echo':
         echo_obj = Echo.objects.filter(name=item_name).first()
         if echo_obj:
             details = {
                 'name': echo_obj.name,
-                # Tambahkan detail lain yang relevan dari echo_obj
                 'cost': echo_obj.cost,
-                'rarity': echo_obj.rarity,
-                'main_stat_type': echo_obj.main_stat_type,
-                'main_stat_value': echo_obj.main_stat_value,
-                'sub_stats': list(echo_obj.sub_stats.all().values('stat_type', 'stat_value')), # Asumsi ada model terkait
-                'effect_description': echo_obj.effect_description,
             }
-            image_url = f"{settings.STATIC_URL}assets/ikon/echo/{format_folder(echo_obj.name)}_Icon.png"
+            image_url = echo_obj.icon_echo.url
 
     elif item_type == 'sonata':
         sonata_obj = Sonata.objects.filter(name=item_name).first()
         if sonata_obj:
             details = {
                 'name': sonata_obj.name,
-                # Tambahkan detail lain yang relevan dari sonata_obj
-                'effect_2_piece': sonata_obj.effect_2_piece,
-                'effect_5_piece': sonata_obj.effect_5_piece,
             }
-            image_url = f"{settings.STATIC_URL}assets/ikon/sonata/{format_folder(sonata_obj.name)}.png"
+            image_url = sonata_obj.icon_sonata.url
 
     # --- Bagian Baru untuk Validasi Echo -> Sonata (dengan ManyToManyField) ---
     filtered_sonatas_data = []
@@ -110,12 +97,12 @@ def character_builder_view(request, name):
     char_obj = get_object_or_404(Resonator, name__iexact=name)
 
     folder_name = format_folder(char_obj.name)
-    image_path = f"{settings.STATIC_URL}resonator/{folder_name}/"
+    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
     images = {"render": f"{image_path}Render.png"}
 
     icon_chars_data = get_icon_chars_data(char_obj)
 
-    weapons_data_db = Weapon.objects.filter(weapon_type__iexact=char_obj.weapon_type).order_by('weapon_name')
+    weapons_data_db = Weapon.objects.filter(weapon_type=char_obj.weapon_type).order_by('weapon_name')
     echos_data_db = Echo.objects.all().order_by('name')
     sonatas_data_db = Sonata.objects.all().order_by('name') 
 
@@ -231,11 +218,11 @@ def character_builder_view(request, name):
 
     # Pastikan image_url ditambahkan ke objek terpilih sebelum dikirim ke konteks
     if selected_weapon_obj:
-        selected_weapon_obj.image_url = f"{settings.STATIC_URL}assets/ikon/weapon/{format_folder(char_obj.weapon)}/{format_folder(selected_weapon_obj.weapon_name)}.png"
+        selected_weapon_obj.image_url = f"{settings.MEDIA_URL}resonator/{format_folder(char_obj.weapon)}/{format_folder(selected_weapon_obj.weapon_name)}.png"
     if selected_echo_obj:
-        selected_echo_obj.image_url = f"{settings.STATIC_URL}assets/ikon/echo/{format_folder(selected_echo_obj.name)}_Icon.png"
+        selected_echo_obj.image_url = f"{settings.MEDIA_URL}{selected_echo_obj.icon_echo.url}"
     if selected_sonata_obj:
-        selected_sonata_obj.image_url = f"{settings.STATIC_URL}assets/ikon/sonata/{format_folder(selected_sonata_obj.name)}.png"
+        selected_sonata_obj.image_url = f"{settings.MEDIA_URL}{selected_sonata_obj.icon_sonata.url}.png"
 
     context = {
         "character": char_obj,
