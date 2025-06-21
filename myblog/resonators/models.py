@@ -1,13 +1,17 @@
+# resonators/models.py
 from django.db import models
+from combat.models import Attribute, Role
+from region.models import SubRegion
+from weapon.models import WeaponType
 
 class Resonator(models.Model):
     name = models.CharField(max_length=100, unique=True, help_text="The official name of the Resonator.")
     rarity = models.IntegerField(help_text="The star rarity of the Resonator (e.g., 4 or 5).")
-    weapon_type = models.CharField(max_length=50, help_text="The type of weapon the Resonator uses (e.g., Sword, Pistols).")
-    attribute = models.CharField(max_length=50, help_text="The elemental attribute of the Resonator (e.g., Aero, Fusion).")
-    birthplace = models.CharField(max_length=100, blank=True, null=True, help_text="The origin place of the Resonator.")
-    role = models.CharField(max_length=100, blank=True, null=True, help_text="The primary combat role of the Resonator (e.g., Main Damage Dealer, Support).")
-
+    weapon_type = models.ForeignKey(WeaponType, on_delete=models.SET_NULL, null=True, blank=True)
+    attribute = models.ForeignKey(Attribute, on_delete=models.SET_NULL, null=True, blank=True)
+    birthplace = models.ForeignKey(SubRegion, on_delete=models.SET_NULL, null=True, blank=True, related_name='born_resonators')
+    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
+    
     recommended_weapons = models.ManyToManyField(
         'weapon.Weapon',
         through='ResonatorRecommendedWeapon',
@@ -56,7 +60,6 @@ class ResonatorRecommendedWeapon(models.Model):
         verbose_name_plural = "Resonator Recommended Weapons"
 
     def __str__(self):
-        # Ini akan menyebabkan error jika weapon belum di-load, tapi biasanya di admin sudah di-load
         return f"{self.resonator.name} - {self.weapon.weapon_name} ({self.get_priority_level_display()})"
 
 class ResonatorRecommendedEcho(models.Model):

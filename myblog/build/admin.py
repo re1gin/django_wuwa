@@ -11,7 +11,7 @@ class WeaponAdmin(admin.ModelAdmin):
 class EchoAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
-    filter_horizontal = ('sonatas',) # Untuk mengelola ManyToMany ke Sonata
+    filter_horizontal = ('sonatas',)
 
 @admin.register(Sonata)
 class SonataAdmin(admin.ModelAdmin):

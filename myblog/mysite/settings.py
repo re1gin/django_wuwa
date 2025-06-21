@@ -26,11 +26,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'resonators',
     'build',
-    'echo',
-    'weapon',
+    'combat',
     'dashboard',
+    'echo',
+    'enemy',
+    'region',
+    'resonators',
+    'weapon',
     
 
 ]
