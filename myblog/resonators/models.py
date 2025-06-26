@@ -2,8 +2,7 @@
 from django.db import models
 from combat.models import Attribute, Role
 from region.models import Region
-from weapon.models import WeaponType, Weapon
-from echo.models import Echo, Sonata 
+from weapon.models import WeaponType
 
 # --- Resonator Model ---
 class Resonator(models.Model):
@@ -22,81 +21,3 @@ class Resonator(models.Model):
         verbose_name = "Resonator"
         verbose_name_plural = "Resonators"
         ordering = ['name']
-
-
-class ResonatorRecommendedWeapon(models.Model):
-    resonator = models.ForeignKey(Resonator, on_delete=models.CASCADE)
-    
-    weapon = models.ForeignKey(Weapon, on_delete=models.CASCADE)
-    PRIORITY_CHOICES = [
-        (1, 'Best in Slot'),
-        (2, 'Great Alternative'),
-        (3, 'Good Option'),
-        (4, 'Situational'),
-    ]
-    priority_level = models.IntegerField(
-        choices=PRIORITY_CHOICES,
-        default=1,
-        help_text="Tingkat kelayakan senjata untuk karakter ini (1=terbaik, 4=situasional)"
-    )
-    notes = models.TextField(blank=True, help_text="Catatan tambahan tentang rekomendasi senjata ini.")
-
-    class Meta:
-        unique_together = ('resonator', 'weapon')
-        ordering = ['priority_level'] # Orders by priority level
-        verbose_name = "Resonator Recommended Weapon"
-        verbose_name_plural = "Resonator Recommended Weapons"
-
-    def __str__(self):
-        return f"{self.resonator.name} - {self.weapon.weapon_name} ({self.get_priority_level_display()})"
-
-class ResonatorRecommendedEcho(models.Model):
-    resonator = models.ForeignKey(Resonator, on_delete=models.CASCADE)
-    
-    echo = models.ForeignKey(Echo, on_delete=models.CASCADE)
-    PRIORITY_CHOICES = [
-        (1, 'Best in Slot'),
-        (2, 'Great Alternative'),
-        (3, 'Good Option'),
-        (4, 'Situational'),
-    ]
-    priority_level = models.IntegerField(
-        choices=PRIORITY_CHOICES,
-        default=1,
-        help_text="Tingkat kelayakan set Echo untuk karakter ini"
-    )
-    notes = models.TextField(blank=True, help_text="Catatan tambahan tentang rekomendasi Echo ini.")
-
-    class Meta:
-        unique_together = ('resonator', 'echo')
-        ordering = ['priority_level']
-        verbose_name = "Resonator Recommended Echo"
-        verbose_name_plural = "Resonator Recommended Echoes"
-
-    def __str__(self):
-        return f"{self.resonator.name} - {self.echo.name} ({self.get_priority_level_display()})"
-
-class ResonatorRecommendedSonata(models.Model):
-    resonator = models.ForeignKey(Resonator, on_delete=models.CASCADE)
-    sonata = models.ForeignKey(Sonata, on_delete=models.CASCADE)
-    PRIORITY_CHOICES = [
-        (1, 'Best in Slot'),
-        (2, 'Great Alternative'),
-        (3, 'Good Option'),
-        (4, 'Situational'),
-    ]
-    priority_level = models.IntegerField(
-        choices=PRIORITY_CHOICES,
-        default=1,
-        help_text="Tingkat kelayakan Sonata untuk karakter ini"
-    )
-    notes = models.TextField(blank=True, help_text="Catatan tambahan tentang rekomendasi Sonata ini.")
-
-    class Meta:
-        unique_together = ('resonator', 'sonata')
-        ordering = ['priority_level']
-        verbose_name = "Resonator Recommended Sonata"
-        verbose_name_plural = "Resonator Recommended Sonatas"
-
-    def __str__(self):
-        return f"{self.resonator.name} - {self.sonata.name} ({self.get_priority_level_display()})"

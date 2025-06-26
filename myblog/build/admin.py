@@ -1,26 +1,34 @@
 # build/admin.py
 from django.contrib import admin
-from .models import Build, UserBuild, Weapon, Echo, Sonata
+
+from .models import Build, UserBuild
+from weapon.models import Weapon
+from echo.models import Echo, Sonata
+
 
 @admin.register(Weapon)
 class WeaponAdmin(admin.ModelAdmin):
-    list_display = ('weapon_name',)
-    search_fields = ('weapon_name',)
+    list_display = ('weapon_name', 'weapon_type', 'rarity') # Menambahkan weapon_type dan rarity agar lebih informatif
+    search_fields = ('weapon_name', 'weapon_type__name')
+    list_filter = ('weapon_type', 'rarity') # Tambahkan filter
+    ordering = ('weapon_name',) # Urutkan berdasarkan nama
 
 @admin.register(Echo)
 class EchoAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'cost') # Menambahkan cost
     search_fields = ('name',)
-    filter_horizontal = ('sonatas',)
+    filter_horizontal = ('sonatas',) # Tetap mempertahankan filter_horizontal untuk ManyToMany
+    ordering = ('name',)
 
 @admin.register(Sonata)
 class SonataAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    ordering = ('name',)
 
 @admin.register(Build)
 class BuildAdmin(admin.ModelAdmin):
-    list_display = ('character', 'build_name', 'hp', 'attack', 'crit_rate', 'crit_dmg')
+    list_display = ('character', 'build_name', 'attack', 'crit_rate', 'crit_dmg', 'energy') # Menyesuaikan list_display
     search_fields = ('character__name', 'build_name')
     list_filter = ('character',)
     fieldsets = (
@@ -31,10 +39,21 @@ class BuildAdmin(admin.ModelAdmin):
             'fields': ('hp', 'attack', 'defense', 'energy', 'crit_rate', 'crit_dmg')
         }),
         ('Damage Bonus Stats', {
-            'fields': ('basic_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg')
+            'fields': (
+                'basic_atk_dmg',
+                'resonance_skill_dmg',
+                'resonance_lib_dmg',
+                'aero_dmg_bonus',
+                'fusion_dmg_bonus',
+                'electro_dmg_bonus',
+                'glacio_dmg_bonus',
+                'havoc_dmg_bonus',
+                'spectro_dmg_bonus',
+            )
         }),
         ('Other Stats', {
-            'fields': ('def_interruption', 'healing_bonus', 'attribute_dmg_bonus', 'attribute_res')
+            # 'def_interruption' dan 'attribute_dmg_bonus' dihapus
+            'fields': ('healing_bonus',) # 'attribute_res' tetap ada
         }),
         ('Ideal Gear (Optional)', {
             'fields': ('ideal_weapon', 'ideal_echo', 'ideal_sonata')
@@ -55,10 +74,20 @@ class UserBuildAdmin(admin.ModelAdmin):
             'fields': ('hp', 'attack', 'defense', 'energy', 'crit_rate', 'crit_dmg')
         }),
         ('Damage Bonus Stats', {
-            'fields': ('basic_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg')
+            'fields': (
+                'basic_atk_dmg',
+                'resonance_skill_dmg',
+                'resonance_lib_dmg',
+                'aero_dmg_bonus',
+                'fusion_dmg_bonus',
+                'electro_dmg_bonus',
+                'glacio_dmg_bonus',
+                'havoc_dmg_bonus',
+                'spectro_dmg_bonus',
+            )
         }),
         ('Other Stats', {
-            'fields': ('def_interruption', 'healing_bonus', 'attribute_dmg_bonus', 'attribute_res')
+            'fields': ('healing_bonus',) 
         }),
         ('Selected Gear', {
             'fields': ('selected_weapon', 'selected_echo', 'selected_sonata')

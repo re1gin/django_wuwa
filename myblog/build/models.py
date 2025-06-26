@@ -17,15 +17,20 @@ class Build(models.Model):
     crit_dmg = models.FloatField(default=0.0)
 
     # Damage Bonus Stats (from Echoes, Sonatas, Resonator Passives)
-    basic_atk_dmg = models.FloatField(default=0.0, help_text="Bonus DMG Basic Attack (%)")
-    resonance_skill_dmg = models.FloatField(default=0.0, help_text="Bonus DMG Resonance Skill (%)")
-    resonance_lib_dmg = models.FloatField(default=0.0, help_text="Bonus DMG Resonance Liberation (%)")
+    basic_atk_dmg = models.FloatField(default=0.0)
+    resonance_skill_dmg = models.FloatField(default=0.0)
+    resonance_lib_dmg = models.FloatField(default=0.0)
     
     # Other Utility/Defensive Stats
-    def_interruption = models.FloatField(default=0.0, help_text="Defense Interruption (%)")
-    healing_bonus = models.FloatField(default=0.0, help_text="Healing Bonus (%)")
-    attribute_dmg_bonus = models.FloatField(default=0.0, help_text="Elemental/Attribute DMG Bonus (%)")
-    attribute_res = models.FloatField(default=0.0, help_text="Elemental/Attribute Resistance (%)")
+    healing_bonus = models.FloatField(default=0.0)
+    attribute_dmg_bonus = models.FloatField(default=0.0)
+    healing_bonus = models.FloatField(default=0.0)
+    aero_dmg_bonus = models.FloatField(default=0.0)
+    fusion_dmg_bonus = models.FloatField(default=0.0)
+    electro_dmg_bonus = models.FloatField(default=0.0)
+    glacio_dmg_bonus = models.FloatField(default=0.0)
+    havoc_dmg_bonus = models.FloatField(default=0.0)
+    spectro_dmg_bonus = models.FloatField(default=0.0)
 
     # Optional: Untuk menunjukkan item "Best in Slot" yang paling ideal untuk build ini
     ideal_weapon = models.ForeignKey(Weapon, on_delete=models.SET_NULL, null=True, blank=True, related_name='ideal_for_specific_builds')
@@ -66,10 +71,14 @@ class UserBuild(models.Model):
     resonance_skill_dmg = models.FloatField(default=0.0)
     resonance_lib_dmg = models.FloatField(default=0.0)
     
-    def_interruption = models.FloatField(default=0.0)
     healing_bonus = models.FloatField(default=0.0)
-    attribute_dmg_bonus = models.FloatField(default=0.0)
-    attribute_res = models.FloatField(default=0.0)
+    aero_dmg_bonus = models.FloatField(default=0.0)
+    fusion_dmg_bonus = models.FloatField(default=0.0)
+    electro_dmg_bonus = models.FloatField(default=0.0)
+    glacio_dmg_bonus = models.FloatField(default=0.0)
+    havoc_dmg_bonus = models.FloatField(default=0.0)
+    spectro_dmg_bonus = models.FloatField(default=0.0)
+
 
     # Item yang dipilih user
     selected_weapon = models.ForeignKey(Weapon, on_delete=models.SET_NULL, null=True, blank=True)

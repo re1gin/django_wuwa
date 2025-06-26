@@ -26,13 +26,6 @@
                         </a>
                     {% endfor %}
                 </div>
-
-                <div class="character-block">
-                    <div class="block-name">
-                        <span class="title-name">NAME</span>
-                        <span class="name-character">{{ character.name|upper }}</span>
-                    </div>
-                </div>
             </div>
 
             <div class="form-block">
@@ -41,6 +34,14 @@
 
                     <div class="input-block">
                         <div class="input-left-block">
+
+                            <div class="character-block">
+                                <div class="block-name">
+                                    <span class="title-name">NAME</span>
+                                    <span class="name-character">{{ character.name|upper }}</span>
+                                </div>
+                            </div>
+
                             <div class="block">
                                 <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
@@ -57,9 +58,9 @@
                                 <div class="echo">
                                     <span class="title-block">ECHO</span>
                                     <div class="block-icon">
-                                        <img id="echo-icon" src="{% if selected_echo_obj %}{{ selected_echo_obj.image_url }}{% else %}{% static 'assets/ikon/echo/default.png' %}{% endif %}" alt="Echo Preview" class="icon-img"/>
+                                        <img id="echo-icon" src="{% if selected_echo_obj %}{{ selected_echo_obj.image_url }}{% else %}{% static 'assets/ikon/Echo.png' %}{% endif %}" alt="Echo Preview" class="icon-img"/>
                                     </div>
-                                    <select name="selected_echo" id="echo-select"> {# Hapus onchange #}
+                                    <select name="selected_echo" id="echo-select">
                                         <option value="">Pilih Echo</option>
                                         {% for echo in echos_data %}
                                             <option value="{{ echo.name }}"
@@ -75,7 +76,7 @@
                                 <div class="sonata">
                                     <span class="title-block">SONATA EFFECT</span>
                                     <div class="block-icon">
-                                        <img id="sonata-icon" src="{% if selected_sonata_obj %}{{ selected_sonata_obj.image_url }}{% else %}{% static 'assets/ikon/sonata/default.png' %}{% endif %}" alt="Sonata Preview" class="icon-img"/>
+                                        <img id="sonata-icon" src="{% if selected_sonata_obj %}{{ selected_sonata_obj.image_url }}{% else %}{% static 'assets/ikon/Sonata.png' %}{% endif %}" alt="Sonata Preview" class="icon-img"/>
                                     </div>
                                     <select name="selected_sonata" id="sonata-select">
                                         <option value="">Pilih Sonata</option>
@@ -96,11 +97,11 @@
                                 <span class="title-block">WEAPON</span>
                                 <div class="weapons">
                                     <div class="block-icon">
-                                        <img id="weapon-icon" src="{% if selected_weapon_obj %}{{ selected_weapon_obj.image_url }}{% else %}{% static 'assets/ikon/weapon/default.png' %}{% endif %}" alt="Weapon Preview" class="icon-img"/>
+                                        <img id="weapon-icon" src="{% if selected_weapon_obj %}{{ selected_weapon_obj.image_url }}{% else %}{% static 'assets/ikon/Weapon.png' %}{% endif %}" alt="Weapon Preview" class="icon-img"/>
                                     </div>
 
                                     <div class="weapon-details" id="weapon-details-container">
-                                        <select name="selected_weapon" id="weapon-select"> {# Hapus onchange #}
+                                        <select name="selected_weapon" id="weapon-select">
                                             <option value="">Pilih Senjata</option>
                                             {% for weapon in weapons_data %}
                                                 <option value="{{ weapon.weapon_name }}"
@@ -111,22 +112,27 @@
                                         </select>
 
                                         {% if selected_weapon_obj %}
-                                            <p><strong>Nama:</strong> {{ selected_weapon_obj.weapon_name }}</p>
-                                        {% endif %}
+                                            <p><strong>Tipe:</strong> {{ selected_weapon_obj.weapon_type}}</p>
+                                            <p><strong>Rarity:</strong> {{ selected_weapon_obj.rarity }}</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-
+                            
                             <div class="block">
                                 <span class="title-block">BONUS STAT</span>
                                 <div class="stat">
-                                    <p>Basic Attack DMG: <input type="number" name="basic_atk_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg|floatformat:'1' }}"></p>
-                                    <p>Resonance Skill DMG: <input type="number" name="resonance_skill_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg|floatformat:'1' }}"></p>
-                                    <p>Resonance Liberation DMG: <input type="number" name="resonance_lib_dmg" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg|floatformat:'1' }}"></p>
-                                    <p>Defense Interruption: <input type="number" name="def_interruption" step="0.1" placeholder="0.0" value="{{ user_input_stats.def_interruption|floatformat:'1' }}"></p>
+                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Heavy Attack DMG Bonus: <input type="number" name="heavy_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.heavy_attack_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Aero DMG Bonus: <input type="number" name="aero_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.aero_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Electro DMG Bonus: <input type="number" name="electro_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.electro_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Fusion DMG Bonus: <input type="number" name="fusion_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.fusion_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Glacio DMG Bonus: <input type="number" name="glacio_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.glacio_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Havoc DMG Bonus: <input type="number" name="havoc_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.havoc_dmg_bonus|floatformat:'1' }}"></p>
+                                    <p>Spectro DMG Bonus: <input type="number" name="spectro_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.spectro_dmg_bonus|floatformat:'1' }}"></p>
                                     <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|floatformat:'1' }}"></p>
-                                    <p>Attribute DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|floatformat:'1' }}"></p>
-                                    <p>Attribute RES: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|floatformat:'1' }}"></p>
                                 </div>
                             </div>
                         </div>
@@ -144,7 +150,6 @@
 
 {% block extra_js %}
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             const weaponSelect = document.getElementById('weapon-select');
             const echoSelect = document.getElementById('echo-select');
@@ -175,78 +180,104 @@
 
             const csrfToken = getCookie('csrftoken');
 
-            // Fungsi untuk update UI berdasarkan data yang diterima dari server
             function updateUI(itemType, data, selectedItemName) {
-                if (itemType === 'weapon') {
-                    if (data.details && data.details.name) {
-                        weaponIcon.src = data.image_url;
-                        weaponDetailsContainer.innerHTML = `
-                            <select name="selected_weapon" id="weapon-select">
-                                <option value="">Pilih Senjata</option>
-                                ${Array.from(weaponSelect.options).map(option =>
-                                    `<option value="${option.value}" ${option.value === selectedItemName ? 'selected' : ''}>${option.text}</option>`
-                                ).join('')}
-                            </select>
-                            <p><strong>Nama:</strong> ${data.details.name}</p>
-                        `;
-                    } else {
-                        weaponIcon.src = "{% static 'assets/ikon/weapon/default.png' %}";
-                        weaponDetailsContainer.innerHTML = `
-                            <select name="selected_weapon" id="weapon-select">
-                                <option value="">Pilih Senjata</option>
-                                ${Array.from(weaponSelect.options).map(option =>
-                                    `<option value="${option.value}" ${option.value === selectedItemName ? 'selected' : ''}>${option.text}</option>`
-                                ).join('')}
-                            </select>
-                        `;
-                    }
-                     // Penting: re-attach event listener setelah DOM diupdate
-                     document.getElementById('weapon-select').addEventListener('change', handleSelectChange);
-
-                } else if (itemType === 'echo') {
-                    if (data.details && data.details.name) {
-                        echoIcon.src = data.image_url;
-                        echoDetailsContainer.innerHTML = ``;
-                    } else {
-                        echoIcon.src = "{% static 'assets/ikon/echo/default.png' %}";
-                        echoDetailsContainer.innerHTML = ``;
-                    }
-
-                    // Update Sonata dropdown berdasarkan filtered_sonatas
-                    sonataSelect.innerHTML = '<option value="">Pilih Sonata</option>';
-                    data.filtered_sonatas.forEach(sonata => {
-                        const option = document.createElement('option');
-                        option.value = sonata.name;
-                        option.textContent = sonata.name;
-                        // Pertahankan pilihan Sonata jika masih valid
-                        if (user_input_stats_js.selected_sonata === sonata.name) {
-                            option.selected = true;
-                        }
-                        sonataSelect.appendChild(option);
-                    });
-
-                    // Pastikan icon dan detail sonata di-reset jika sonata yang dipilih tidak lagi valid
-                    const currentSelectedSonata = sonataSelect.value;
-                    const sonataStillValid = data.filtered_sonatas.some(s => s.name === currentSelectedSonata);
-                    if (!sonataStillValid) {
-                        sonataSelect.value = ""; // Reset pilihan sonata
-                        sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
-                        user_input_stats_js.selected_sonata = ""; 
-                    } else {
-                        fetchDetails('sonata', currentSelectedSonata, currentSelectedEcho); // Panggil ulang untuk sonata
-                    }
-
-                } else if (itemType === 'sonata') {
-                    if (data.details && data.details.name) {
-                        sonataIcon.src = data.image_url;
-                        sonataDetailsContainer.innerHTML = `
-                        `;
-                    } else {
-                        sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
-                    }
-                }
+            let imgElement;
+            if (itemType === 'weapon') {
+                imgElement = weaponIcon;
+            } else if (itemType === 'echo') {
+                imgElement = echoIcon;
+            } else if (itemType === 'sonata') {
+                imgElement = sonataIcon;
+            } else {
+                return;
             }
 
+            // Langkah 1: Sembunyikan gambar dengan opacity 0
+            imgElement.style.opacity = '0';
+            imgElement.style.transform = 'scale(0.9)'; // Efek pop kecil
+
+            imgElement.onload = () => {
+                imgElement.style.opacity = '1'; // Fade in
+                imgElement.style.transform = 'scale(1)'; // Kembali ke ukuran normal
+            };
+
+            // Langkah 2: Update src gambar
+            if (itemType === 'weapon') {
+                if (data.details && data.details.name) {
+                    imgElement.src = data.image_url;
+                    // Ambil kembali referensi ke weaponSelect yang sudah ada
+                    const currentWeaponSelect = document.getElementById('weapon-select');
+                    // Buat array dari opsi yang ada di select
+                    const optionsHtml = Array.from(currentWeaponSelect.options).map(option =>
+                        `<option value="${option.value}" ${option.value === selectedItemName ? 'selected' : ''}>${option.text}</option>`
+                    ).join('');
+
+                    // Update innerHTML dari weaponDetailsContainer, tetapi JANGAN mengganti <select>
+                    // Cukup perbarui elemen detail di bawah <select>
+                    weaponDetailsContainer.innerHTML = `
+                        <select name="selected_weapon" id="weapon-select">
+                            ${optionsHtml}
+                        </select>
+                        <p><strong>Tipe:</strong> ${data.details.weapon_type}</p> {# Pastikan data.details.type tersedia dari AJAX #}
+                        <p><strong>Rarity:</strong> ${data.details.rarity}</p> {# Pastikan data.details.rarity tersedia dari AJAX #}
+                    `;
+                } else {
+                    imgElement.src = "{% static 'assets/ikon/Weapon.png' %}";
+                    // Ambil kembali referensi ke weaponSelect yang sudah ada
+                    const currentWeaponSelect = document.getElementById('weapon-select');
+                    const optionsHtml = Array.from(currentWeaponSelect.options).map(option =>
+                        `<option value="${option.value}" ${option.value === selectedItemName ? 'selected' : ''}>${option.text}</option>`
+                    ).join('');
+
+                    weaponDetailsContainer.innerHTML = `
+                        <select name="selected_weapon" id="weapon-select">
+                            <option value="">Pilih Senjata</option>
+                            ${optionsHtml}
+                        </select>
+                    `;
+                }
+                document.getElementById('weapon-select').addEventListener('change', handleSelectChange);
+            } 
+            
+            else if (itemType === 'echo') {
+                if (data.details && data.details.name) {
+                    imgElement.src = data.image_url;
+                    echoDetailsContainer.innerHTML = ``;
+                } else {
+                    imgElement.src = "{% static 'assets/ikon/Echo.png' %}";
+                    echoDetailsContainer.innerHTML = ``;
+                }
+
+                sonataSelect.innerHTML = '<option value="">Pilih Sonata</option>';
+                data.filtered_sonatas.forEach(sonata => {
+                    const option = document.createElement('option');
+                    option.value = sonata.name;
+                    option.textContent = sonata.name;
+                    if (user_input_stats_js.selected_sonata === sonata.name) {
+                        option.selected = true;
+                    }
+                    sonataSelect.appendChild(option);
+                });
+
+                const currentSelectedSonata = sonataSelect.value;
+                const sonataStillValid = data.filtered_sonatas.some(s => s.name === currentSelectedSonata);
+                if (!sonataStillValid) {
+                    sonataSelect.value = "";
+                    sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
+                    user_input_stats_js.selected_sonata = "";
+                } else {
+                    fetchDetails('sonata', currentSelectedSonata, user_input_stats_js.selected_echo);
+                }
+
+            } else if (itemType === 'sonata') {
+                if (data.details && data.details.name) {
+                    imgElement.src = data.image_url;
+                    sonataDetailsContainer.innerHTML = ``;
+                } else {
+                    imgElement.src = "{% static 'assets/ikon/Sonata.png' %}";
+                }
+            }
+        }
 
             async function fetchDetails(itemType, itemName, selectedEchoName = '') {
                 const formData = new FormData();
@@ -281,16 +312,16 @@
                     console.error('Error fetching item details:', error);
                     // Handle error: show default image/details
                     if (itemType === 'weapon') {
-                        weaponIcon.src = "{% static 'assets/ikon/weapon/default.png' %}";
+                        weaponIcon.src = "{% static 'assets/ikon/Weapon.png' %}";
                     } else if (itemType === 'echo') {
-                        echoIcon.src = "{% static 'assets/ikon/echo/default.png' %}";
+                        echoIcon.src = "{% static 'assets/ikon/Echo.png' %}";
                     } else if (itemType === 'sonata') {
-                        sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
+                        sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
                     }
                 }
             }
 
-            // Inisialisasi status user_input_stats dari Django context ke JavaScript
+            
             const user_input_stats_js = {
                 selected_weapon: "{{ user_input_stats.selected_weapon }}",
                 selected_echo: "{{ user_input_stats.selected_echo }}",
@@ -298,24 +329,21 @@
             };
 
 
-            // Event listener untuk setiap dropdown
             function handleSelectChange(event) {
                 const selectElement = event.target;
-                const itemType = selectElement.id.replace('-select', ''); // 'weapon', 'echo', 'sonata'
+                const itemType = selectElement.id.replace('-select', ''); 
                 const itemName = selectElement.value;
 
                 let selectedEchoForFilter = '';
                 if (itemType === 'sonata') {
-                    selectedEchoForFilter = echoSelect.value; // Ambil Echo yang sedang terpilih
+                    selectedEchoForFilter = echoSelect.value;
                 } else if (itemType === 'echo') {
-                    // Jika Echo berubah, reset Sonata agar bisa difilter
                     sonataSelect.value = "";
-                    user_input_stats_js.selected_sonata = ""; // Pastikan state JS juga direset
-                    sonataIcon.src = "{% static 'assets/ikon/sonata/default.png' %}";
-                    selectedEchoForFilter = itemName; // Echo yang baru terpilih
+                    user_input_stats_js.selected_sonata = "";
+                    sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
+                    selectedEchoForFilter = itemName;
                 }
 
-                // Panggil fetchDetails
                 fetchDetails(itemType, itemName, selectedEchoForFilter);
             }
 
@@ -330,7 +358,6 @@
                 fetchDetails('echo', user_input_stats_js.selected_echo);
             }
             if (user_input_stats_js.selected_sonata) {
-                // Pastikan Echo terpilih sebelum memuat Sonata
                 const initialSelectedEcho = echoSelect.value;
                 fetchDetails('sonata', user_input_stats_js.selected_sonata, initialSelectedEcho);
             }
