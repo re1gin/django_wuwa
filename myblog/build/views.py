@@ -3,25 +3,48 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
+
 from resonators.models import Resonator
 from weapon.models import Weapon
 from echo.models import Sonata, Echo
 
+# --- Helper Functions ---
+def _get_sanitized_name_for_path(name):
+    """
+    Helper function to sanitize names for use in file paths, consistent with models.py.
+    """
+    sanitized_name = name.replace(' ', '_')
+    return sanitized_name
 
 def format_folder(name):
-    formatted_name = name.replace(' ', '_')
-    return formatted_name
+    """
+    Formats a name into a folder-friendly string, consistent with _get_sanitized_resonator_name
+    in models.py, without changing the function name as requested.
+    """
+    return _get_sanitized_name_for_path(name)
+
 
 def get_icon_chars_data(current_char_obj=None):
     icon_chars_data = []
     all_resonators = Resonator.objects.all().order_by('name')
     for resonator in all_resonators:
-        icon_folder = format_folder(resonator.name)
-        icon_url = f"{settings.MEDIA_URL}resonator/{icon_folder}/Icon.png"
-        icon_detail_url = reverse('resonators:resonator_detail', kwargs={'name': resonator.name})
+        # --- PERUBAHAN DI SINI: Membangun URL ikon secara manual ---
+        folder_name = format_folder(resonator.name)
+        icon_url = f"{settings.MEDIA_URL}resonator/{folder_name}/Icon.png"
+        # -------------------------------------------------------------
+        
+        try:
+            # Mengarahkan ikon ke halaman builder untuk karakter tersebut
+            icon_detail_url = reverse('resonators:character_builder', kwargs={'name': resonator.name})
+        except Exception: # Fallback jika URL tidak ditemukan
+            icon_detail_url = '#'
+            
         is_active_icon = False
         if current_char_obj and resonator.name == current_char_obj.name:
             is_active_icon = True
+        
+        # Asumsi file Icon.png selalu ada di path yang dibangun.
+        # Jika file tidak ada, browser akan menampilkan broken image.
         icon_chars_data.append({
             'icon_url': icon_url,
             'character_name': resonator.name,
@@ -31,26 +54,25 @@ def get_icon_chars_data(current_char_obj=None):
     return icon_chars_data
 
 def get_item_details_ajax(request):
-
     item_type = request.POST.get('item_type')
     item_name = request.POST.get('item_name')
     selected_echo_name = request.POST.get('selected_echo_name')
 
     details = {}
     image_url = ""
+    filtered_sonatas_data = []
+    filtered_echos_data = list(Echo.objects.all().values('name'))
 
     if item_type == 'weapon':
         weapon_obj = Weapon.objects.filter(weapon_name=item_name).first()
-        if weapon_obj: # Pastikan weapon_obj ditemukan
+        if weapon_obj:
             details = {
                 'name': weapon_obj.weapon_name,
                 'rarity': weapon_obj.rarity,
-                'weapon_type': weapon_obj.weapon_type.name
+                'weapon_type': weapon_obj.weapon_type.name if weapon_obj.weapon_type else "N/A"
             }
-            image_url = weapon_obj.icon_image.url
-        else:
-            return JsonResponse({'details': {}, 'image_url': '', 'filtered_echos': [], 'filtered_sonatas': []}) 
-
+            # Menggunakan ImageField URL jika ada
+            image_url = weapon_obj.icon_image.url if weapon_obj.icon_image else ""
     elif item_type == 'echo':
         echo_obj = Echo.objects.filter(name=item_name).first()
         if echo_obj:
@@ -58,33 +80,28 @@ def get_item_details_ajax(request):
                 'name': echo_obj.name,
                 'cost': echo_obj.cost,
             }
-            image_url = echo_obj.icon_echo.url
+            # Menggunakan ImageField URL jika ada
+            image_url = echo_obj.icon_echo.url if echo_obj.icon_echo else ""
+            filtered_sonatas_data = list(echo_obj.sonatas.all().values('name'))
         else:
-            return JsonResponse({'details': {}, 'image_url': '', 'filtered_echos': [], 'filtered_sonatas': []}) 
-
+            filtered_sonatas_data = []
     elif item_type == 'sonata':
         sonata_obj = Sonata.objects.filter(name=item_name).first()
         if sonata_obj:
             details = {
                 'name': sonata_obj.name,
             }
-            image_url = sonata_obj.icon_sonata.url
-        else:
-            return JsonResponse({'details': {}, 'image_url': '', 'filtered_echos': [], 'filtered_sonatas': []}) 
-
-    
-    filtered_sonatas_data = []
-
+            # Menggunakan ImageField URL jika ada
+            image_url = sonata_obj.icon_sonata.url if sonata_obj.icon_sonata else ""
+        
     if selected_echo_name:
-        selected_echo_obj = Echo.objects.filter(name=selected_echo_name).first()
-        if selected_echo_obj:
-            filtered_sonatas_data = list(selected_echo_obj.sonatas.all().values('name'))
+        selected_echo_from_ajax = Echo.objects.filter(name=selected_echo_name).first()
+        if selected_echo_from_ajax:
+            filtered_sonatas_data = list(selected_echo_from_ajax.sonatas.all().values('name'))
         else:
-            filtered_sonatas_data = list(Sonata.objects.all().values('name'))
+            filtered_sonatas_data = []
     else:
         filtered_sonatas_data = list(Sonata.objects.all().values('name'))
-
-    filtered_echos_data = list(Echo.objects.all().values('name'))
 
     return JsonResponse({
         'details': details,
@@ -96,20 +113,21 @@ def get_item_details_ajax(request):
 def character_builder_view(request, name):
     char_obj = get_object_or_404(Resonator, name__iexact=name)
 
+    # Images for the builder page (Constructed manually as requested)
     folder_name = format_folder(char_obj.name)
     image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
     images = {"render": f"{image_path}Render.png"}
 
-    icon_chars_data = get_icon_chars_data(char_obj)
+    # Menggunakan fungsi get_icon_chars_data
+    all_characters_for_icons = get_icon_chars_data(char_obj)
 
     weapons_data_db = Weapon.objects.filter(weapon_type=char_obj.weapon_type).order_by('weapon_name')
     echos_data_db = Echo.objects.all().order_by('name')
-    sonatas_data_db = Sonata.objects.all().order_by('name') 
+    sonatas_data_db = Sonata.objects.all().order_by('name')
 
-    # Inisialisasi default user_input_stats
     user_input_stats = {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
+        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0, # Pastikan heavy_atk_dmg ada
         'healing_bonus': 0.0, 
         'aero_dmg_bonus': 0.0, 'fusion_dmg_bonus': 0.0, 'electro_dmg_bonus': 0.0,
         'glacio_dmg_bonus': 0.0, 'havoc_dmg_bonus': 0.0, 'spectro_dmg_bonus': 0.0,
@@ -126,111 +144,74 @@ def character_builder_view(request, name):
     selected_echo_obj = None
     selected_sonata_obj = None
 
-    # --- Bagian POST Request ---
     if request.method == 'POST':
         try:
             for stat_name in ['hp', 'attack', 'defense', 'energy', 'crit_rate', 'crit_dmg',
-                               'basic_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg',
+                               'basic_atk_dmg', 'heavy_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg', # Pastikan heavy_atk_dmg ada di loop
                                'healing_bonus', 
-                               # New attribute DMG bonuses
                                'aero_dmg_bonus', 'fusion_dmg_bonus', 'electro_dmg_bonus',
                                'glacio_dmg_bonus', 'havoc_dmg_bonus', 'spectro_dmg_bonus',
-                               'attribute_res']: # attribute_res is still here
-                user_input_stats[stat_name] = float(request.POST.get(stat_name, 0.0))
+                               'attribute_res']:
+                user_input_stats[stat_name] = float(request.POST.get(stat_name, 0.0) or 0.0)
         except ValueError:
             messages.error(request, "Input stat harus berupa angka.")
-            
             
         user_input_stats['selected_weapon'] = request.POST.get('selected_weapon', '')
         user_input_stats['selected_echo'] = request.POST.get('selected_echo', '')
         user_input_stats['selected_sonata'] = request.POST.get('selected_sonata', '')
 
-        if user_input_stats['selected_echo'] and user_input_stats['selected_sonata']:
-            selected_echo_from_post = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-            selected_sonata_from_post = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
+        selected_echo_name = user_input_stats['selected_echo']
+        selected_sonata_name = user_input_stats['selected_sonata']
 
-            if selected_echo_from_post and selected_sonata_from_post:
-                if not selected_echo_from_post.sonatas.filter(name=selected_sonata_from_post.name).exists():
-                    messages.error(request, f"Sonata '{selected_sonata_from_post.name}' tidak valid untuk Echo '{selected_echo_from_post.name}'. Sonata direset.")
-                    user_input_stats['selected_sonata'] = '' 
-                    
-            elif selected_echo_from_post and not selected_sonata_from_post:
-                pass
-            
-            
-            elif not selected_echo_from_post and selected_sonata_from_post:
-                messages.error(request, "Sonata tidak dapat dipilih tanpa Echo yang valid. Sonata direset.")
-                user_input_stats['selected_sonata'] = '' 
-                
-        elif user_input_stats['selected_echo'] and not user_input_stats['selected_sonata']:
-            pass
-        
-        elif not user_input_stats['selected_echo'] and user_input_stats['selected_sonata']:
+        if selected_echo_name:
+            selected_echo_obj_from_post = Echo.objects.filter(name=selected_echo_name).first()
+            if selected_echo_obj_from_post:
+                if selected_sonata_name:
+                    if not selected_echo_obj_from_post.sonatas.filter(name=selected_sonata_name).exists():
+                        messages.error(request, f"Sonata '{selected_sonata_name}' tidak valid untuk Echo '{selected_echo_name}'. Pilihan direset.")
+                        user_input_stats['selected_sonata'] = ''
+            else:
+                messages.error(request, f"Echo '{selected_echo_name}' tidak ditemukan. Pilihan Echo dan Sonata direset.")
+                user_input_stats['selected_echo'] = ''
+                user_input_stats['selected_sonata'] = ''
+        elif selected_sonata_name:
             messages.error(request, "Sonata tidak dapat dipilih tanpa Echo yang dipilih. Sonata direset.")
             user_input_stats['selected_sonata'] = ''
 
-        # Simpan user_input_stats yang sudah diperbarui (termasuk validasi) ke session
         request.session['user_input_stats'] = user_input_stats
         request.session['character_name_for_comparison'] = char_obj.name
 
         if 'NILAI BUILD' in request.POST:
-            return redirect('build:compare_stats', character_name=char_obj.name)
+            return redirect('build:build_review', character_name=char_obj.name)
         
-    # --- Load selected item objects based on user_input_stats (whether from POST or session) ---
-    if user_input_stats['selected_weapon']:
-        selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
-        if not selected_weapon_obj:
-            user_input_stats['selected_weapon'] = '' # Reset if not found
-            messages.warning(request, f"Senjata '{user_input_stats['selected_weapon']}' tidak ditemukan. Pilihan direset.")
+        if user_input_stats['selected_weapon']:
+            selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+        if user_input_stats['selected_echo']:
+            selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+        if user_input_stats['selected_sonata'] and selected_echo_obj:
+            selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
+            if not selected_sonata_obj or not selected_echo_obj.sonatas.filter(name=selected_sonata_obj.name).exists():
+                 selected_sonata_obj = None
 
+    else:
+        if user_input_stats['selected_weapon']:
+            selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+        if user_input_stats['selected_echo']:
+            selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+        if user_input_stats['selected_sonata'] and selected_echo_obj:
+            selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
+            if not selected_sonata_obj or not selected_echo_obj.sonatas.filter(name=selected_sonata_obj.name).exists():
+                 selected_sonata_obj = None
 
-    if user_input_stats['selected_echo']:
-        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-        if not selected_echo_obj:
-            user_input_stats['selected_echo'] = '' 
-            user_input_stats['selected_sonata'] = '' 
-            selected_echo_obj = None 
-            selected_sonata_obj = None
-            messages.warning(request, f"Echo '{user_input_stats['selected_echo']}' tidak ditemukan. Pilihan direset.")
-    else: 
-        user_input_stats['selected_sonata'] = ''
-        selected_echo_obj = None
-        selected_sonata_obj = None
-
-
-    current_selected_echo_name = user_input_stats.get('selected_echo')
-    if current_selected_echo_name:
-        echo_for_filter = Echo.objects.filter(name=current_selected_echo_name).first()
-        if echo_for_filter:
-            sonatas_data_db = echo_for_filter.sonatas.all().order_by('name')
-            
-            if user_input_stats.get('selected_sonata'):
-                selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
-                if not selected_sonata_obj or not sonatas_data_db.filter(name=selected_sonata_obj.name).exists():
-                    messages.warning(request, f"Sonata '{user_input_stats['selected_sonata']}' tidak valid untuk Echo '{current_selected_echo_name}'. Sonata direset.")
-                    user_input_stats['selected_sonata'] = ''
-                    selected_sonata_obj = None 
-            else: 
-                selected_sonata_obj = None
-        else:
-            sonatas_data_db = Sonata.objects.all().order_by('name')
-            messages.warning(request, f"Echo '{current_selected_echo_name}' tidak ditemukan. Sonata direset.")
-            user_input_stats['selected_echo'] = ''
-            user_input_stats['selected_sonata'] = ''
-            selected_echo_obj = None
-            selected_sonata_obj = None
-            
-            request.session['user_input_stats'] = user_input_stats
+    if selected_echo_obj:
+        sonatas_data_db = selected_echo_obj.sonatas.all().order_by('name')
     else:
         sonatas_data_db = Sonata.objects.all().order_by('name')
-        
-        user_input_stats['selected_sonata'] = ''
-        selected_sonata_obj = None
 
     context = {
         "character": char_obj,
         "images": images,
-        "all_characters_for_icons": icon_chars_data,
+        "all_characters_for_icons": all_characters_for_icons,
         "user_input_stats": user_input_stats,
         "weapons_data": weapons_data_db,
         "echos_data": echos_data_db,
@@ -240,3 +221,46 @@ def character_builder_view(request, name):
         "selected_sonata_obj": selected_sonata_obj,
     }
     return render(request, 'landingpage/character_builder.html', context)
+
+
+def build_review_view(request, character_name):
+    resonator = get_object_or_404(Resonator, name__iexact=character_name)
+    
+    # Perbaikan: Gunakan 'resonator.name' bukan 'char_obj.name'
+    folder_name = format_folder(resonator.name) 
+    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
+    images = {"render": f"{image_path}Render.png"}
+
+    user_input_stats = request.session.get('user_input_stats', {
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
+        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
+        'healing_bonus': 0.0, 
+        'aero_dmg_bonus': 0.0, 'fusion_dmg_bonus': 0.0, 'electro_dmg_bonus': 0.0,
+        'glacio_dmg_bonus': 0.0, 'havoc_dmg_bonus': 0.0, 'spectro_dmg_bonus': 0.0,
+        'attribute_res': 0.0,
+        'selected_weapon': '',
+        'selected_echo': '',
+        'selected_sonata': '',
+    })
+
+    selected_weapon_obj = None
+    if user_input_stats['selected_weapon']:
+        selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+
+    selected_echo_obj = None
+    if user_input_stats['selected_echo']:
+        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+    
+    selected_sonata_obj = None
+    if user_input_stats['selected_sonata'] and selected_echo_obj:
+        selected_sonata_obj = selected_echo_obj.sonatas.filter(name=user_input_stats['selected_sonata']).first()
+    
+    context = {
+        "resonator": resonator,
+        "user_input_stats": user_input_stats,
+        "selected_weapon_obj": selected_weapon_obj,
+        "selected_echo_obj": selected_echo_obj,
+        "selected_sonata_obj": selected_sonata_obj,
+        "images": images, # Jangan lupa untuk mengirim 'images' ke konteks
+    }
+    return render(request, 'landingpage/resonator_build_review.html', context)

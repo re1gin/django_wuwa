@@ -1,4 +1,4 @@
-        .container {
+    .container {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -16,7 +16,7 @@
     justify-content: center;
     width: 100%;
     gap: 67px;
-    height: 680px;
+    height: 100vh;
     margin: 0 auto;
     max-width: 1050px;
     padding: 0 0px;
