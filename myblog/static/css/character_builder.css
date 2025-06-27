@@ -50,16 +50,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 9px; /* 10px * 0.9 */
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 18px; /* 20px * 0.9 */
-    align-items: center;
-}
 
 .icon-container {
     display: flex;
@@ -145,11 +137,11 @@
 .name-character {
     display: flex;
     width: max-content;
-    font-size: 22.5px; /* 25px * 0.9 */
+    font-size: 25px; /* 25px * 0.9 */
     font-weight: bold;
     color: #000000;
     background-color: #ffffff;
-    padding: 2px 8px; /* 2px * 0.9, 8px * 0.9 */
+    padding: 2px 8px;
     text-transform: uppercase;
 }
 
@@ -164,8 +156,8 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    align-items: end;
-    gap: 13.5px; /* 15px * 0.9 */
+    align-items: flex-start;
+    gap: 13.5px;
     justify-content: space-between;
 }
 
@@ -174,16 +166,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    align-self: self-start;
     justify-content: space-around;
 }
 
 .input-right-block {
     width: 50%;
-    gap: 18px; /* 20px * 0.9 */
+    gap: 18px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 select {
@@ -230,6 +221,7 @@ option {
     flex-direction: column;
     width: 100%;
     align-items: flex-start;
+    border: 1px solid #b7b7b7;
 }
 
 .title-block {
@@ -419,6 +411,27 @@ option {
     border-radius: 50px;
     border: 1px solid #d4d4d4;
     padding: 0;
+}
+
+.errorlist {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 5px;
+    font-size: 0.85em;
+}
+.messages {
+    list-style-type: none;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+/* Style untuk input yang memiliki error */
+input.input-error, select.input-error {
+    border: 1px solid red !important;
 }
 
 .btn-grup {

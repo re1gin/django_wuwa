@@ -40,15 +40,7 @@ class BuildAdmin(admin.ModelAdmin):
         }),
         ('Damage Bonus Stats', {
             'fields': (
-                'basic_atk_dmg',
-                'resonance_skill_dmg',
-                'resonance_lib_dmg',
-                'aero_dmg_bonus',
-                'fusion_dmg_bonus',
-                'electro_dmg_bonus',
-                'glacio_dmg_bonus',
-                'havoc_dmg_bonus',
-                'spectro_dmg_bonus',
+                'attribute_dmg_bonus',
             )
         }),
         ('Other Stats', {
@@ -78,12 +70,7 @@ class UserBuildAdmin(admin.ModelAdmin):
                 'basic_atk_dmg',
                 'resonance_skill_dmg',
                 'resonance_lib_dmg',
-                'aero_dmg_bonus',
-                'fusion_dmg_bonus',
-                'electro_dmg_bonus',
-                'glacio_dmg_bonus',
-                'havoc_dmg_bonus',
-                'spectro_dmg_bonus',
+                'attribute_dmg_bonus',
             )
         }),
         ('Other Stats', {

@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
                 # 1. Pastikan Resonator ada atau buat jika tidak ada
                 resonator, created_resonator = Resonator.objects.get_or_create(
-                    character_name=character_name_from_csv,
+                    name=character_name_from_csv,
                     defaults={} # Defaults kosong
                 )
                 if created_resonator:

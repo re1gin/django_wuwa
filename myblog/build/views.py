@@ -35,7 +35,7 @@ def get_icon_chars_data(current_char_obj=None):
         
         try:
             # Mengarahkan ikon ke halaman builder untuk karakter tersebut
-            icon_detail_url = reverse('resonators:character_builder', kwargs={'name': resonator.name})
+            icon_detail_url = reverse('build:character_builder', kwargs={'name': resonator.name})
         except Exception: # Fallback jika URL tidak ditemukan
             icon_detail_url = '#'
             
@@ -43,8 +43,6 @@ def get_icon_chars_data(current_char_obj=None):
         if current_char_obj and resonator.name == current_char_obj.name:
             is_active_icon = True
         
-        # Asumsi file Icon.png selalu ada di path yang dibangun.
-        # Jika file tidak ada, browser akan menampilkan broken image.
         icon_chars_data.append({
             'icon_url': icon_url,
             'character_name': resonator.name,
@@ -129,9 +127,7 @@ def character_builder_view(request, name):
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0, # Pastikan heavy_atk_dmg ada
         'healing_bonus': 0.0, 
-        'aero_dmg_bonus': 0.0, 'fusion_dmg_bonus': 0.0, 'electro_dmg_bonus': 0.0,
-        'glacio_dmg_bonus': 0.0, 'havoc_dmg_bonus': 0.0, 'spectro_dmg_bonus': 0.0,
-        'attribute_res': 0.0,
+        'attribue_dmg_bonus': 0.0,
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
@@ -235,9 +231,7 @@ def build_review_view(request, character_name):
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
         'healing_bonus': 0.0, 
-        'aero_dmg_bonus': 0.0, 'fusion_dmg_bonus': 0.0, 'electro_dmg_bonus': 0.0,
-        'glacio_dmg_bonus': 0.0, 'havoc_dmg_bonus': 0.0, 'spectro_dmg_bonus': 0.0,
-        'attribute_res': 0.0,
+        'attribue_dmg_bonus': 0.0,
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',

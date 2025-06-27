@@ -15,22 +15,9 @@ class Build(models.Model):
     energy = models.FloatField(default=0.0)
     crit_rate = models.FloatField(default=0.0)
     crit_dmg = models.FloatField(default=0.0)
-
-    # Damage Bonus Stats (from Echoes, Sonatas, Resonator Passives)
-    basic_atk_dmg = models.FloatField(default=0.0)
-    resonance_skill_dmg = models.FloatField(default=0.0)
-    resonance_lib_dmg = models.FloatField(default=0.0)
     
-    # Other Utility/Defensive Stats
     healing_bonus = models.FloatField(default=0.0)
     attribute_dmg_bonus = models.FloatField(default=0.0)
-    healing_bonus = models.FloatField(default=0.0)
-    aero_dmg_bonus = models.FloatField(default=0.0)
-    fusion_dmg_bonus = models.FloatField(default=0.0)
-    electro_dmg_bonus = models.FloatField(default=0.0)
-    glacio_dmg_bonus = models.FloatField(default=0.0)
-    havoc_dmg_bonus = models.FloatField(default=0.0)
-    spectro_dmg_bonus = models.FloatField(default=0.0)
 
     # Optional: Untuk menunjukkan item "Best in Slot" yang paling ideal untuk build ini
     ideal_weapon = models.ForeignKey(Weapon, on_delete=models.SET_NULL, null=True, blank=True, related_name='ideal_for_specific_builds')
@@ -70,14 +57,8 @@ class UserBuild(models.Model):
     basic_atk_dmg = models.FloatField(default=0.0)
     resonance_skill_dmg = models.FloatField(default=0.0)
     resonance_lib_dmg = models.FloatField(default=0.0)
-    
     healing_bonus = models.FloatField(default=0.0)
-    aero_dmg_bonus = models.FloatField(default=0.0)
-    fusion_dmg_bonus = models.FloatField(default=0.0)
-    electro_dmg_bonus = models.FloatField(default=0.0)
-    glacio_dmg_bonus = models.FloatField(default=0.0)
-    havoc_dmg_bonus = models.FloatField(default=0.0)
-    spectro_dmg_bonus = models.FloatField(default=0.0)
+    attribute_dmg_bonus = models.FloatField(default=0.0)
 
 
     # Item yang dipilih user
