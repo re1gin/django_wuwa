@@ -1,0 +1,382 @@
+
+.hero {
+    display: flex;
+    justify-content: space-between; /* Untuk menjarakkan panel kiri, tengah, dan kanan */
+    align-items: flex-start; /* Untuk menyelaraskan elemen di bagian atas */
+    padding: 20px;
+    gap: 20px; /* Jarak antar panel */
+    background-color: #1a1a1a; /* Background gelap */
+    color: #e0e0e0; /* Warna teks terang */
+    font-family: 'Inter', sans-serif; /* Font Inter */
+    border-radius: 12px; /* Sudut membulat */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sedikit bayangan */
+    width: 100%;
+    margin: 20px auto; /* Pusatkan di halaman */
+}
+
+/* Panel Kiri (Statistik, Senjata, Echo/Sonata) */
+.hero .left-panel {
+    flex: 1; /* Ambil proporsi ruang yang sama */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 280px; /* Pastikan ada lebar minimum */
+}
+
+.hero .header-section h1 {
+    font-size: 1.8em;
+    color: #f0f0f0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #444; /* Garis bawah tipis */
+    padding-bottom: 10px;
+}
+
+/* Daftar Statistik (HP, ATK, DEF, dll.) */
+.hero .stat-list {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4); /* Efek cekung */
+}
+
+.hero .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #3a3a3a; /* Garis putus-putus */
+}
+
+.hero .stat-item:last-child {
+    border-bottom: none; /* Hapus garis bawah item terakhir */
+}
+
+.hero .stat-name {
+    font-weight: bold;
+    color: #c0c0c0;
+}
+
+.hero .stat-value-placeholder {
+    color: #f0f0f0;
+}
+
+/* Bagian Senjata */
+.hero .weapon {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero .weapon-details-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.hero .weapon-icon-large {
+    width: 80px; /* Ukuran ikon senjata */
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #555;
+}
+
+.hero .weapon-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.hero .weapon-header-and-rank {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.hero .weapon-name-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.hero .weapon-attributes p {
+    margin: 3px 0;
+    font-size: 0.9em;
+    color: #c0c0c0;
+}
+
+.hero .attribute-value {
+    color: #f0f0f0;
+}
+
+.hero .rank-label {
+    background-color: #444;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    white-space: nowrap; /* Pastikan "Rank 1" tidak pecah baris */
+}
+
+/* Bagian Echo dan Sonata */
+.hero .gear {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around; /* Agar ikon berada di tengah */
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero .equipment-gear {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1; /* Agar mengambil ruang yang sama */
+}
+
+.hero .gear-icon {
+    width: 60px; /* Ukuran ikon gear */
+    height: 60px;
+    border-radius: 50%; /* Membulat penuh */
+    object-fit: cover;
+    border: 2px solid #555;
+    margin-bottom: 5px;
+}
+
+.hero .gear-title {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap; /* Jangan pecah baris */
+    overflow: hidden; /* Sembunyikan jika terlalu panjang */
+    text-overflow: ellipsis; /* Tampilkan ... jika terlalu panjang */
+}
+
+/* Panel Tengah (Gambar Karakter) */
+.hero .center-panel {
+    flex: 1.2; /* Beri sedikit lebih banyak ruang untuk panel tengah */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Selaraskan di atas */
+    padding: 10px;
+    position: relative; /* Untuk positioning bintang */
+    min-width: 250px;
+    max-width: 350px; /* Batasi agar tidak terlalu lebar */
+}
+
+.hero .character-display {
+    text-align: center;
+}
+
+.hero .character-art {
+    width: 100%; /* Ambil lebar penuh kontainer */
+    max-width: 300px; /* Batasi lebar maksimal gambar */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6); /* Bayangan kuat untuk gambar */
+}
+
+.hero .stars {
+    font-size: 1.5em;
+    color: gold; /* Warna bintang */
+    margin-top: 10px;
+}
+
+.hero .character-name {
+    font-size: 2em;
+    font-weight: bold;
+    color: #f0f0f0;
+    margin-top: 5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Bayangan teks untuk keterbacaan */
+}
+
+/* Panel Kanan (Overview, Damage List, Skill Levels) */
+.hero .right-panel {
+    flex: 1; /* Ambil proporsi ruang yang sama */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 280px;
+}
+
+/* Statistik Overview (Level, Resonance Chain, Attribute) */
+.hero .stats-overview {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero .stat-box {
+    text-align: center;
+    flex: 1; /* Agar mengambil ruang yang sama */
+}
+
+.hero .stat-box .stat-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #f0f0f0;
+    margin-bottom: 5px;
+}
+
+.hero .stat-box .stat-label .label {
+    font-size: 0.9em;
+    color: #c0c0c0;
+}
+
+.hero .icon-attribute {
+    width: 40px; /* Ukuran ikon atribut */
+    height: 40px;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+
+/* Ikon Tipe Damage (Atas daftar damage) */
+.hero .damage-type-icons {
+    display: flex;
+    justify-content: flex-end; /* Dorong ke kanan */
+    gap: 10px;
+    margin-bottom: -10px; /* Tarik sedikit ke atas agar lebih dekat ke daftar damage */
+}
+
+.hero .icon-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background-color: #444; /* Background untuk ikon placeholder */
+}
+
+/* Daftar Damage Bonus */
+.hero .damage-list {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero .damage-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #3a3a3a;
+}
+
+.hero .damage-item:last-child {
+    border-bottom: none;
+}
+
+.hero .damage-name {
+    font-weight: bold;
+    color: #c0c0c0;
+}
+
+.hero .damage-value-placeholder {
+    color: #f0f0f0;
+}
+
+/* Level Skill */
+.hero .skill-levels {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+    text-align: center; /* Pusatkan konten */
+}
+
+.hero .level-text {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    color: #f0f0f0;
+}
+
+.hero .skill-icons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+}
+
+.hero .skill-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #555;
+    background-color: #444; /* Placeholder background */
+}
+
+.hero .skill-names {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.8em;
+    color: #c0c0c0;
+}
+
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+    .hero {
+        flex-direction: column; /* Ubah ke tumpukan vertikal */
+        align-items: center; /* Pusatkan item */
+        padding: 15px;
+    }
+
+    .hero .left-panel,
+    .hero .center-panel,
+    .hero .right-panel {
+        width: 100%; /* Ambil lebar penuh */
+        max-width: 400px; /* Batasi lebar untuk tampilan lebih rapi di mobile */
+        margin-bottom: 20px; /* Jarak antar panel */
+    }
+
+    .hero .center-panel {
+        order: -1; /* Pindahkan panel tengah ke atas di mobile */
+        margin-bottom: 0; /* Hapus margin bawah jika di atas */
+    }
+
+    .hero .damage-type-icons {
+        justify-content: center; /* Pusatkan ikon damage */
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 10px;
+    }
+
+    .hero .header-section h1 {
+        font-size: 1.5em;
+    }
+
+    .hero .character-name {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero .stat-item,
+    .hero .damage-item {
+        font-size: 0.9em;
+    }
+
+    .hero .weapon-name-display {
+        font-size: 1em;
+    }
+
+    .hero .gear-title {
+        font-size: 0.8em;
+    }
+
+    .hero .skill-names {
+        font-size: 0.7em;
+    }
+}

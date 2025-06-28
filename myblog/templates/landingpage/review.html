@@ -1,0 +1,49 @@
+{# templates/review.html #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ resonator.name }} Build Review - Web ku{% endblock %}
+{% block extra_head %}
+    {# Page-specific CSS for the review page #}
+    <link rel="stylesheet" href="{% static 'css/review_page.css' %}">
+    {# CSS for the build review content #}
+    <link rel="stylesheet" href="{% static 'css/build_review.css' %}">
+    {# CSS for the difference stats content #}
+    <link rel="stylesheet" href="{% static 'css/difference_stat.css' %}">
+
+    <style>
+        .container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-image: url("/static/assets/background/Background-7.png"); 
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="review-page-container"> {# A wrapper for all content on this page #}
+        {# Include the main build review content #}
+        {% include 'landingpage/build_review.html' %} {# Menggunakan nama file yang Anda berikan #}
+
+        <hr class="section-divider"> {# Visual separator between sections #}
+
+        {# Include the difference stats content #}
+        {% include 'landingpage/difference_stat.html' %} {# Menggunakan nama file yang Anda berikan #}
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    {# Penting: Muat Chart.js library terlebih dahulu #}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {# Penting: Lewatkan data untuk Chart.js dari konteks Django ke JavaScript #}
+    {# Ini membuat tag script dengan type="application/json" yang bisa dibaca oleh JS di difference_stat.html. #}
+    {{ performance_data_json|json_script:"performance-data" }}
+    
+    {# Anda mungkin bisa menempatkan JS spesifik halaman review lainnya di sini, jika ada #}
+{% endblock %}

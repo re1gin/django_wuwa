@@ -56,7 +56,6 @@
                                 <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
                                     <p>HP: <input type="number" name="hp" step="0.1" placeholder="0.0" class="{% if form.hp.errors %}input-error{% endif %}"></p>
-                                    {# Tampilkan error Django Forms di bawah field #}
                                     {% if form.hp.errors %}<ul class="errorlist">{% for error in form.hp.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
                                     <p>ATK: <input type="number" name="attack" step="0.1" placeholder="0.0" class="{% if form.attack.errors %}input-error{% endif %}"></p>
@@ -102,8 +101,6 @@
                                     </div>
                                     <select name="selected_sonata" id="sonata-select" class="{% if form.selected_sonata.errors %}input-error{% endif %}">
                                         <option value="">Pilih Sonata</option>
-                                        {# Opsi ini akan diisi oleh JavaScript atau saat form dirender kembali dari server #}
-                                        {# Jika Anda ingin opsi sonata default saat halaman pertama dimuat: #}
                                         {% for sonata in sonatas_data %}
                                             <option value="{{ sonata.name }}"
                                                 {% if sonata.name == user_input_stats.selected_sonata %}selected{% endif %}>
@@ -125,18 +122,20 @@
                                         <img id="weapon-icon" src="{% if selected_weapon_obj %}{{ selected_weapon_obj.icon_image.url }}{% else %}{% static 'assets/ikon/Weapon.png' %}{% endif %}" alt="Weapon Preview" class="icon-img"/>
                                     </div>
 
-                                    <div class="weapon-details" id="weapon-details-container">
-                                        <select name="selected_weapon" id="weapon-select" class="{% if form.selected_weapon.errors %}input-error{% endif %}">
-                                            <option value="">Pilih Senjata</option>
-                                            {% for weapon in weapons_data %}
-                                                <option value="{{ weapon.weapon_name }}"
-                                                        {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
-                                                    {{ weapon.weapon_name }} 
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                        {% if form.selected_weapon.errors %}<ul class="errorlist">{% for error in form.selected_weapon.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                                    {# Pindahkan select ke luar weapon-details-container agar tidak terhapus #}
+                                    <select name="selected_weapon" id="weapon-select" class="{% if form.selected_weapon.errors %}input-error{% endif %}">
+                                        <option value="">Pilih Senjata</option>
+                                        {% for weapon in weapons_data %}
+                                            <option value="{{ weapon.weapon_name }}"
+                                                {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
+                                                {{ weapon.weapon_name }} 
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.selected_weapon.errors %}<ul class="errorlist">{% for error in form.selected_weapon.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
 
+                                    
+                                    <div class="weapon-details" id="weapon-text-details-container">
                                         {% if selected_weapon_obj %}
                                             <p><strong>Tipe:</strong> {{ selected_weapon_obj.weapon_type}}</p>
                                             <p><strong>Rarity:</strong> {{ selected_weapon_obj.rarity }}</p>
@@ -148,27 +147,25 @@
                             <div class="block">
                                 <span class="title-block">BONUS STAT</span>
                                 <div class="stat">
-                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.basic_attack_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.basic_attack_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    <p>Heavy Attack DMG Bonus: <input type="number" name="heavy_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.heavy_attack_dmg_bonus }}" class="{% if form.heavy_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Heavy Attack DMG Bonus: <input type="number" name="heavy_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.heavy_attack_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.heavy_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.heavy_attack_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.heavy_attack_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus }}" class="{% if form.resonance_skill_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.resonance_skill_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.resonance_skill_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.resonance_skill_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus }}" class="{% if form.resonance_lib_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.resonance_lib_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.resonance_lib_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.resonance_lib_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    {# Mengganti semua bonus DMG elemental spesifik dengan satu input: attribute_dmg_bonus #}
-                                    {# Label akan disesuaikan dengan atribut karakter (misal: "Aero DMG Bonus") #}
-                                    <p>{{ character.attribute.name }} DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus }}" class="{% if form.attribute_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>{{ character.attribute.name }} DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.attribute_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.attribute_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.attribute_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus }}" class="{% if form.healing_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|default_if_none:'0.0' }}" class="{% if form.healing_bonus.errors %}input-error{% endif %}"></p>
                                     {% if form.healing_bonus.errors %}<ul class="errorlist">{% for error in form.healing_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                     
-                                    <p>Attribute Resistance: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res }}" class="{% if form.attribute_res.errors %}input-error{% endif %}"></p>
+                                    <p>Attribute Resistance: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|default_if_none:'0.0' }}" class="{% if form.attribute_res.errors %}input-error{% endif %}"></p>
                                     {% if form.attribute_res.errors %}<ul class="errorlist">{% for error in form.attribute_res.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                                 </div>
                             </div>
@@ -183,372 +180,329 @@
             </div>
         </div>
     </div>
-{% endblock %}
 
-{% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const weaponSelect = document.getElementById('weapon-select');
-            const echoSelect = document.getElementById('echo-select');
-            const sonataSelect = document.getElementById('sonata-select');
+    {% block extra_js %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // DOM Elements
+                const weaponSelect = document.getElementById('weapon-select');
+                const echoSelect = document.getElementById('echo-select');
+                const sonataSelect = document.getElementById('sonata-select');
+                const weaponIcon = document.getElementById('weapon-icon');
+                const echoIcon = document.getElementById('echo-icon');
+                const sonataIcon = document.getElementById('sonata-icon');
+                const weaponTextDetailsContainer = document.getElementById('weapon-text-details-container');
+                const echoDetailsContainer = document.getElementById('echo-details-container');
+                const sonataDetailsContainer = document.getElementById('sonata-details-container');
+                const buildForm = document.getElementById('buildForm');
+                const resetButton = document.getElementById('reset-builder-button');
 
-            const weaponIcon = document.getElementById('weapon-icon');
-            const echoIcon = document.getElementById('echo-icon');
-            const sonataIcon = document.getElementById('sonata-icon');
-
-            const weaponDetailsContainer = document.getElementById('weapon-details-container');
-            const echoDetailsContainer = document.getElementById('echo-details-container');
-            const sonataDetailsContainer = document.getElementById('sonata-details-container');
-
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.startsWith(name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            const csrfToken = getCookie('csrftoken');
-
-            // Fungsi untuk mengisi/memperbarui opsi dropdown
-            function updateSelectOptions(selectElement, data, selectedValue) {
-                // Clear existing options, but keep the "Pilih..." option if it exists
-                const placeholderOption = selectElement.querySelector('option[value=""]');
-                selectElement.innerHTML = ''; // Clear all options
-                if (placeholderOption) {
-                    selectElement.appendChild(placeholderOption);
-                } else {
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = "";
-                    defaultOption.textContent = `Pilih ${selectElement.id.replace('-select', '').charAt(0).toUpperCase() + selectElement.id.replace('-select', '').slice(1)}`;
-                    selectElement.appendChild(defaultOption);
-                }
-            
-                data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.name || item.weapon_name; // 'name' for echo/sonata, 'weapon_name' for weapon
-                    option.textContent = item.name || item.weapon_name;
-                    if (option.value === selectedValue) {
-                        option.selected = true;
-                    }
-                    selectElement.appendChild(option);
-                });
-            }
-
-
-            function updateUI(itemType, data, selectedItemName) {
-                let imgElement;
-                let detailsContainer;
-                let defaultIconPath;
-
-                if (itemType === 'weapon') {
-                    imgElement = weaponIcon;
-                    detailsContainer = weaponDetailsContainer;
-                    defaultIconPath = "{% static 'assets/ikon/Weapon.png' %}";
-                } else if (itemType === 'echo') {
-                    imgElement = echoIcon;
-                    detailsContainer = echoDetailsContainer;
-                    defaultIconPath = "{% static 'assets/ikon/Echo.png' %}";
-                } else if (itemType === 'sonata') {
-                    imgElement = sonataIcon;
-                    detailsContainer = sonataDetailsContainer;
-                    defaultIconPath = "{% static 'assets/ikon/Sonata.png' %}";
-                } else {
-                    return;
-                }
-
-                // Efek transisi gambar
-                imgElement.style.opacity = '0';
-                imgElement.style.transform = 'scale(0.9)';
-
-                imgElement.onload = () => {
-                    imgElement.style.opacity = '1';
-                    imgElement.style.transform = 'scale(1)';
+                // State management
+                const user_input_stats_js = {
+                    selected_weapon: "{{ user_input_stats.selected_weapon }}",
+                    selected_echo: "{{ user_input_stats.selected_echo }}",
+                    selected_sonata: "{{ user_input_stats.selected_sonata }}",
+                    attribute_dmg_bonus: parseFloat("{{ user_input_stats.attribute_dmg_bonus|default:'0.0' }}") || 0
                 };
 
-                // Update src gambar
-                imgElement.src = data.image_url || defaultIconPath;
-
-                // Update detail teks (khusus weapon)
-                if (itemType === 'weapon') {
-                    // Hanya perbarui paragraf detail di bawah <select> yang sudah ada
-                    const existingDetailsHtml = `
-                        <select name="selected_weapon" id="weapon-select" class="{% if form.selected_weapon.errors %}input-error{% endif %}"></select>
-                        {% if form.selected_weapon.errors %}<ul class="errorlist">{% for error in form.selected_weapon.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                    `;
-                    let dynamicDetailsHtml = '';
-                    if (data.details && data.details.name) {
-                        dynamicDetailsHtml = `
-                            <p><strong>Tipe:</strong> ${data.details.weapon_type}</p>
-                            <p><strong>Rarity:</strong> ${data.details.rarity}</p>
-                        `;
+                // Utility Functions
+                function getCookie(name) {
+                    const cookies = document.cookie.split(';');
+                    for (let cookie of cookies) {
+                        cookie = cookie.trim();
+                        if (cookie.startsWith(name + '=')) {
+                            return decodeURIComponent(cookie.substring(name.length + 1));
+                        }
                     }
-                    // Kita tidak akan mengganti seluruh innerHTML weaponDetailsContainer lagi
-                    // Sebaliknya, temukan elemen <p> yang sudah ada atau buat baru jika tidak ada
-                    let typeP = weaponDetailsContainer.querySelector('p strong:contains("Tipe:")');
-                    let rarityP = weaponDetailsContainer.querySelector('p strong:contains("Rarity:")');
+                    return null;
+                }
 
-                    if (data.details && data.details.name) {
-                        if (!typeP) {
-                            typeP = document.createElement('p');
-                            weaponDetailsContainer.appendChild(typeP);
-                        }
-                        typeP.innerHTML = `<strong>Tipe:</strong> ${data.details.weapon_type}`;
+                function showError(element, message) {
+                    element.classList.add('input-error');
+                    const errorList = document.createElement('ul');
+                    errorList.classList.add('errorlist');
+                    errorList.innerHTML = `<li>${message}</li>`;
+                    element.parentNode.appendChild(errorList);
+                }
 
-                        if (!rarityP) {
-                            rarityP = document.createElement('p');
-                            weaponDetailsContainer.appendChild(rarityP);
+                function clearErrors() {
+                    document.querySelectorAll('.errorlist').forEach(el => el.remove());
+                    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+                }
+
+                function updateImage(imgElement, src) {
+                    imgElement.src = src;
+                    imgElement.alt = imgElement.alt || 'Preview Image';
+                }
+
+                function updateSelectOptions(selectElement, data, selectedValue) {
+                    const placeholderOption = selectElement.querySelector('option[value=""]') || 
+                        document.createElement('option');
+                    
+                    selectElement.innerHTML = '';
+                    placeholderOption.value = "";
+                    placeholderOption.textContent = `Pilih ${selectElement.id.replace('-select', '')}`;
+                    selectElement.appendChild(placeholderOption);
+
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.name || item.weapon_name;
+                        option.textContent = item.name || item.weapon_name;
+                        option.selected = (option.value === selectedValue);
+                        selectElement.appendChild(option);
+                    });
+                }
+
+                // Reset Functionality
+                async function resetBuilder() {
+                    try {
+                        const csrfToken = getCookie('csrftoken');
+
+                        if (response.ok) {
+                            return await response.json();
                         }
-                        rarityP.innerHTML = `<strong>Rarity:</strong> ${data.details.rarity}`;
-                    } else {
-                        // Clear details if no weapon selected or data is empty
-                        if (typeP) typeP.remove();
-                        if (rarityP) rarityP.remove();
+                        throw new Error('Failed to reset session');
+                    } catch (error) {
+                        console.error('Reset error:', error);
+                        throw error;
                     }
                 }
-                
-                if (itemType === 'echo') {
-                    // Perbarui opsi sonata berdasarkan echo yang dipilih
-                    updateSelectOptions(sonataSelect, data.filtered_sonatas, user_input_stats_js.selected_sonata);
+
+                function resetUI() {
+                    // Reset icons
+                    updateImage(weaponIcon, "{% static 'assets/ikon/Weapon.png' %}");
+                    updateImage(echoIcon, "{% static 'assets/ikon/Echo.png' %}");
+                    updateImage(sonataIcon, "{% static 'assets/ikon/Sonata.png' %}");
                     
-                    const currentSelectedSonata = sonataSelect.value;
-                    const sonataStillValid = data.filtered_sonatas.some(s => s.name === currentSelectedSonata);
-                    if (!sonataStillValid && currentSelectedSonata !== '') {
-                        sonataSelect.value = ""; // Reset sonata jika tidak lagi valid
-                        sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
+                    // Clear details
+                    weaponTextDetailsContainer.innerHTML = '';
+                    echoDetailsContainer.innerHTML = '';
+                    sonataDetailsContainer.innerHTML = '';
+                    
+                    // Reset selects
+                    weaponSelect.value = "";
+                    echoSelect.value = "";
+                    sonataSelect.value = "";
+                    
+                    // Reset state
+                    Object.keys(user_input_stats_js).forEach(key => {
+                        if (key !== 'attribute_dmg_bonus') {
+                            user_input_stats_js[key] = "";
+                        } else {
+                            user_input_stats_js[key] = 0;
+                        }
+                    });
+                    
+                    // Reset form inputs
+                    document.querySelectorAll('input[type="number"]').forEach(input => {
+                        input.value = "0.0";
+                    });
+                    
+                    // Clear errors
+                    clearErrors();
+                }
+
+                // Item Display Functions
+                function updateDetails(itemType, data) {
+                    const config = {
+                        'weapon': {
+                            imgElement: weaponIcon,
+                            detailsContainer: weaponTextDetailsContainer,
+                            defaultIcon: "{% static 'assets/ikon/Weapon.png' %}",
+                            detailsHTML: data?.details ? `
+                                <p><strong>Tipe:</strong> ${data.details.weapon_type}</p>
+                                <p><strong>Rarity:</strong> ${data.details.rarity}</p>
+                            ` : ''
+                        },
+                        'echo': {
+                            imgElement: echoIcon,
+                            detailsContainer: echoDetailsContainer,
+                            defaultIcon: "{% static 'assets/ikon/Echo.png' %}",
+                        },
+                        'sonata': {
+                            imgElement: sonataIcon,
+                            detailsContainer: sonataDetailsContainer,
+                            defaultIcon: "{% static 'assets/ikon/Sonata.png' %}",
+                        }
+                    };
+
+                    const { imgElement, detailsContainer, defaultIcon, detailsHTML } = config[itemType] || {};
+                    if (!imgElement) return;
+
+                    updateImage(imgElement, data?.image_url || defaultIcon);
+                    detailsContainer.innerHTML = detailsHTML || '';
+                }
+
+                function updateUI(itemType, data) {
+                    updateDetails(itemType, data);
+                    
+                    if (itemType === 'echo') {
+                        updateSelectOptions(sonataSelect, data.filtered_sonatas || [], user_input_stats_js.selected_sonata);
+                        
+                        if (!data.filtered_sonatas?.some(s => s.name === sonataSelect.value)) {
+                            sonataSelect.value = "";
+                            updateDetails('sonata', null);
+                            user_input_stats_js.selected_sonata = "";
+                        }
+                    }
+                }
+
+                // Data Fetching
+                async function fetchDetails(itemType, itemName, selectedEchoName = '') {
+                    const csrfToken = getCookie('csrftoken');
+                    const formData = new FormData();
+                    
+                    formData.append('item_type', itemType);
+                    formData.append('item_name', itemName);
+                    formData.append('selected_echo_name', selectedEchoName);
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+
+                    try {
+                        const response = await fetch("{% url 'build:get_item_details_ajax' %}", {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        
+                        const data = await response.json();
+                        updateUI(itemType, data);
+                        user_input_stats_js[`selected_${itemType}`] = itemName;
+
+                    } catch (error) {
+                        console.error('Error fetching item details:', error);
+                        updateDetails(itemType, null);
+                        
+                        if (itemType === 'echo') {
+                            updateSelectOptions(sonataSelect, [], '');
+                            user_input_stats_js.selected_sonata = "";
+                        }
+                    }
+                }
+
+                // Event Handlers
+                function handleSelectChange(event) {
+                    const selectElement = event.target;
+                    const itemType = selectElement.id.replace('-select', '');
+                    const itemName = selectElement.value;
+
+                    const selectedEchoForFilter = itemType === 'sonata' ? echoSelect.value : 
+                                                (itemType === 'echo' ? itemName : '');
+
+                    if (itemType === 'echo') {
+                        sonataSelect.value = "";
                         user_input_stats_js.selected_sonata = "";
                     }
-                    // Panggil fetchDetails untuk sonata jika ada sonata yang terpilih setelah echo berubah
-                    if (sonataSelect.value) {
-                         fetchDetails('sonata', sonataSelect.value, user_input_stats_js.selected_echo);
+
+                    if (itemName) {
+                        fetchDetails(itemType, itemName, selectedEchoForFilter);
                     } else {
-                        // Clear sonata icon and details if no sonata is selected
-                        sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
-                        sonataDetailsContainer.innerHTML = '';
+                        updateDetails(itemType, null);
+                        user_input_stats_js[`selected_${itemType}`] = "";
                     }
                 }
-            }
 
-            async function fetchDetails(itemType, itemName, selectedEchoName = '') {
-                const formData = new FormData();
-                formData.append('item_type', itemType);
-                formData.append('item_name', itemName);
-                formData.append('selected_echo_name', selectedEchoName);
-                formData.append('csrfmiddlewaretoken', csrfToken);
+                function validateForm(event) {
+                    clearErrors();
+                    let isValid = true;
 
-                try {
-                    const response = await fetch("{% url 'build:get_item_details_ajax' %}", {
-                        method: 'POST',
-                        body: formData,
+                    // Validate required number inputs
+                    const requiredNumberInputs = [
+                        { name: 'hp', label: 'HP' },
+                        { name: 'attack', label: 'ATK' },
+                        { name: 'defense', label: 'DEF' },
+                        { name: 'energy', label: 'ENERGY REGEN' },
+                        { name: 'crit_rate', label: 'CRITICAL RATE' },
+                        { name: 'crit_dmg', label: 'CRITICAL DAMAGE' }
+                    ];
+
+                    requiredNumberInputs.forEach(({name, label}) => {
+                        const input = document.querySelector(`input[name="${name}"]`);
+                        if (!input) return;
+
+                        const value = input.value.trim();
+                        if (value === '') {
+                            showError(input, `${label} tidak boleh kosong.`);
+                            isValid = false;
+                        } else if (isNaN(value) || parseFloat(value) < 0) {
+                            showError(input, `${label} harus angka positif.`);
+                            isValid = false;
+                        }
                     });
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                    // Validate optional number inputs
+                    const optionalNumberInputs = [
+                        { name: 'basic_attack_dmg_bonus', label: 'Basic Attack DMG Bonus' },
+                        { name: 'heavy_attack_dmg_bonus', label: 'Heavy Attack DMG Bonus' },
+                        { name: 'resonance_skill_dmg_bonus', label: 'Resonance Skill DMG Bonus' },
+                        { name: 'resonance_lib_dmg_bonus', label: 'Resonance Liberation DMG Bonus' },
+                        { name: 'attribute_dmg_bonus', label: 'Attribute DMG Bonus' },
+                        { name: 'healing_bonus', label: 'Healing Bonus' },
+                        { name: 'attribute_res', label: 'Attribute Resistance' }
+                    ];
 
-                    const data = await response.json();
-                    updateUI(itemType, data, itemName);
+                    optionalNumberInputs.forEach(({name, label}) => {
+                        const input = document.querySelector(`input[name="${name}"]`);
+                        if (!input) return;
 
-                    // Perbarui user_input_stats_js hanya jika item berhasil dimuat
-                    if (itemType === 'weapon') {
-                        user_input_stats_js.selected_weapon = itemName;
-                    } else if (itemType === 'echo') {
-                        user_input_stats_js.selected_echo = itemName;
-                    } else if (itemType === 'sonata') {
-                        user_input_stats_js.selected_sonata = itemName;
-                    }
+                        const value = input.value.trim();
+                        if (value !== '' && (isNaN(value) || parseFloat(value) < 0)) {
+                            showError(input, `${label} harus angka positif.`);
+                            isValid = false;
+                        }
+                    });
 
-                } catch (error) {
-                    console.error('Error fetching item details:', error);
-                    // Reset UI ke default jika ada error
-                    if (itemType === 'weapon') {
-                        weaponIcon.src = "{% static 'assets/ikon/Weapon.png' %}";
-                        // Hapus detail teks senjata
-                        const typeP = weaponDetailsContainer.querySelector('p strong:contains("Tipe:")');
-                        const rarityP = weaponDetailsContainer.querySelector('p strong:contains("Rarity:")');
-                        if (typeP) typeP.remove();
-                        if (rarityP) rarityP.remove();
-                    } else if (itemType === 'echo') {
-                        echoIcon.src = "{% static 'assets/ikon/Echo.png' %}";
-                        echoDetailsContainer.innerHTML = '';
-                        // Reset sonata select dan icon jika echo mengalami masalah
-                        updateSelectOptions(sonataSelect, [], ''); // Clear sonata options
-                        sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
-                        sonataDetailsContainer.innerHTML = '';
-                        user_input_stats_js.selected_sonata = "";
-                    } else if (itemType === 'sonata') {
-                        sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
-                        sonataDetailsContainer.innerHTML = '';
+                    // Validate required selects
+                    const requiredSelects = [
+                        { element: weaponSelect, label: 'Senjata' },
+                        { element: echoSelect, label: 'Echo' },
+                        { element: sonataSelect, label: 'Efek Sonata' }
+                    ];
+
+                    requiredSelects.forEach(({element, label}) => {
+                        if (element && element.value === '') {
+                            showError(element, `Mohon pilih ${label}.`);
+                            isValid = false;
+                        }
+                    });
+
+                    if (!isValid) {
+                        event.preventDefault();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 }
-            }
 
-            // Client-side validation: Menambahkan kelas 'input-error' dan menampilkan errorlist JS
-            const buildForm = document.getElementById('buildForm');
-
-            buildForm.addEventListener('submit', function(event) {
-                // Hapus semua error sebelumnya
-                document.querySelectorAll('.errorlist').forEach(el => el.remove());
-                document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-
-                let hasClientSideError = false;
-
-                // Validasi input angka utama
-                const mainStatsInputs = [
-                    { name: 'hp', label: 'HP' },
-                    { name: 'attack', label: 'ATK' },
-                    { name: 'defense', label: 'DEF' },
-                    { name: 'energy', label: 'ENERGY REGEN' },
-                    { name: 'crit_rate', label: 'CRITICAL RATE' },
-                    { name: 'crit_dmg', label: 'CRITICAL DAMAGE' }
-                ];
-
-                mainStatsInputs.forEach(stat => {
-                    const inputElement = document.querySelector(`input[name="${stat.name}"]`);
-                    if (inputElement) {
-                        if (inputElement.value.trim() === '') {
-                            inputElement.classList.add('input-error');
-                            const errorList = document.createElement('ul');
-                            errorList.classList.add('errorlist');
-                            const errorItem = document.createElement('li');
-                            errorItem.textContent = `${stat.label} tidak boleh kosong.`;
-                            errorList.appendChild(errorItem);
-                            inputElement.parentNode.appendChild(errorList);
-                            hasClientSideError = true;
-                        } else if (isNaN(parseFloat(inputElement.value))) {
-                            inputElement.classList.add('input-error');
-                            const errorList = document.createElement('ul');
-                            errorList.classList.add('errorlist');
-                            const errorItem = document.createElement('li');
-                            errorItem.textContent = `${stat.label} harus berupa angka.`;
-                            errorList.appendChild(errorItem);
-                            inputElement.parentNode.appendChild(errorList);
-                            hasClientSideError = true;
-                        } else if (parseFloat(inputElement.value) < 0) {
-                             inputElement.classList.add('input-error');
-                            const errorList = document.createElement('ul');
-                            errorList.classList.add('errorlist');
-                            const errorItem = document.createElement('li');
-                            errorItem.textContent = `${stat.label} harus angka positif.`;
-                            errorList.appendChild(errorItem);
-                            inputElement.parentNode.appendChild(errorList);
-                            hasClientSideError = true;
+                // Initialize Reset Button
+                if (resetButton) {
+                    resetButton.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        try {
+                            await resetBuilder();
+                            resetUI();
+                            console.log('Builder successfully reset');
+                        } catch (error) {
+                            console.error('Error resetting builder:', error);
                         }
-                    }
-                });
-                
-                // Validasi untuk semua bonus stat (termasuk attribute_dmg_bonus)
-                const bonusStatsInputs = [
-                    { name: 'basic_attack_dmg_bonus', label: 'Basic Attack DMG Bonus' },
-                    { name: 'heavy_attack_dmg_bonus', label: 'Heavy Attack DMG Bonus' },
-                    { name: 'resonance_skill_dmg_bonus', label: 'Resonance Skill DMG Bonus' },
-                    { name: 'resonance_lib_dmg_bonus', label: 'Resonance Liberation DMG Bonus' },
-                    { name: 'attribute_dmg_bonus', label: `${document.querySelector('p:has(input[name="attribute_dmg_bonus"])').textContent.split(':')[0]}`, type: 'attribute_dmg' }, // Dynamic label
-                    { name: 'healing_bonus', label: 'Healing Bonus' },
-                    { name: 'attribute_res', label: 'Attribute Resistance' }
-                ];
+                    });
+                }
 
-                bonusStatsInputs.forEach(stat => {
-                    const inputElement = document.querySelector(`input[name="${stat.name}"]`);
-                    if (inputElement) {
-                        // Hanya validasi jika diisi, dan jika diisi harus angka atau positif
-                        if (inputElement.value.trim() !== '' && isNaN(parseFloat(inputElement.value))) {
-                            inputElement.classList.add('input-error');
-                            const errorList = document.createElement('ul');
-                            errorList.classList.add('errorlist');
-                            const errorItem = document.createElement('li');
-                            errorItem.textContent = `${stat.label} harus berupa angka.`;
-                            errorList.appendChild(errorItem);
-                            inputElement.parentNode.appendChild(errorList);
-                            hasClientSideError = true;
-                        } else if (inputElement.value.trim() !== '' && parseFloat(inputElement.value) < 0) {
-                            inputElement.classList.add('input-error');
-                            const errorList = document.createElement('ul');
-                            errorList.classList.add('errorlist');
-                            const errorItem = document.createElement('li');
-                            errorItem.textContent = `${stat.label} harus angka positif.`;
-                            errorList.appendChild(errorItem);
-                            inputElement.parentNode.appendChild(errorList);
-                            hasClientSideError = true;
-                        }
-                    }
-                });
+                // Event Listeners
+                weaponSelect.addEventListener('change', handleSelectChange);
+                echoSelect.addEventListener('change', handleSelectChange);
+                sonataSelect.addEventListener('change', handleSelectChange);
+                buildForm.addEventListener('submit', validateForm);
 
-
-                const requiredSelects = [
-                    { id: 'weapon-select', label: 'Senjata' },
-                    { id: 'echo-select', label: 'Echo' },
-                    { id: 'sonata-select', label: 'Efek Sonata' }
-                ];
-                requiredSelects.forEach(selectInfo => {
-                    const selectElement = document.getElementById(selectInfo.id);
-                    if (selectElement && selectElement.value === '') {
-                        selectElement.classList.add('input-error');
-                        const errorList = document.createElement('ul');
-                        errorList.classList.add('errorlist');
-                        const errorItem = document.createElement('li');
-                        errorItem.textContent = `Mohon pilih ${selectInfo.label}.`;
-                        errorList.appendChild(errorItem);
-                        selectElement.parentNode.appendChild(errorList);
-                        hasClientSideError = true;
-                    }
-                });
-                
-                if (hasClientSideError) {
-                    event.preventDefault(); // Mencegah form disubmit jika ada error
+                // Initialize
+                if (user_input_stats_js.selected_weapon) {
+                    fetchDetails('weapon', user_input_stats_js.selected_weapon);
+                }
+                if (user_input_stats_js.selected_echo) {
+                    fetchDetails('echo', user_input_stats_js.selected_echo);
+                }
+                if (user_input_stats_js.selected_sonata && user_input_stats_js.selected_echo) {
+                    fetchDetails('sonata', user_input_stats_js.selected_sonata, user_input_stats_js.selected_echo);
                 }
             });
-            
-            // Inisialisasi user_input_stats_js dengan data dari Django
-            const user_input_stats_js = {
-                selected_weapon: "{{ user_input_stats.selected_weapon }}",
-                selected_echo: "{{ user_input_stats.selected_echo }}",
-                selected_sonata: "{{ user_input_stats.selected_sonata }}",
-                attribute_dmg_bonus: parseFloat("{{ user_input_stats.attribute_dmg_bonus|default:'0.0' }}") // Pastikan ini float
-            };
-
-            function handleSelectChange(event) {
-                const selectElement = event.target;
-                const itemType = selectElement.id.replace('-select', ''); 
-                const itemName = selectElement.value;
-
-                let selectedEchoForFilter = '';
-                if (itemType === 'sonata') {
-                    selectedEchoForFilter = echoSelect.value;
-                } else if (itemType === 'echo') {
-                    sonataSelect.value = ""; // Reset sonata jika echo berubah
-                    user_input_stats_js.selected_sonata = "";
-                    sonataIcon.src = "{% static 'assets/ikon/Sonata.png' %}";
-                    selectedEchoForFilter = itemName;
-                }
-
-                fetchDetails(itemType, itemName, selectedEchoForFilter);
-            }
-
-            weaponSelect.addEventListener('change', handleSelectChange);
-            echoSelect.addEventListener('change', handleSelectChange);
-            sonataSelect.addEventListener('change', handleSelectChange);
-
-            // Inisialisasi tampilan awal berdasarkan data yang sudah ada dari Django
-            // Ini akan memastikan icon dan detail muncul jika ada item yang sudah terpilih
-            if (user_input_stats_js.selected_weapon) {
-                fetchDetails('weapon', user_input_stats_js.selected_weapon);
-            }
-            if (user_input_stats_js.selected_echo) {
-                fetchDetails('echo', user_input_stats_js.selected_echo);
-            }
-            // Penting: Hanya panggil fetchDetails untuk sonata jika ada echo yang terpilih,
-            // karena sonata bergantung pada echo. Jika tidak ada echo, sonata sudah diisi default dari Django.
-            if (user_input_stats_js.selected_sonata && user_input_stats_js.selected_echo) {
-                fetchDetails('sonata', user_input_stats_js.selected_sonata, user_input_stats_js.selected_echo);
-            }
-        });
-    </script>
+        </script>
+    {% endblock extra_js %}
 {% endblock %}

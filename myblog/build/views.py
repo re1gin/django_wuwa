@@ -1,28 +1,22 @@
+import copy
+from datetime import date, datetime
 from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET, require_POST
+from django.core.exceptions import ObjectDoesNotExist
 
+from build.models import Build
 from resonators.models import Resonator
 from weapon.models import Weapon
 from echo.models import Sonata, Echo
+from combat.models import Attribute
 
-# --- Helper Functions ---
-def _get_sanitized_name_for_path(name):
-    """
-    Helper function to sanitize names for use in file paths, consistent with models.py.
-    """
-    sanitized_name = name.replace(' ', '_')
-    return sanitized_name
 
 def format_folder(name):
-    """
-    Formats a name into a folder-friendly string, consistent with _get_sanitized_resonator_name
-    in models.py, without changing the function name as requested.
-    """
-    return _get_sanitized_name_for_path(name)
-
+    return name.replace(' ', '_')
 
 def get_icon_chars_data(current_char_obj=None):
     icon_chars_data = []
@@ -110,7 +104,13 @@ def get_item_details_ajax(request):
     
 def character_builder_view(request, name):
     char_obj = get_object_or_404(Resonator, name__iexact=name)
-
+    
+    if request.method == 'GET':
+        if 'user_input_stats' in request.session:
+            del request.session['user_input_stats']
+        if 'character_name_for_comparison' in request.session:
+            del request.session['character_name_for_comparison']
+            
     # Images for the builder page (Constructed manually as requested)
     folder_name = format_folder(char_obj.name)
     image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
@@ -178,7 +178,7 @@ def character_builder_view(request, name):
         request.session['character_name_for_comparison'] = char_obj.name
 
         if 'NILAI BUILD' in request.POST:
-            return redirect('build:build_review', character_name=char_obj.name)
+            return redirect('build:review_build_page', name=char_obj.name)
         
         if user_input_stats['selected_weapon']:
             selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
@@ -218,43 +218,262 @@ def character_builder_view(request, name):
     }
     return render(request, 'landingpage/character_builder.html', context)
 
+# build/views.py
 
-def build_review_view(request, character_name):
-    resonator = get_object_or_404(Resonator, name__iexact=character_name)
-    
-    # Perbaikan: Gunakan 'resonator.name' bukan 'char_obj.name'
-    folder_name = format_folder(resonator.name) 
-    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
-    images = {"render": f"{image_path}Render.png"}
+# PERBAIKAN: Impor 'date' secara langsung dari modul 'datetime'
+from datetime import date # Perubahan di sini
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist 
 
+# Impor model yang ada di aplikasi 'build'
+from .models import Resonator, Weapon, Echo, Sonata, Build 
+# Impor model 'Attribute' dari aplikasi 'combat'
+from combat.models import Attribute 
+
+# Fungsi utility (asumsi ini ada di views.py atau diimpor)
+def format_folder(name):
+    """Memformat string untuk digunakan sebagai nama folder."""
+    return name.lower().replace(' ', '_').replace('.', '').replace("'", "")
+
+# Helper function untuk mendapatkan data terkait build_review_content.html
+def _get_build_review_data(request, resonator_obj):
+    """
+    Menyiapkan data konteks untuk bagian build review,
+    termasuk input pengguna dan objek gear yang dipilih.
+    """
     user_input_stats = request.session.get('user_input_stats', {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
         'healing_bonus': 0.0, 
-        'attribue_dmg_bonus': 0.0,
+        'attribute_dmg_bonus': 0.0, 
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
     })
 
-    selected_weapon_obj = None
+    selected_weapon_obj_session = None
     if user_input_stats['selected_weapon']:
-        selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+        selected_weapon_obj_session = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+    if not selected_weapon_obj_session:
+        selected_weapon_obj_session = type('Weapon', (object,), {
+            'weapon_name': user_input_stats.get('selected_weapon', 'No Weapon Selected'),
+            'icon_image': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'}),
+            'atk_value': 0.0, 'energy_regen_value': 0.0, 'crit_dmg_value': 0.0
+        })()
 
-    selected_echo_obj = None
+    selected_echo_obj_session = None
     if user_input_stats['selected_echo']:
-        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+        selected_echo_obj_session = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+    if not selected_echo_obj_session:
+        selected_echo_obj_session = type('Echo', (object,), {
+            'name': user_input_stats.get('selected_echo', 'No Echo Selected'),
+            'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
+            'cost': 0, 'main_stat': 'N/A'
+        })()
     
-    selected_sonata_obj = None
-    if user_input_stats['selected_sonata'] and selected_echo_obj:
-        selected_sonata_obj = selected_echo_obj.sonatas.filter(name=user_input_stats['selected_sonata']).first()
-    
-    context = {
-        "resonator": resonator,
-        "user_input_stats": user_input_stats,
-        "selected_weapon_obj": selected_weapon_obj,
-        "selected_echo_obj": selected_echo_obj,
-        "selected_sonata_obj": selected_sonata_obj,
-        "images": images, # Jangan lupa untuk mengirim 'images' ke konteks
+    selected_sonata_obj_session = None
+    if user_input_stats['selected_sonata'] and selected_echo_obj_session and selected_echo_obj_session.name != 'No Echo Selected':
+        selected_sonata_obj_session = selected_echo_obj_session.sonatas.filter(name=user_input_stats['selected_sonata']).first()
+    if not selected_sonata_obj_session:
+        selected_sonata_obj_session = type('Sonata', (object,), {
+            'name': user_input_stats.get('selected_sonata', 'No Sonata Selected'),
+            'icon_sonata': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'}),
+            'effect': 'N/A'
+        })()
+
+    return {
+        'user_input_stats': user_input_stats,
+        'selected_weapon_obj': selected_weapon_obj_session, # Ini adalah gear dari sesi/form
+        'selected_echo_obj': selected_echo_obj_session,
+        'selected_sonata_obj': selected_sonata_obj_session,
     }
-    return render(request, 'landingpage/resonator_build_review.html', context)
+
+
+# Helper function untuk mendapatkan data terkait difference_stat_content.html
+def _get_difference_stat_data(request, resonator_obj, build_review_data):
+    """
+    Menyiapkan data konteks untuk bagian difference stat.
+    Mengambil final stats dan gear dari Build terbaru di database.
+    Menerima 'build_review_data' untuk mengakses user_input_stats (dari sesi) untuk perbandingan.
+    """
+    user_input_stats_from_session = build_review_data['user_input_stats'] # Ini adalah input mentah dari sesi
+
+    # Mengambil Build instance melalui OneToOneField
+    build_instance = None
+    try:
+        build_instance = resonator_obj.ideal_build # Mengakses melalui related_name 'ideal_build'
+    except ObjectDoesNotExist:
+        pass
+
+    # Inisialisasi final_stats dan objek gear dari BUILD DATABASE
+    final_hp = 0.0
+    final_attack = 0.0
+    final_defense = 0.0
+    final_energy = 0.0
+    final_crit_rate = 0.0
+    final_crit_dmg = 0.0
+    final_attribute_dmg_bonus = 0.0 
+    final_healing_bonus = 0.0
+
+    selected_weapon_obj_db = None
+    selected_echo_obj_db = None
+    selected_sonata_obj_db = None
+
+    if build_instance:
+        final_hp = build_instance.hp
+        final_attack = build_instance.attack
+        final_defense = build_instance.defense
+        final_energy = build_instance.energy
+        final_crit_rate = build_instance.crit_rate
+        final_crit_dmg = build_instance.crit_dmg
+        # attribute_dmg_bonus dan healing_bonus tidak diambil dari build_instance
+        # sesuai permintaan Anda bahwa ini ditangani terpisah.
+
+        selected_weapon_obj_db = build_instance.ideal_weapon 
+        selected_echo_obj_db = build_instance.ideal_echo     
+        selected_sonata_obj_db = build_instance.ideal_sonata 
+    else:
+        selected_weapon_obj_db = type('Weapon', (object,), {
+            'weapon_name': 'No Saved Weapon',
+            'icon_image': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'}),
+            'atk_value': 0.0, 'energy_regen_value': 0.0, 'crit_dmg_value': 0.0
+        })()
+        selected_echo_obj_db = type('Echo', (object,), {
+            'name': 'No Saved Echo',
+            'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
+            'cost': 0, 'main_stat': 'N/A'
+        })()
+        selected_sonata_obj_db = type('Sonata', (object,), {
+            'name': 'No Saved Sonata',
+            'icon_sonata': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'}),
+            'effect': 'N/A'
+        })()
+
+
+    # Mengevaluasi Build: Radar Chart & Skor Performa
+    HP_NORM = 25000.0   
+    ATK_NORM = 3500.0   
+    DEF_NORM = 2000.0   
+    ENERGY_NORM = 300.0 
+    CRIT_RATE_NORM = 100.0
+    CRIT_DMG_NORM = 300.0
+
+    chart_labels = ['HP', 'ATK', 'DEF', 'Energy Regen', 'Crit Rate', 'Crit Dmg']
+    chart_data_normalized = [
+        min(100.0, (final_hp / HP_NORM) * 100.0),        
+        min(100.0, (final_attack / ATK_NORM) * 100.0),    
+        min(100.0, (final_defense / DEF_NORM) * 100.0),    
+        min(100.0, (final_energy / ENERGY_NORM) * 100.0),  
+        min(100.0, final_crit_rate),                       
+        min(100.0, final_crit_dmg),                         
+    ]
+    
+    resonator_rating = round(sum(chart_data_normalized) / len(chart_data_normalized) if chart_data_normalized else 0.0, 2)
+
+    # Perbedaan Status (Membandingkan Final Stats DARI DATABASE vs User Input Stats DARI SESI)
+    status_differences = []
+    
+    # build/views.py (di dalam fungsi _get_difference_stat_data)
+
+    def format_comparison_difference(db_val, session_val, label, is_percentage=False):
+        diff = db_val - session_val
+        symbol = ''
+        if diff > 0:
+            symbol = '&#9650;' # Panah atas
+            diff_str = f"+{diff:.1f}" if not is_percentage else f"+{diff:.1f}%"
+        elif diff < 0:
+            symbol = '&#9660;' # Panah bawah
+            diff_str = f"{diff:.1f}" if not is_percentage else f"{diff:.1f}%"
+        else:
+            symbol = '&#x2713;' # Tanda centang
+            diff_str = "Equal"
+
+        # --- PERBAIKAN DI SINI ---
+        # Tambahkan bagian pertama dari label sebagai 'label_unit'
+        label_parts = label.split(' ')
+        label_unit = label_parts[0] if label_parts else '' # Ambil bagian pertama
+        # --- AKHIR PERBAIKAN ---
+
+        return {'label': label, 'value': diff_str, 'symbol': symbol, 'label_unit': label_unit} # Tambahkan 'label_unit'
+
+    status_differences.append(format_comparison_difference(final_hp, user_input_stats_from_session['hp'], "HP"))
+    status_differences.append(format_comparison_difference(final_attack, user_input_stats_from_session['attack'], "ATK"))
+    status_differences.append(format_comparison_difference(final_defense, user_input_stats_from_session['defense'], "DEF"))
+    status_differences.append(format_comparison_difference(final_energy, user_input_stats_from_session['energy'], "Energy Regen", is_percentage=True))
+    status_differences.append(format_comparison_difference(final_crit_rate, user_input_stats_from_session['crit_rate'], "Crit Rate", is_percentage=True))
+    status_differences.append(format_comparison_difference(final_crit_dmg, user_input_stats_from_session['crit_dmg'], "Crit Dmg", is_percentage=True))
+    
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('basic_atk_dmg', 0.0), "Basic ATK DMG", is_percentage=True)) 
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('heavy_atk_dmg', 0.0), "Heavy ATK DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('resonance_skill_dmg', 0.0), "Skill DMG", is_percentage=True)) 
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('resonance_lib_dmg', 0.0), "Lib. DMG", is_percentage=True)) 
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('attribute_dmg_bonus', 0.0), "Attribute DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('healing_bonus', 0.0), "Healing Bonus", is_percentage=True))
+
+    # Skor Kategori (Dummy atau Terhitung)
+    category_scores = {
+        'Character': f"{resonator_obj.rarity}/5", 
+        'Weapon': '9/10', # Placeholder
+        'Echo': '8/10',   # Placeholder
+        'Skill': '10/10', # Placeholder
+    }
+
+    return {
+        'final_stats': { # Ini adalah stats dari Build yang tersimpan di DB
+            'hp': final_hp, 'attack': final_attack, 'defense': final_defense,
+            'energy': final_energy, 'crit_rate': final_crit_rate, 'crit_dmg': final_crit_dmg,
+            # Bonus DMG dasar, heavy, skill, liberation, attribute_dmg_bonus, healing_bonus TIDAK DIKEMBALIKAN DI SINI
+            # karena tidak diambil dari model Build
+        },
+        'performance_data_json': {
+            'labels': chart_labels,
+            'datasets': [{
+                'label': 'Resonator Performance',
+                'data': chart_data_normalized,
+                'backgroundColor': 'rgba(255, 99, 132, 0.2)',
+                'borderColor': 'rgba(255, 99, 132, 1)',
+                'borderWidth': 1
+            }]
+        },
+        'resonator_rating': resonator_rating,
+        'status_differences': status_differences,
+        'category_scores': category_scores,
+        'selected_weapon_obj_db': selected_weapon_obj_db, # Gear dari Build di DB
+        'selected_echo_obj_db': selected_echo_obj_db,
+        'selected_sonata_obj_db': selected_sonata_obj_db,
+    }
+
+
+# View utama untuk menampilkan halaman review build gabungan
+def build_review_page(request, name):
+    """
+    Menggabungkan data dari helper functions untuk merender halaman review build.
+    """
+    resonator = get_object_or_404(Resonator, name__iexact=name) 
+    
+    # URL gambar karakter
+    folder_name = format_folder(resonator.name) 
+    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
+    images = {"render": f"{image_path}Render.png"}
+
+    # Panggil helper functions untuk mendapatkan bagian-bagian data
+    build_review_data = _get_build_review_data(request, resonator)
+    difference_stat_data = _get_difference_stat_data(request, resonator, build_review_data) 
+
+    # Gabungkan semua data ke dalam satu konteks
+    context = {
+        'resonator': resonator,
+        'images': images, 
+        'user_name': request.user.username if request.user.is_authenticated else 'Guest',
+        # PERBAIKAN: Gunakan 'date.today()' karena kita sudah mengimpor 'date' secara langsung
+        'current_date': date.today().strftime("%d %B %Y"), 
+        'current_character_name': name, 
+    }
+    
+    # Update konteks dengan data dari helper functions
+    context.update(build_review_data)
+    context.update(difference_stat_data)
+
+    return render(request, 'landingpage/review.html', context)
