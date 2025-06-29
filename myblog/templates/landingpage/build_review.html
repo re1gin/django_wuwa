@@ -1,151 +1,154 @@
 {# templates/components/build_review_content.html #}
 {% load static %} {# Keep this if there are any static files within this component #}
+<div class="review">
+    <div class="container-review">
+        <div class="left-panel">
+            <header class="header-section">
+                <h1>Build Review : {{ resonator.name }}</h1>
+            </header>
 
-<div class="hero">
-    <div class="left-panel">
-        <header class="header-section">
-            <h1>Build Review : {{ resonator.name }}</h1>
-        </header>
+            <div class="left-stat-overview">
+                <div class="stat-item">
+                    <span class="stat-name">HP</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.hp|floatformat:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">ATK</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.attack|floatformat:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">DEF</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.defense|floatformat:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Energy Regen</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.energy|floatformat:"0" }}%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Critical Rate</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.crit_rate|floatformat:"0" }}%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Critical Damage</span>
+                    <span class="stat-value-placeholder">{{ user_input_stats.crit_dmg|floatformat:"0" }}%</span>
+                </div>
+            
+            </div>
 
-        <div class="stat-list">
-            <div class="stat-item">
-                <span class="stat-name">HP</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.hp|floatformat:"0" }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-name">ATK</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.attack|floatformat:"0" }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-name">DEF</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.defense|floatformat:"0" }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-name">Energy Regen</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.energy|floatformat:"0" }}%</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-name">Critical Rate</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.crit_rate|floatformat:"0" }}%</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-name">Critical Damage</span>
-                <span class="stat-value-placeholder">{{ user_input_stats.crit_dmg|floatformat:"0" }}%</span>
-            </div>
-        </div>
-
-        <div class="weapon">
-            <div class="weapon-details-container">
-                <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.name }} Icon" class="weapon-icon-large">
-                <div class="weapon-info">
-                    <div class="weapon-header-and-rank">
-                        <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
+            <div class="weapon">
+                <div class="weapon-details-container">
+                    <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.name }} Icon" class="weapon-icon-large">
+                    <div class="weapon-info">
+                        <div class="weapon-header-and-rank">
+                            <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
+                        </div>
+                        <div class="weapon-attributes">
+                            <p>ATK : <span class="attribute-value">{{ selected_weapon_obj.atk_value|default:"[Value]" }}</span></p>
+                            <p>Energy Regen : <span class="attribute-value">{{ selected_weapon_obj.energy_regen_value|default:"[Value]" }}</span></p>
+                            <span class="rank-label">Rank 1</span>
+                            <span class="rank-label">Level </span>
+                        </div>
                     </div>
-                    <div class="weapon-attributes">
-                        <p>ATK : <span class="attribute-value">{{ selected_weapon_obj.atk_value|default:"[Value]" }}</span></p>
-                        <p>Energy Regen : <span class="attribute-value">{{ selected_weapon_obj.energy_regen_value|default:"[Value]" }}</span></p>
-                        <span class="rank-label">Rank 1</span>
+                </div>
+            </div>
+
+            <div class="gear">
+                <div class="equipment-gear">
+                    <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
+                    <div class="gear-title">{{ selected_echo_obj.name }}</div>
+                </div>
+                <div class="equipment-gear">
+                    <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
+                    <div class="gear-title">{{ selected_sonata_obj.name }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="center-panel">
+            <div class="character-display">
+                <img src="{{ images.render }}" alt="{{ resonator.name }}" class="character-art" />
+                <div class="stars">
+                    {% for i in "x"|ljust:resonator.rarity %}
+                        <span>&#9733;</span>
+                    {% endfor %}
+                </div>
+                <h2 class="character-name">{{ resonator.name|upper }}</h2>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="right-stat-overview">
+                <div class="stat-box">
+                    <div class="stat-value">{{ resonator.level|default:"90"}}</div>
+                    <div class="stat-label">
+                        <div class="label">Level</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ resonator.resonance_chain|default:"0"}}</div>
+                    <div class="stat-label">
+                        <div class="label">R. Chain</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <img src="{{ resonator.attribute.icon_attribute.url }}" alt="{{ resonator.attribute.name }} Attribute Icon" class="icon-attribute">
+                    <div class="stat-label">
+                        <div class="label">{{ resonator.attribute.name }}</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="gear">
-            <div class="equipment-gear">
-                <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
-                <div class="gear-title">{{ selected_echo_obj.name }}</div>
+            <div class="damage-type-icons">
+                <img src="https://via.placeholder.com/30/808080/FFFFFF?text=⚔" alt="Basic Attack Icon" class="icon-small">
+                <img src="https://via.placeholder.com/30/808080/FFFFFF?text=✨" alt="Heavy Attack Icon" class="icon-small">
             </div>
-            <div class="equipment-gear">
-                <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
-                <div class="gear-title">{{ selected_sonata_obj.name }}</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="center-panel">
-        <div class="character-display">
-            <img src="{{ images.render }}" alt="{{ resonator.name }}" class="character-art" />
-            <div class="stars">
-                {% for i in "x"|ljust:resonator.rarity %}
-                    <span>&#9733;</span>
-                {% endfor %}
-            </div>
-            <h2 class="character-name">{{ resonator.name|upper }}</h2>
-        </div>
-    </div>
-
-    <div class="right-panel">
-        <div class="stats-overview">
-            <div class="stat-box">
-                <div class="stat-value">{{ resonator.level|default:"90"}}</div>
-                <div class="stat-label">
-                    <div class="label">Level</div>
+            <div class="damage-list">
+                <div class="damage-item">
+                    <span class="damage-name">Basic Attack Damage</span>
+                    <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg|floatformat:"1" }}%</span>
                 </div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">{{ resonator.resonance_chain|default:"0"}}</div>
-                <div class="stat-label">
-                    <div class="label">R. Chain</div>
+                <div class="damage-item">
+                    <span class="damage-name">Heavy Attack Damage</span>
+                    <span class="damage-value-placeholder">{{ user_input_stats.heavy_atk_dmg|floatformat:"1" }}%</span>
                 </div>
-            </div>
-            <div class="stat-box">
-                <img src="{{ resonator.attribute.icon_attribute.url }}" alt="{{ resonator.attribute.name }} Attribute Icon" class="icon-attribute">
-                <div class="stat-label">
-                    <div class="label">{{ resonator.attribute.name }}</div>
+                <div class="damage-item">
+                    <span class="damage-name">Resonance Skill Damage</span>
+                    <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg|floatformat:"1" }}%</span>
                 </div>
+                <div class="damage-item">
+                    <span class="damage-name">Resonance Liberation Damage</span>
+                    <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg|floatformat:"1" }}%</span>
+                </div>
+                <div class="damage-item">
+                    <span class="damage-name">Healing Bonus</span>
+                    <span class="damage-value-placeholder">{{ user_input_stats.healing_bonus|floatformat:"1" }}%</span>
+                </div>
+                {% if user_input_stats.aero_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Aero DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.aero_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
+                {% if user_input_stats.fusion_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Fusion DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.fusion_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
+                {% if user_input_stats.electro_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Electro DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.electro_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
+                {% if user_input_stats.havoc_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Havoc DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.havoc_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
+                {% if user_input_stats.spectro_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Spectro DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.spectro_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
             </div>
-        </div>
 
-        <div class="damage-type-icons">
-            <img src="https://via.placeholder.com/30/808080/FFFFFF?text=⚔" alt="Basic Attack Icon" class="icon-small">
-            <img src="https://via.placeholder.com/30/808080/FFFFFF?text=✨" alt="Heavy Attack Icon" class="icon-small">
-        </div>
-
-        <div class="damage-list">
-            <div class="damage-item">
-                <span class="damage-name">Basic Attack Damage</span>
-                <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg|floatformat:"1" }}%</span>
-            </div>
-            <div class="damage-item">
-                <span class="damage-name">Heavy Attack Damage</span>
-                <span class="damage-value-placeholder">{{ user_input_stats.heavy_atk_dmg|floatformat:"1" }}%</span>
-            </div>
-            <div class="damage-item">
-                <span class="damage-name">Resonance Skill Damage</span>
-                <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg|floatformat:"1" }}%</span>
-            </div>
-            <div class="damage-item">
-                <span class="damage-name">Resonance Liberation Damage</span>
-                <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg|floatformat:"1" }}%</span>
-            </div>
-            <div class="damage-item">
-                <span class="damage-name">Healing Bonus</span>
-                <span class="damage-value-placeholder">{{ user_input_stats.healing_bonus|floatformat:"1" }}%</span>
-            </div>
-            {% if user_input_stats.aero_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Aero DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.aero_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
-            {% if user_input_stats.fusion_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Fusion DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.fusion_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
-            {% if user_input_stats.electro_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Electro DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.electro_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
-            {% if user_input_stats.havoc_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Havoc DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.havoc_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
-            {% if user_input_stats.spectro_dmg_bonus > 0 %}<div class="damage-item"><span class="damage-name">Spectro DMG Bonus</span><span class="damage-value-placeholder">{{ user_input_stats.spectro_dmg_bonus|floatformat:"1" }}%</span></div>{% endif %}
-        </div>
-
-        <div class="skill-levels">
-            <div class="level-text">
-                <span>LV10</span><span>LV10</span><span>LV10</span><span>LV10</span><span>LV10</span>
-            </div>
-            <div class="skill-icons">
-                <img src="https://via.placeholder.com/40/808080/FFFFFF?text=A" alt="Basic Attack Skill Icon" class="skill-icon">
-                <img src="https://via.placeholder.com/40/808080/FFFFFF?text=S" alt="Resonance Skill Icon" class="skill-icon">
-                <img src="https://via.placeholder.com/40/808080/FFFFFF?text=F" alt="Forte Circuit Icon" class="skill-icon">
-                <img src="https://via.placeholder.com/40/808080/FFFFFF?text=L" alt="Resonance Liberation Icon" class="skill-icon">
-                <img src="https://via.placeholder.com/40/808080/FFFFFF?text=I" alt="Intro Skill Icon" class="skill-icon">
-            </div>
-            <div class="skill-names">
-                <span>Basic Attack</span>
-                <span>Resonance Skill</span>
-                <span>Forte Circuit</span>
-                <span>Resonance Liberation</span>
-                <span>Intro Skill</span>
+            <div class="skill-levels">
+                <div class="level-text">
+                    <span>LV10</span><span>LV10</span><span>LV10</span><span>LV10</span><span>LV10</span>
+                </div>
+                <div class="skill-icons">
+                    <img src="https://via.placeholder.com/40/808080/FFFFFF?text=A" alt="Basic Attack Skill Icon" class="skill-icon">
+                    <img src="https://via.placeholder.com/40/808080/FFFFFF?text=S" alt="Resonance Skill Icon" class="skill-icon">
+                    <img src="https://via.placeholder.com/40/808080/FFFFFF?text=F" alt="Forte Circuit Icon" class="skill-icon">
+                    <img src="https://via.placeholder.com/40/808080/FFFFFF?text=L" alt="Resonance Liberation Icon" class="skill-icon">
+                    <img src="https://via.placeholder.com/40/808080/FFFFFF?text=I" alt="Intro Skill Icon" class="skill-icon">
+                </div>
+                <div class="skill-names">
+                    <span>Basic Attack</span>
+                    <span>Resonance Skill</span>
+                    <span>Forte Circuit</span>
+                    <span>Resonance Liberation</span>
+                    <span>Intro Skill</span>
+                </div>
             </div>
         </div>
     </div>

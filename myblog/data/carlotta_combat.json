@@ -1,8 +1,8 @@
 {
   "Carlotta": {
     "final_attack": null,
-    "crit_rate": 0.05,
-    "crit_damage": 1.50,
+    "crit_rate": null,
+    "crit_damage": null,
     "glacio_damage_bonus": null,
     "damage_data": {
       "Basic Attack Stage 1": {"percentage": 0.5408, "hits": 1},

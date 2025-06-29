@@ -1,33 +1,20 @@
-/* combat/static/css/difference.css */
-body {
-    font-family: Arial, sans-serif;
+/* difference_stat.css - Scoped under .difference class */
+
+.difference {
     background-color: #1a1a1a;
-    color: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: auto; /* Allow scrolling if content overflows */
-}
-
-.container {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Left, Center, Right panels */
-    grid-template-rows: auto 1fr; /* Header and main content */
-    gap: 20px;
-    width: 90%;
-    max-width: 1200px;
-    background-color: #2a2a2a;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
 }
 
-.header-left {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
+.difference .header-left,
+.difference .header-right {
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.difference .header-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -35,9 +22,12 @@ body {
     gap: 5px;
 }
 
-.header-right {
-    grid-column: 3 / 4;
-    grid-row: 1 / 2;
+.difference .header-left p {
+    margin: 0;
+    color: #aaaaaa;
+}
+
+.difference .header-right {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -45,12 +35,13 @@ body {
     font-size: 0.9em;
 }
 
-.user-info p {
+.difference .user-info p {
     margin: 0;
     text-align: right;
+    color: #aaaaaa;
 }
 
-.user-avatar {
+.difference .user-avatar {
     width: 50px;
     height: 50px;
     background-color: #555;
@@ -58,165 +49,158 @@ body {
     border: 2px solid #e0e0e0;
 }
 
-.main-content {
-    grid-column: 1 / 4;
-    grid-row: 2 / 3;
+.difference .main-content {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Re-establish column structure for panels */
+    grid-template-columns: 1fr 2fr 1fr;
     gap: 20px;
 }
 
-.panel {
-    background-color: #3a3a3a;
+.difference .panel {
+    background-color: #2a2a2a;
     padding: 20px;
     border-radius: 8px;
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Left Panel */
-.left-panel {
+.difference .left-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-.character-display {
+.difference .character-display {
     margin-bottom: 20px;
 }
 
-.character-art {
+.difference .character-art {
     width: 100%;
-    max-width: 200px; /* Limit max width */
+    max-width: 200px;
     height: auto;
     border-radius: 8px;
     border: 2px solid #555;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
-.character-name {
-    margin-top: 10px;
-    color: #f0f0f0;
-    font-size: 1.5em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.stats-group {
+.difference .stats-group {
     width: 100%;
 }
 
-.stat-item {
+.difference .stat-item {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
-    border-bottom: 1px solid #4a4a4a;
+    border-bottom: 1px solid #3a3a3a;
     font-size: 1.1em;
 }
 
-.stat-item:last-child {
+.difference .stat-item:last-child {
     border-bottom: none;
 }
 
-.stat-icon {
+.difference .stat-icon {
     margin-right: 10px;
-    color: #ffcc00; /* Yellow for icons */
+    color: #ffcc00;
 }
 
-.stat-label {
+.difference .stat-label {
     flex-grow: 1;
     text-align: left;
+    color: #cccccc;
 }
 
-.stat-value {
+.difference .stat-value {
     font-weight: bold;
-    color: #00ff99; /* Green for values */
+    color: #00ff99;
 }
 
 /* Center Panel */
-.center-panel {
+.difference .center-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
 }
 
-.spider-chart-container {
+.difference .spider-chart-container {
     width: 100%;
     max-width: 400px;
-    height: 300px; /* Adjust height as needed */
+    height: 300px;
     margin-bottom: 20px;
 }
 
-.resonator-rating {
+.difference .resonator-rating {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.resonator-rating h3 {
+.difference .resonator-rating h3 {
     color: #f0f0f0;
     margin-bottom: 10px;
+    font-size: 1.2em;
 }
 
-.rating-score {
+.difference .rating-score {
     font-size: 2.5em;
     font-weight: bold;
-    color: #ff9900; /* Orange for rating */
+    color: #ff9900;
     text-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
 }
 
-.status-difference {
+.difference .status-difference {
     width: 100%;
     text-align: center;
 }
 
-.status-difference h3 {
+.difference .status-difference h3 {
     color: #f0f0f0;
     margin-bottom: 15px;
+    font-size: 1.2em;
 }
 
-.diff-icons {
+.difference .diff-icons {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.diff-item {
-    background-color: #4a4a4a;
+.difference .diff-item {
+    background-color: #3a3a3a;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
     min-width: 80px;
-    flex: 1 1 auto; /* Allow items to grow/shrink */
+    flex: 1 1 auto;
 }
 
-.diff-item p {
+.difference .diff-item p {
     margin: 0 0 5px 0;
     font-size: 0.85em;
     color: #ccc;
 }
 
-.diff-symbol {
+.difference .diff-symbol {
     font-size: 1.5em;
-    color: #66ccff; /* Blue for symbols */
+    color: #66ccff;
 }
 
 /* Right Panel */
-.right-panel {
+.difference .right-panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.category-scores {
+.difference .category-scores {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 }
 
-.score-box {
-    background-color: #4a4a4a;
+.difference .score-box {
+    background-color: #3a3a3a;
     padding: 15px;
     border-radius: 5px;
     text-align: center;
@@ -224,60 +208,60 @@ body {
     color: #ccc;
 }
 
-.score-box span {
+.difference .score-box span {
     display: block;
     font-size: 1.5em;
     font-weight: bold;
-    color: #ff0066; /* Pink for scores */
+    color: #ff0066;
     margin-top: 5px;
 }
 
-.bonus-list {
+.difference .bonus-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.bonus-item {
+.difference .bonus-item {
     display: flex;
     justify-content: space-between;
-    background-color: #4a4a4a;
+    background-color: #3a3a3a;
     padding: 8px 15px;
     border-radius: 5px;
     font-size: 1em;
 }
 
-.bonus-item .bonus-name {
-    color: #ccc;
-}
-
-.bonus-item .bonus-value {
-    font-weight: bold;
-    color: #00ff99; /* Green for bonus values */
-}
-
-.bonus-item.highlight {
-    background-color: #5a5a5a;
+.difference .bonus-item.highlight {
+    background-color: #4a4a4a;
     border: 1px solid #ff9900;
     box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
 }
 
-.gear-section {
+.difference .bonus-name {
+    color: #ccc;
+}
+
+.difference .bonus-value {
+    font-weight: bold;
+    color: #00ff99;
+}
+
+.difference .gear-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.gear-item {
+.difference .gear-item {
     display: flex;
     align-items: center;
-    background-color: #4a4a4a;
+    background-color: #3a3a3a;
     padding: 10px;
     border-radius: 5px;
     gap: 10px;
 }
 
-.gear-icon {
+.difference .gear-icon {
     width: 50px;
     height: 50px;
     border-radius: 5px;
@@ -285,23 +269,24 @@ body {
     border: 1px solid #666;
 }
 
-.gear-details {
+.difference .gear-details {
     flex-grow: 1;
 }
 
-.gear-name {
+.difference .gear-name {
     margin: 0;
     font-weight: bold;
     color: #f0f0f0;
+    font-size: 0.9em;
 }
 
-.gear-sub {
+.difference .gear-sub {
     margin: 0;
     font-size: 0.8em;
     color: #ccc;
 }
 
-.gear-rank {
+.difference .gear-rank {
     background-color: #ff9900;
     color: #3a3a3a;
     font-weight: bold;
@@ -310,12 +295,12 @@ body {
     font-size: 0.8em;
 }
 
-.skill-levels {
+.difference .skill-levels {
     margin-top: 20px;
     text-align: center;
 }
 
-.level-numbers {
+.difference .level-numbers {
     display: flex;
     justify-content: space-around;
     margin-bottom: 10px;
@@ -323,13 +308,13 @@ body {
     color: #ccc;
 }
 
-.skill-icons-row {
+.difference .skill-icons-row {
     display: flex;
     justify-content: space-around;
     gap: 5px;
 }
 
-.skill-icon {
+.difference .skill-icon {
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -340,55 +325,52 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-    .container {
+    .difference .main-content {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto 1fr;
-    }
-    .header-left {
-        grid-column: 1 / 2;
-        text-align: center;
-        align-items: center;
-    }
-    .header-right {
-        grid-column: 1 / 2;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-    .main-content {
-        grid-template-columns: 1fr;
-    }
-    .left-panel, .center-panel, .right-panel {
-        grid-column: 1 / 2;
     }
 }
 
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-        padding: 15px;
-    }
-    .header-left, .header-right {
+    .difference .header-left,
+    .difference .header-right {
         font-size: 0.8em;
     }
-    .user-avatar {
+    
+    .difference .user-avatar {
         width: 40px;
         height: 40px;
     }
-    .character-art {
+    
+    .difference .character-art {
         max-width: 150px;
     }
-    .stat-item, .bonus-item {
+    
+    .difference .stat-item,
+    .difference .bonus-item {
         font-size: 0.9em;
     }
-    .rating-score {
+    
+    .difference .rating-score {
         font-size: 2em;
     }
-    .diff-item {
+    
+    .difference .diff-item {
         min-width: 60px;
         padding: 8px;
     }
-    .skill-icon {
+    
+    .difference .skill-icon {
         width: 35px;
         height: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .difference .category-scores {
+        grid-template-columns: 1fr;
+    }
+    
+    .difference .diff-icons {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

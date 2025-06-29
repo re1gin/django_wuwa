@@ -1,0 +1,62 @@
+
+.container {
+    width: 100%; /* Scaled from 100% */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url("/static/assets/background/Background-7.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.review-page-container {
+    width: 100%;
+    margin: 20px auto; /* Pusatkan kontainer dengan margin vertikal */
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Menumpuk section yang disertakan secara vertikal */
+    gap: 30px; /* Jarak antara build_review.html dan difference_stat.html */
+}
+
+/* Pemisah visual antar section */
+.section-divider {
+    border: none; /* Hapus border default */
+    height: 1px; /* Garis tipis */
+    background-color: #444; /* Warna abu-abu gelap untuk garis */
+    margin: 20px 0; /* Jarak di atas dan di bawah pemisah */
+    width: 80%; /* Lebar garis lebih pendek dari full width untuk estetika */
+    align-self: center; /* Pusatkan garis dalam kontainer flex */
+}
+
+/* Penyesuaian Responsif */
+@media (max-width: 1250px) {
+    .review-page-container {
+        margin: 10px; /* Margin lebih kecil pada layar lebih kecil */
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .review-page-container {
+        margin: 5px;
+        padding: 10px;
+        border-radius: 5px; /* Sudut kurang melengkung pada layar kecil */
+        gap: 20px;
+    }
+    .section-divider {
+        margin: 15px 0;
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .review-page-container {
+        padding: 8px;
+        gap: 15px;
+    }
+    .section-divider {
+        margin: 10px 0;
+        width: 95%;
+    }
+}

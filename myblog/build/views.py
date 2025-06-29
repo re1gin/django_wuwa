@@ -1,18 +1,14 @@
-import copy
-from datetime import date, datetime
+from datetime import date
 from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET, require_POST
 from django.core.exceptions import ObjectDoesNotExist
 
-from build.models import Build
 from resonators.models import Resonator
 from weapon.models import Weapon
 from echo.models import Sonata, Echo
-from combat.models import Attribute
 
 
 def format_folder(name):
@@ -218,26 +214,6 @@ def character_builder_view(request, name):
     }
     return render(request, 'landingpage/character_builder.html', context)
 
-# build/views.py
-
-# PERBAIKAN: Impor 'date' secara langsung dari modul 'datetime'
-from datetime import date # Perubahan di sini
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist 
-
-# Impor model yang ada di aplikasi 'build'
-from .models import Resonator, Weapon, Echo, Sonata, Build 
-# Impor model 'Attribute' dari aplikasi 'combat'
-from combat.models import Attribute 
-
-# Fungsi utility (asumsi ini ada di views.py atau diimpor)
-def format_folder(name):
-    """Memformat string untuk digunakan sebagai nama folder."""
-    return name.lower().replace(' ', '_').replace('.', '').replace("'", "")
-
-# Helper function untuk mendapatkan data terkait build_review_content.html
 def _get_build_review_data(request, resonator_obj):
     """
     Menyiapkan data konteks untuk bagian build review,
@@ -290,17 +266,10 @@ def _get_build_review_data(request, resonator_obj):
         'selected_sonata_obj': selected_sonata_obj_session,
     }
 
-
-# Helper function untuk mendapatkan data terkait difference_stat_content.html
 def _get_difference_stat_data(request, resonator_obj, build_review_data):
-    """
-    Menyiapkan data konteks untuk bagian difference stat.
-    Mengambil final stats dan gear dari Build terbaru di database.
-    Menerima 'build_review_data' untuk mengakses user_input_stats (dari sesi) untuk perbandingan.
-    """
-    user_input_stats_from_session = build_review_data['user_input_stats'] # Ini adalah input mentah dari sesi
+    
+    user_input_stats_from_session = build_review_data['user_input_stats']
 
-    # Mengambil Build instance melalui OneToOneField
     build_instance = None
     try:
         build_instance = resonator_obj.ideal_build # Mengakses melalui related_name 'ideal_build'
@@ -445,8 +414,6 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
         'selected_sonata_obj_db': selected_sonata_obj_db,
     }
 
-
-# View utama untuk menampilkan halaman review build gabungan
 def build_review_page(request, name):
     """
     Menggabungkan data dari helper functions untuk merender halaman review build.
