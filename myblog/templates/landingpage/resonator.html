@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} {{ character.character }} {% endblock %}
+{% block title %} {{ page_title }} {% endblock %} {# Menggunakan page_title dari context #}
 
 {% block extra_head %}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
                     </div>
                     <div class="profile-item">
                         <div class="label">Title:</div>
-                        <div class="value">{{ character.title}}</div>
+                        <div class="value">{{ character.title }}</div> {# Sudah dikonversi di view #}
                     </div>
                     <div class="profile-item">
                         <div class="label">Birthday:</div>
@@ -52,21 +52,22 @@
                 </div>
 
                 <p class="description">
-                    {{ json_data.Quote|default:"No description available."|linebreaksbr }}
+                     {{ character.quote}} {# Menggunakan character.quote #}
                 </p>
             </div>
         </div>
 
         <div class="center">
-            <img src="{{ images.render }}" alt="{{ character.character }}" class="character-render" />
+            <img src="{{ images.render }}" alt="{{ character.name }}" class="character-render" /> {# Menggunakan character.name #}
 
             <div class="stars">
-                {% if character.rarity == '5' %}
+                {# Asumsikan rarity adalah integer dari JSON #}
+                {% if character.rarity == 5 %}
                     <img src="{% static 'assets/ikon/Star5.png' %}" alt="5 Stars" class="stars-img" />
-                {% elif character.rarity == '4' %}
+                {% elif character.rarity == 4 %}
                     <img src="{% static 'assets/ikon/logo/Star_4.png' %}" alt="4 Stars" class="stars-img" />
                 {% else %}
-                    <img src="{% static 'ikon/logo/Star_default.png' %}" alt="Stars" class="stars-img" />
+                    <img src="{% static 'assets/ikon/logo/Star_default.png' %}" alt="Stars" class="stars-img" />
                 {% endif %}
             </div>
         </div>
@@ -80,7 +81,7 @@
 
                 <div class="tags">
                     <span class="tag yellow">{{ character.attribute }}</span>
-                    <span class="tag gray">{{ character.weapon }}</span>
+                    <span class="tag gray">{{ character.weapon }}</span> {# Menggunakan 'weapon' yang diambil dari 'weapon_type' #}
                 </div>
 
                 <div class="block">
@@ -88,17 +89,21 @@
                     <div class="stat">
                         <p>HP: {{ character.hp }}</p>
                         <p>ATK: {{ character.atk }}</p>
-                        <p>DEF: {{ character.defense }}</p>
+                        <p>DEF: {{ character.def }}</p> {# Menggunakan character.def #}
                         <p>ENERGY REGEN: {{ character.energy }}</p>
-                        <p>CRITICAL RATE: {{ character.crit_rate }}%</p>
-                        <p>CRITICAL DAMAGE: {{ character.crit_dmg }}%</p>
+                        <p>CRITICAL RATE: {{ character.crit_rate }}%</p> {# Menggunakan crit_rate dari JSON #}
+                        <p>CRITICAL DAMAGE: {{ character.crit_dmg }}%</p> {# Menggunakan crit_dmg dari JSON #}
                     </div>
                 </div>
 
                 <div class="block">
                     <span class="title-block">ROLE</span>
                     <div class="role-tags">
-                        <span>{{ character.role }}</span>
+                        {% for single_role in character.role %}
+                            <span class="role">{{ single_role }}</span>
+                        {% empty %}
+                            <span class="role">N/A</span>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

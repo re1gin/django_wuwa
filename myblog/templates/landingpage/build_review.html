@@ -98,9 +98,19 @@
                 </div>
             </div>
 
-            <div class="damage-type-icons">
-                <img src="https://via.placeholder.com/30/808080/FFFFFF?text=⚔" alt="Basic Attack Icon" class="icon-small">
-                <img src="https://via.placeholder.com/30/808080/FFFFFF?text=✨" alt="Heavy Attack Icon" class="icon-small">
+            <div class="role-hover-container">
+                {% for role in resonator.role.all %}
+                    <div class="role-hover-item">
+                        {% if role.icon_role %}
+                            <img src="{{ role.icon_role.url }}" class="role-icon" alt="{{ role.name }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/30/808080/FFFFFF?text=?" class="role-icon" alt="{{ role.name }}">
+                        {% endif %}
+                        <span class="role-hover-name">{{ role.name }}</span>
+                    </div>
+                {% empty %}
+                    <p class="no-roles">No roles assigned</p>
+                {% endfor %}
             </div>
 
             <div class="damage-list">

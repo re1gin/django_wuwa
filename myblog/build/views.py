@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
+from weapon.views import get_weapon_for_template
 from resonators.models import Resonator
 from weapon.models import Weapon
 from echo.models import Sonata, Echo
@@ -215,10 +216,11 @@ def character_builder_view(request, name):
     return render(request, 'landingpage/character_builder.html', context)
 
 def _get_build_review_data(request, resonator_obj):
-   
     user_input_stats = request.session.get('user_input_stats', {
-        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 
+        'crit_rate': 0.0, 'crit_dmg': 0.0,
+        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 
+        'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
         'healing_bonus': 0.0, 
         'attribute_dmg_bonus': 0.0, 
         'selected_weapon': '',
@@ -226,31 +228,63 @@ def _get_build_review_data(request, resonator_obj):
         'selected_sonata': '',
     })
 
-    selected_weapon_obj_session = None
-    if user_input_stats['selected_weapon']:
-        selected_weapon_obj_session = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
-    if not selected_weapon_obj_session:
-        selected_weapon_obj_session = type('Weapon', (object,), {
-            'weapon_name': user_input_stats.get('selected_weapon', 'No Weapon Selected'),
-            'icon_image': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'}),
-            'atk_value': 0.0, 'energy_regen_value': 0.0, 'crit_dmg_value': 0.0
-        })()
+    # 1. Handle Weapon Selection
+    selected_weapon_name = user_input_stats['selected_weapon']
+    selected_weapon_obj = None
+    
+    if selected_weapon_name:
+        # Cari di database terlebih dahulu
+        selected_weapon_obj = Weapon.objects.filter(
+            weapon_name__iexact=selected_weapon_name
+        ).first()
+        
+        # Jika tidak ada di database, cari di JSON
+        if not selected_weapon_obj:
+            try:
+                weapon_data = get_weapon_for_template(selected_weapon_name)
+                selected_weapon_obj = type('Weapon', (object,), {
+                    'weapon_name': weapon_data['name'],
+                    'weapon_data': weapon_data,
+                    'icon_image': type('ImageFile', (object,), {
+                        'url': weapon_data['icon_url']
+                    }),
+                    'atk_value': weapon_data['base_atk'],
+                    'energy_regen_value': weapon_data['secondary_value'] 
+                        if weapon_data['secondary_stat'] == 'Energy Regen' else '0%'
+                })()
+            except Http404:
+                # Fallback jika tidak ditemukan
+                selected_weapon_obj = type('Weapon', (object,), {
+                    'weapon_name': selected_weapon_name,
+                    'weapon_data': {},
+                    'icon_image': type('ImageFile', (object,), {
+                        'url': '/static/weapons/images/placeholder.png'
+                    }),
+                    'atk_value': 0,
+                    'energy_regen_value': '0%'
+                })()
 
-    selected_echo_obj_session = None
+    # 2. Handle Echo Selection (tetap seperti sebelumnya)
+    selected_echo_obj = None
     if user_input_stats['selected_echo']:
-        selected_echo_obj_session = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-    if not selected_echo_obj_session:
-        selected_echo_obj_session = type('Echo', (object,), {
+        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+    if not selected_echo_obj:
+        selected_echo_obj = type('Echo', (object,), {
             'name': user_input_stats.get('selected_echo', 'No Echo Selected'),
             'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
             'cost': 0, 'main_stat': 'N/A'
         })()
-    
-    selected_sonata_obj_session = None
-    if user_input_stats['selected_sonata'] and selected_echo_obj_session and selected_echo_obj_session.name != 'No Echo Selected':
-        selected_sonata_obj_session = selected_echo_obj_session.sonatas.filter(name=user_input_stats['selected_sonata']).first()
-    if not selected_sonata_obj_session:
-        selected_sonata_obj_session = type('Sonata', (object,), {
+
+    # 3. Handle Sonata Selection (tetap seperti sebelumnya)
+    selected_sonata_obj = None
+    if (user_input_stats['selected_sonata'] and 
+        selected_echo_obj and 
+        selected_echo_obj.name != 'No Echo Selected'):
+        selected_sonata_obj = selected_echo_obj.sonatas.filter(
+            name=user_input_stats['selected_sonata']
+        ).first()
+    if not selected_sonata_obj:
+        selected_sonata_obj = type('Sonata', (object,), {
             'name': user_input_stats.get('selected_sonata', 'No Sonata Selected'),
             'icon_sonata': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'}),
             'effect': 'N/A'
@@ -258,9 +292,9 @@ def _get_build_review_data(request, resonator_obj):
 
     return {
         'user_input_stats': user_input_stats,
-        'selected_weapon_obj': selected_weapon_obj_session, # Ini adalah gear dari sesi/form
-        'selected_echo_obj': selected_echo_obj_session,
-        'selected_sonata_obj': selected_sonata_obj_session,
+        'selected_weapon_obj': selected_weapon_obj,  # Sudah termasuk data dari JSON jika ada
+        'selected_echo_obj': selected_echo_obj,
+        'selected_sonata_obj': selected_sonata_obj,
     }
 
 def _get_difference_stat_data(request, resonator_obj, build_review_data):
@@ -411,6 +445,9 @@ def build_review_page(request, name):
     image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
     images = {"render": f"{image_path}Render.png"}
 
+    # Get roles with their icons
+    roles_with_icons = resonator.role.all().values('name', 'icon_role')
+
     # Panggil helper functions untuk mendapatkan bagian-bagian data
     build_review_data = _get_build_review_data(request, resonator)
     difference_stat_data = _get_difference_stat_data(request, resonator, build_review_data) 
@@ -420,9 +457,9 @@ def build_review_page(request, name):
         'resonator': resonator,
         'images': images, 
         'user_name': request.user.username if request.user.is_authenticated else 'Guest',
-        # PERBAIKAN: Gunakan 'date.today()' karena kita sudah mengimpor 'date' secara langsung
         'current_date': date.today().strftime("%d %B %Y"), 
-        'current_character_name': name, 
+        'current_character_name': name,
+        'roles': roles_with_icons,  # Tambahkan ini
     }
     
     # Update konteks dengan data dari helper functions

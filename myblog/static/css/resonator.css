@@ -259,21 +259,28 @@
     }
 
     .role-tags {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 7px;
-    padding: 11px 0px;
-    border-top: 1px solid #ffffff95;
-    border-bottom: 1px solid #ffffff95;
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        max-height: 60px; /* Batasi tinggi konten */
+        overflow-y: auto; /* Scroll vertikal jika konten melebihi batas */
+        flex-direction: row;
+        gap: 10px;
+        padding: 11px 0px;
+        border-top: 1px solid #ffffff95;
+        border-bottom: 1px solid #ffffff95;
+        scrollbar-width: none; /* Hilangkan scrollbar di Firefox */
     }
 
-    .role-tags span {
-    background-color: #aeaeae;
-    font-size: 11px;
-    color: #000000;
-    padding: 4px 7px;
+    .role-tags::-webkit-scrollbar {
+        display: none; /* Hilangkan scrollbar di Chrome/Safari */
+    }
+
+    .role {
+        background-color: #aeaeae;
+        font-size: 11px;
+        color: #000000;
+        padding: 4px 4px;
     }
 
     .btn-grup {
