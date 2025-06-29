@@ -215,10 +215,7 @@ def character_builder_view(request, name):
     return render(request, 'landingpage/character_builder.html', context)
 
 def _get_build_review_data(request, resonator_obj):
-    """
-    Menyiapkan data konteks untuk bagian build review,
-    termasuk input pengguna dan objek gear yang dipilih.
-    """
+   
     user_input_stats = request.session.get('user_input_stats', {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
@@ -297,8 +294,6 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
         final_energy = build_instance.energy
         final_crit_rate = build_instance.crit_rate
         final_crit_dmg = build_instance.crit_dmg
-        # attribute_dmg_bonus dan healing_bonus tidak diambil dari build_instance
-        # sesuai permintaan Anda bahwa ini ditangani terpisah.
 
         selected_weapon_obj_db = build_instance.ideal_weapon 
         selected_echo_obj_db = build_instance.ideal_echo     
@@ -322,12 +317,12 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
 
 
     # Mengevaluasi Build: Radar Chart & Skor Performa
-    HP_NORM = 25000.0   
-    ATK_NORM = 3500.0   
-    DEF_NORM = 2000.0   
+    HP_NORM = 50000.0   
+    ATK_NORM = 4000.0   
+    DEF_NORM = 4000.0   
     ENERGY_NORM = 300.0 
     CRIT_RATE_NORM = 100.0
-    CRIT_DMG_NORM = 300.0
+    CRIT_DMG_NORM = 350.0
 
     chart_labels = ['HP', 'ATK', 'DEF', 'Energy Regen', 'Crit Rate', 'Crit Dmg']
     chart_data_normalized = [
@@ -340,11 +335,8 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
     ]
     
     resonator_rating = round(sum(chart_data_normalized) / len(chart_data_normalized) if chart_data_normalized else 0.0, 2)
-
-    # Perbedaan Status (Membandingkan Final Stats DARI DATABASE vs User Input Stats DARI SESI)
-    status_differences = []
     
-    # build/views.py (di dalam fungsi _get_difference_stat_data)
+    status_differences = []
 
     def format_comparison_difference(db_val, session_val, label, is_percentage=False):
         diff = db_val - session_val
@@ -359,13 +351,10 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
             symbol = '&#x2713;' # Tanda centang
             diff_str = "Equal"
 
-        # --- PERBAIKAN DI SINI ---
-        # Tambahkan bagian pertama dari label sebagai 'label_unit'
         label_parts = label.split(' ')
-        label_unit = label_parts[0] if label_parts else '' # Ambil bagian pertama
-        # --- AKHIR PERBAIKAN ---
+        label_unit = label_parts[0] if label_parts else ''
 
-        return {'label': label, 'value': diff_str, 'symbol': symbol, 'label_unit': label_unit} # Tambahkan 'label_unit'
+        return {'label': label, 'value': diff_str, 'symbol': symbol, 'label_unit': label_unit}
 
     status_differences.append(format_comparison_difference(final_hp, user_input_stats_from_session['hp'], "HP"))
     status_differences.append(format_comparison_difference(final_attack, user_input_stats_from_session['attack'], "ATK"))
@@ -415,9 +404,6 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
     }
 
 def build_review_page(request, name):
-    """
-    Menggabungkan data dari helper functions untuk merender halaman review build.
-    """
     resonator = get_object_or_404(Resonator, name__iexact=name) 
     
     # URL gambar karakter
