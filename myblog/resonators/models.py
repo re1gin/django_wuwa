@@ -11,7 +11,7 @@ class Resonator(models.Model):
     weapon_type = models.ForeignKey(WeaponType, on_delete=models.CASCADE, null=True, blank=True)
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True, blank=True)
     birthplace = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
-    role = models.ManyToManyField(Role, null=True, blank=True)
+    role = models.ManyToManyField(Role, blank=True)
 
     
     def __str__(self):

@@ -18,10 +18,28 @@ class WeaponType(models.Model):
 
 class Weapon(models.Model):
     weapon_name = models.CharField(max_length=100, unique=True)
-    rarity = models.IntegerField()
+    rarity = models.IntegerField(default=1)
     weapon_type = models.ForeignKey(WeaponType, on_delete=models.SET_NULL, null=True, blank=True)
+    base_atk = models.IntegerField(default=0) 
+    SECONDARY_STAT_CHOICES = [
+        ('ATK%', 'ATK%'),
+        ('DEF%', 'DEF%'),
+        ('HP%', 'HP%'),
+        ('Energy Regen', 'Energy Regen'),
+        ('Crit Rate', 'Crit Rate'),
+        ('Crit DMG', 'Crit DMG'),
+    ]
+    secondary_stat = models.CharField(
+        max_length=50,
+        choices=SECONDARY_STAT_CHOICES,
+        default='ATK%'
+    )
+    secondary_value = models.CharField(max_length=20, default='0')
+    passive_skill_description = models.TextField(null=True, blank=True)
+    passive_skill_description = models.TextField(null=True, blank=True)
     
-    icon_image = models.ImageField(upload_to=weapon_icon_upload_path, blank=True, null=True)
+    # Image field
+    icon_image = models.ImageField(upload_to='weapons/icons/', blank=True, null=True)
 
     def __str__(self):
         return self.weapon_name

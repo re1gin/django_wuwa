@@ -1,52 +1,52 @@
-weapon_name,rarity,weapon_type,icon_image
-Abyss Surges,5,Gauntlets,weapon/Abyss_Surges.png
-Ages of Harvest,5,Broadblade,weapon/Ages_of_Harvest.png
-Amity Accord,4,Gauntlets,weapon/Amity_Accord.png
-Augment,4,Rectifier,weapon/Augment.png
-Autumntrace,4,Broadblade,weapon/Autumntrace.png
-Blazing Brilliance,5,Sword,weapon/Blazing_Brilliance.png
-Broadblade#41,4,Broadblade,weapon/Broadblade#41.png
-Cadenza,4,Pistols,weapon/Cadenza.png
-Call of the Abyss,4,Rectifier,weapon/Call_of_the_Abyss.png
-Celestial Spiral,4,Gauntlet,weapon/Celestial_Spiral.png
-Comet Flare,4,Rectifier,weapon/Comet_Flare.png
-Commando of Conviction,4,Sword,weapon/Commando_of_Conviction.png
-Cosmic Ripples,5,Rectifier,weapon/Cosmic_Ripples.png
-Dauntless Evernight,4,Broadblade,weapon/Dauntless_Evernight.png
-Discord,4,Broadblade,weapon/Discord.png
-Emerald of Genesis,5,Sword,weapon/Emerald_of_Genesis.png
-Endless Collapse,4,Rectifier,weapon/Endless_Collapse.png
-Fables of Wisdom,4,Rectifier,weapon/Fables_of_Wisdom.png
-Fusion Accretion,4,Rectifier,weapon/Fusion_Accretion.png
-Gauntlets#21D,4,Gauntlet,weapon/Gauntlets#21D.png
-Helios Cleaver,4,Broadblade,weapon/Helios_Cleaver.png
-Hollow Mirage,4,Gauntlets,weapon/Hollow_Mirage.png
-Jinzhou Keeper,4,Rectifier,weapon/Jinzhou_Keeper.png
-Legend of Drunken Hero,4,Gauntlets,weapon/Legend_of_Drunken_Hero.png
-Lumingloss,4,Sword,weapon/Lumingloss.png
-Lunar Cutter,4,Sword,weapon/Lunar_Cutter.png
-Lustrous Razor,5,Broadblade,weapon/Lustrous_Razor.png
-Marcato,4,Gauntlets,weapon/Marcato.png
-Meditations on Mercy,4,Broadblade,weapon/Meditations_on_Mercy.png
-Novaburst,4,Pistols,weapon/Novaburst.png
-Overture,4,Sword,weapon/Overture.png
-Pistols#26,4,Pistols,weapon/Pistols#26.png
-Rectifier#25,4,Rectifier,weapon/Rectifier#25.png
-Red Spring,5,Sword,weapon/Red_Spring.png
-Relativistic Jet,4,Pistols,weapon/Relativistic_Jet.png
-Rime-Draped Sprouts,5,Rectifier,weapon/Rime-Draped_Sprouts.png
-Romance in Farewell,4,Pistols,weapon/Romance_in_Farewell.png
-Static Mist,5,Pistols,weapon/Static_Mist.png
-Stellar Symphony,5,Rectifier,weapon/Stellar_Symphony.png
-Stonard,4,Gauntlets,weapon/Stonard.png
-Stringmaster,5,Rectifier,weapon/Stringmaster.png
-Sword#18,4,Sword,weapon/Sword#18.png
-The Last Dance,5,Pistols,weapon/The_Last_Dance.png
-Thunderbolt,4,Pistols,weapon/Thunderbolt.png
-Tragicomedy,5,Gauntlets,weapon/Tragicomedy.png
-Undying Flame,4,Pistols,weapon/Undying_Flame.png
-Variation,4,Rectifier,weapon/Variation.png
-Verdant Summit,5,Broadblade,weapon/Verdant_Summit.png
-Verity's Handle,5,Gauntlets,weapon/Verity's_Handle.png
-Waltz in Masquerade,4,Rectifier,weapon/Waltz_in_Masquerade.png
-Waning Redshift,4,Broadblade,weapon/Waning_Redshift.png
+weapon_name,rarity,weapon_type,base_atk,secondary_stat,secondary_value,passive_skill_description,icon_image
+Abyss Surges,5,Gauntlets,587,ATK%,36.40%,"Meningkatkan Energy Regen sebesar 12.8%. Saat mengenai target dengan Resonance Skill, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 8 d.",weapon/Abyss_Surges.png
+Ages of Harvest,5,Broadblade,587,Crit Rate,24.30%,"Memberikan 12% Bonus DMG Atribut. Menggunakan Skill Intro memberikan Ageless Marking kepada equipper, yang memberikan 24% Bonus DMG Skill Resonance selama 12 d. Menggunakan Skill Resonance memberikan Ethereal Endowment kepada equipper, yang memberikan 24% Bonus DMG Skill Resonance selama 12 d.",weapon/Ages_of_Harvest.png
+Amity Accord,4,Gauntlets,337,DEF%,61.50%,"Saat Intro Skill digunakan, meningkatkan Resonance Liberation DMG Bonus sebesar 40% selama 15 detik.",weapon/Amity_Accord.png
+Augment,4,Rectifier,412,Crit Rate,20.20%,"Menggunakan Resonance Liberation meningkatkan ATK sebesar 15% selama 15 detik.",weapon/Augment.png
+Autumntrace,4,Broadblade,412,Crit Rate,20.20%,"Meningkatkan ATK sebesar 4% saat memberikan Basic atau Heavy Attack DMG, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik.",weapon/Autumntrace.png
+Blazing Brilliance,5,Sword,587,ATK%,36.40%,"Meningkatkan ATK sebesar 12%. Mendapatkan 1 stack Searing Feather saat memberikan damage (maks 1 stack setiap 0.5 detik) dan 5 stack saat menggunakan Resonance Skill. Setiap stack memberikan 4% tambahan Resonance Skill DMG Bonus, hingga 14 stack. Semua stack akan hilang dalam 12 detik setelah mencapai jumlah maksimum.",weapon/Blazing_Brilliance.png
+Broadblade#41,4,Broadblade,412,Energy Regen,32.30%,"Saat HP Resonator di atas 80%, meningkatkan ATK sebesar 12%. Saat HP di bawah 40%, memberikan penyembuhan sebesar 5% saat memberikan Basic atau Heavy Attack DMG. Efek ini dapat dipicu setiap 8 detik.",weapon/Broadblade#41.png
+Cadenza,4,Pistols,412,Energy Regen,51.80%,"Saat Resonance Skill digunakan, memulihkan 16 Concerto Energy. Efek ini dapat dipicu setiap 20 detik.",weapon/Cadenza.png
+Call of the Abyss,4,Rectifier,338,Energy Regen,51.80%,"Setelah menggunakan Resonance Skill, meningkatkan ATK sebesar 10% selama 16 detik dan memberikan 6 Resonance Energy.",weapon/Call_of_the_Abyss.png
+Celestial Spiral,4,Gauntlet,462,ATK%,18.20%,"Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik.",weapon/Celestial_Spiral.png
+Comet Flare,4,Rectifier,412,HP%,30.30%,"Saat mengenai target dengan Basic atau Heavy Attack, meningkatkan Healing Bonus sebesar 3%, dapat ditumpuk hingga 3 kali. Efek berlangsung selama 8 detik dan dapat dipicu setiap 0.6 detik.",weapon/Comet_Flare.png
+Commando of Conviction,4,Sword,412,ATK%,30.30%,"Saat menggunakan Intro Skill, meningkatkan ATK sebesar 15% selama 15 detik.",weapon/Commando_of_Conviction.png
+Cosmic Ripples,5,Rectifier,500,ATK%,54.00%,"Meningkatkan Energy Regen sebesar 12.8%. Saat memberikan Basic Attack DMG, meningkatkan Basic Attack DMG Bonus sebesar 3.2%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 8 detik dan dapat dipicu setiap 0.5 detik.",weapon/Cosmic_Ripples.png
+Dauntless Evernight,4,Broadblade,337,DEF%,61.60%,"Saat menggunakan Intro Skill, meningkatkan ATK sebesar 8% dan DEF sebesar 15% selama 15 detik.",weapon/Dauntless_Evernight.png
+Discord,4,Broadblade,462,Energy Regen,51.80%,"Saat mengenai musuh dengan Basic atau Heavy Attack, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik.",weapon/Discord.png
+Emerald of Genesis,5,Sword,587,Crit Rate,24.30%,"Meningkatkan Energy Regen sebesar 12.8%. Saat menggunakan Resonance Skill, meningkatkan ATK sebesar 6%, dapat ditumpuk hingga 2 kali. Efek berlangsung selama 10 detik.",weapon/Emerald_of_Genesis.png
+Endless Collapse,4,Rectifier,462,ATK%,18.20%,"Saat menggunakan Resonance Liberation, meningkatkan Healing Bonus sebesar 16% selama 15 detik.",weapon/Endless_Collapse.png
+Fables of Wisdom,4,Rectifier,462,ATK%,18.20%,"Saat mengenai musuh dengan Basic atau Heavy Attack, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 5 kali. Efek berlangsung selama 7 detik dan dapat dipicu setiap 1 detik.",weapon/Fables_of_Wisdom.png
+Fusion Accretion,4,Rectifier,462,ATK%,18.20%,"Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik.",weapon/Fusion_Accretion.png
+Gauntlets#21D,4,Gauntlet,387,Energy Regen,38.80%,"Saat Resonator melakukan dash atau dodge, meningkatkan ATK sebesar 16% dan Counter Attack DMG sebesar 100% selama 8 detik. Saat melakukan Counter Attack, memulihkan HP sebesar 10%. Efek ini dapat dipicu setiap 6 detik.",weapon/Gauntlets#21D.png
+Helios Cleaver,4,Broadblade,412,ATK%,30.30%,"Dalam 12 detik setelah Skill Resonansi digunakan, ATK meningkat sebesar 3% setiap 2 detik, dapat ditumpuk hingga 4 kali. Efek ini dapat dipicu 1 kali setiap 12 detik. Saat jumlah tumpukan mencapai 4, semua tumpukan akan diatur ulang dalam 6 detik.",weapon/Helios_Cleaver.png
+Hollow Mirage,4,Gauntlets,412,ATK%,30.30%,"Saat Resonance Liberation dilepaskan, memberikan 3 tumpukan Iron Armor. Setiap tumpukan meningkatkan ATK dan DEF sebesar 3% , menumpuk hingga 3 kali. Saat Resonator menerima kerusakan, mengurangi jumlah tumpukan sebanyak 1.",weapon/Hollow_Mirage.png
+Jinzhou Keeper,4,Rectifier,387,ATK%,36.40%,"Saat Skill Intro dilepaskan, tingkatkan ATK penggunanya sebanyak 8% dan HP sebanyak 10% , berlangsung selama 15 d.",weapon/Jinzhou_Keeper.png
+Legend of Drunken Hero,4,Gauntlets,462,ATK%,18.20%,"Memberikan DMG ke musuh dengan Status Negatif meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu sekali setiap detik, dapat ditumpuk hingga 4 kali.",weapon/Legend_of_Drunken_Hero.png
+Lumingloss,4,Sword,388,ATK%,36.45%,"Saat Resonance Skill digunakan, meningkatkan Basic dan Heavy Attack DMG sebesar 20% selama 10 detik. Efek ini dapat dipicu sekali setiap detik.",weapon/Lumingloss.png
+Lunar Cutter,4,Sword,412,ATK%,30.38%,"Resonator yang dilengkapi memperoleh 6 tumpukan Oath saat memasuki medan perang. Setiap tumpukan meningkatkan ATK sebesar 2% , hingga 6 tumpukan. Efek ini dapat dipicu 1 kali setiap 12 detik. Oath berkurang 1 tumpukan setiap 2 detik. Resonator yang dilengkapi memperoleh 6 tumpukan Oath tambahan saat mengalahkan musuh.",weapon/Lunar_Cutter.png
+Lustrous Razor,5,Broadblade,587,ATK%,36.40%,"Meningkatkan regenerasi energi sebesar 12.8%. Setelah menggunakan Resonance Skill, meningkatkan DMG Resonance Liberation sebesar 7%, dapat ditumpuk hingga 3 kali.",weapon/Lustrous_Razor.png
+Marcato,4,Gauntlets,338,Energy Regen,51.84%,"Saat Skill Resonansi dilepaskan, memulihkan Energi Konserto sebesar 8. Efek ini dapat dipicu 1 kali setiap 20 detik.",weapon/Marcato.png
+Meditations on Mercy,4,Broadblade,462,ATK%,18.20%,"Memberikan DMG ke musuh dengan Status Negatif meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu sekali setiap detik, dapat ditumpuk hingga 4 kali.",weapon/Meditations_on_Mercy.png
+Novaburst,4,Pistols,412,ATK%,30.30%,"Saat Resonator melakukan dash atau dodge, meningkatkan ATK sebesar 4%, dapat ditumpuk hingga 3 kali. Efek ini berlangsung selama 8 detik.",weapon/Novaburst.png
+Overture,4,Sword,337,Energy Regen,51.80%,"Menawarkan keseimbangan antara kemampuan ofensif dan regenerasi energi, cocok untuk karakter yang sering menggunakan Resonance Skills dan Ultimates.",weapon/Overture.png
+Pistols#26,4,Pistols,387,ATK%,36.40%,"Saat Resonator tidak menerima damage selama 5 detik, meningkatkan ATK sebesar 6%, dapat ditumpuk hingga 2 kali. Efek ini berlangsung selama 8 detik. Jika Resonator menerima damage, satu stack akan hilang dan memulihkan HP sebesar 6.25%.",weapon/Pistols#26.png
+Rectifier#25,4,Rectifier,337,ATK%,51.80%,"Jika HP Resonator di atas 60%, meningkatkan ATK sebesar 12% selama 10 detik. Jika HP di bawah 60%, menggunakan Resonance Skill akan memulihkan 5% dari Max HP. Efek ini dapat dipicu setiap 8 detik.",weapon/Rectifier#25.png
+Red Spring,5,Sword,587,Crit Rate,24.30%,"Meningkatkan ATK sebesar 12%. Saat memberikan Basic Attack DMG, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 14 detik, dapat ditumpuk hingga 3 kali. Ketika Concerto Energy digunakan, memberikan tambahan 40% Basic DMG Bonus selama 10 detik.",weapon/Red_Spring.png
+Relativistic Jet,4,Pistols,462,ATK%,18.20%,"Menggunakan Resonance Skill memberikan 6 Resonance Energy dan meningkatkan ATK sebesar 10% selama 16 detik. Efek ini dapat dipicu setiap 20 detik.",weapon/Relativistic_Jet.png
+Rime-Draped Sprouts,5,Rectifier,500,Crit Rate,72.00%,"Meningkatkan Basic ATK DMG saat berada di lapangan dan meningkatkan serangan terkoordinasi saat menggunakan Outro Skill.",weapon/Rime-Draped_Sprouts.png
+Romance in Farewell,4,Pistols,462,ATK%,18.20%,"Menampilkan peningkatan ATK% sebagai statistik sekunder, cocok untuk karakter DPS.",weapon/Romance_in_Farewell.png
+Static Mist,5,Pistols,587,Crit Rate,24.30%,"Meningkatkan Energy Regen sebesar 12.8%. Saat mengenai target dengan Resonance Skill, meningkatkan Basic Attack DMG Bonus sebesar 10% selama 8 detik.",weapon/Static_Mist.png
+Stellar Symphony,5,Rectifier,412,Energy Regen,72.00%,"Meningkatkan Basic ATK DMG saat berada di lapangan dan meningkatkan serangan terkoordinasi saat menggunakan Outro Skill.",weapon/Stellar_Symphony.png
+Stonard,4,Gauntlets,412,Crit Rate,20.20%,"Saat Resonance Skill digunakan, meningkatkan ATK sebesar 6% selama 10 detik. Efek ini dapat ditumpuk hingga 2 kali.",weapon/Stonard.png
+Stringmaster,5,Rectifier,500,Crit Rate,36.00%,"Memberikan 12% Attribute DMG Bonus. Saat memberikan Resonance Skill DMG, meningkatkan ATK sebesar 12%, dapat ditumpuk hingga 2 kali selama 5 detik. Saat pengguna tidak berada di medan perang, meningkatkan ATK sebesar 12%.",weapon/Stringmaster.png
+Sword#18,4,Sword,388,ATK%,36.45%,"Saat HP pengguna turun di bawah 40%, meningkatkan Heavy Attack DMG sebesar 18% dan memulihkan HP sebesar 5% saat memberikan Heavy Attack DMG. Efek ini dapat dipicu sekali setiap 8 detik.",weapon/Sword#18.png
+The Last Dance,5,Pistols,500,Crit DMG,72.00%,"Meningkatkan ATK sebesar 12%. Setiap kali Intro Skill atau Resonance Liberation digunakan, meningkatkan Resonance Skill DMG Bonus sebesar 48% selama 5 detik.",weapon/The_Last_Dance.png
+Thunderbolt,4,Pistols,387,ATK%,36.40%,"Saat mengenai target dengan Basic atau Heavy Attack, meningkatkan Resonance Skill DMG Bonus sebesar 7%, dapat ditumpuk hingga 3 kali. Efek ini berlangsung selama 10 detik dan dapat dipicu setiap detik.",weapon/Thunderbolt.png
+Tragicomedy,5,Gauntlets,587,Crit Rate,24.30%,"Meningkatkan ATK sebesar 12%. Setiap kali Basic Attack atau Intro Skill digunakan, meningkatkan Heavy Attack DMG Bonus sebesar 48% selama 3 detik.",weapon/Tragicomedy.png
+Undying Flame,4,Pistols,412,ATK%,30.30%,"Saat Intro Skill digunakan, meningkatkan Resonance Skill DMG Bonus sebesar 20% selama 15 detik.",weapon/Undying_Flame.png
+Variation,4,Rectifier,388,Energy Regen,51.80%,"Saat Resonance Skill digunakan, memulihkan 8 Concerto Energy. Efek ini dapat dipicu sekali setiap 20 detik.",weapon/Variation.png
+Verdant Summit,5,Broadblade,587,Crit DMG,48.60%,"Meningkatkan DMG Bonus dari semua Resonance Attributes sebesar 12%. Setiap kali Intro Skill atau Resonance Liberation digunakan, meningkatkan Heavy Attack DMG Bonus sebesar 24%, dapat ditumpuk hingga 2 kali.",weapon/Verdant_Summit.png
+Verity's Handle,5,Gauntlets,587,Crit Rate,24.30%,"Dapatkan Bonus DMG Atribut sebesar 12% . Saat menggunakan Resonance Liberation, pengguna mendapatkan Bonus DMG Resonance Liberation sebesar 48% selama 8 detik. Efek ini dapat diperpanjang selama 5 detik setiap kali Skill Resonance digunakan, hingga 3 kali.",weapon/Verity's_Handle.png
+Waltz in Masquerade,4,Rectifier,462,ATK%,18.20%,"Memberikan DMG ke musuh dengan Status Negatif akan meningkatkan ATK pengguna sebesar 4% selama 10 detik. Efek ini dapat dipicu 1 kali per detik, dapat ditumpuk hingga 4 kali.",weapon/Waltz_in_Masquerade.png
+Waning Redshift,4,Broadblade,462,ATK%,18.20%,"Menggunakan Skill Resonansi akan memberikan 6 Energi Resonansi dan meningkatkan ATK sebesar 10% , berlangsung selama 16 detik. Efek ini dapat dipicu sekali setiap 20 detik.",weapon/Waning_Redshift.png

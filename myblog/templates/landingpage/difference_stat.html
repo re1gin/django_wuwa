@@ -100,22 +100,24 @@
                 </div>
             </div>
             <div class="gear-section">
-                {# Tampilkan gear dari BUILD DATABASE #}
+                
                 <div class="gear-item weapon-gear">
-                    <img src="{{ selected_weapon_obj_db.icon_image.url }}" alt="{{ selected_weapon_obj_db.weapon_name }}" class="gear-icon">
+                    <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj_db.weapon_name }}" class="gear-icon">
                     <div class="gear-details">
-                        <p class="gear-name">{{ selected_weapon_obj_db.weapon_name }}</p>
-                        <p class="gear-sub">ATK {{ selected_weapon_obj_db.atk_value|default:"[Value]" }}<br>CRITICAL DAMAGE +{{ selected_weapon_obj_db.crit_dmg_value|default:"0" }}%</p>
+                        <p class="gear-name">{{ selected_weapon_obj.weapon_name }}</p>
+                        <p class="gear-sub">ATK: {{ selected_weapon_obj.base_atk }}
+                            <br>{{selected_weapon_obj.secondary_stat}}: {{ selected_weapon_obj.secondary_value }}</p>
                     </div>
                     <span class="gear-rank">RANK 1</span>
                 </div>
                 <div class="gear-item">
-                    <img src="{{ selected_echo_obj_db.icon_echo.url }}" alt="{{ selected_echo_obj_db.name }}" class="gear-icon">
-                    <p class="gear-name">{{ selected_echo_obj_db.name }}</p>
+                    <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj_db.name }}" class="gear-icon">
+                    <p class="gear-name">{{ selected_echo_obj.name }}</p>
+                    <p class="gear-rank">Cost: {{selected_echo_obj.cost}}</p>
                 </div>
                 <div class="gear-item">
-                    <img src="{{ selected_sonata_obj_db.icon_sonata.url }}" alt="{{ selected_sonata_obj_db.name }}" class="gear-icon">
-                    <p class="gear-name">{{ selected_sonata_obj_db.name }}</p>
+                    <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj_db.name }}" class="gear-icon">
+                    <p class="gear-name">Soanata: {{ selected_sonata_obj.name }}</p>
                 </div>
             </div>
             <div class="skill-levels">
