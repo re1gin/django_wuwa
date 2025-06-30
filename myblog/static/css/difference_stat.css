@@ -1,376 +1,300 @@
-/* difference_stat.css - Scoped under .difference class */
+/* resonator/static/css/review_page.css */
 
-.difference {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.difference .header-left,
-.difference .header-right {
-    padding: 10px 0;
-    margin-bottom: 20px;
-}
-
-.difference .header-left {
+.review-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.9em;
-    gap: 5px;
-}
-
-.difference .header-left p {
-    margin: 0;
-    color: #aaaaaa;
-}
-
-.difference .header-right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 15px;
-    font-size: 0.9em;
-}
-
-.difference .user-info p {
-    margin: 0;
-    text-align: right;
-    color: #aaaaaa;
-}
-
-.difference .user-avatar {
-    width: 50px;
-    height: 50px;
-    background-color: #555;
-    border-radius: 50%;
-    border: 2px solid #e0e0e0;
-}
-
-.difference .main-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
     gap: 20px;
-}
-
-.difference .panel {
-    background-color: #2a2a2a;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+    background-color: #1a1a1a; /* Dark background */
+    color: #f0f0f0; /* Light text */
+    font-family: Arial, sans-serif;
 }
 
-/* Left Panel */
-.difference .left-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.difference .character-display {
-    margin-bottom: 20px;
-}
-
-.difference .character-art {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-    border-radius: 8px;
-    border: 2px solid #555;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.difference .stats-group {
-    width: 100%;
-}
-
-.difference .stat-item {
+.header-section {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #3a3a3a;
+    align-items: flex-start;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.header-left p, .user-info p {
+    margin: 5px 0;
+}
+
+.resonator-roles {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.role-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #333; /* Placeholder background for icons */
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    background-color: #555; /* Placeholder */
+    border-radius: 50%;
+}
+
+.main-content-panels {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Allow panels to wrap on smaller screens */
+}
+
+.panel {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    flex: 1; /* Distribute space */
+    min-width: 300px; /* Minimum width for panels */
+}
+
+.character-info-panel .character-art {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px;
+    border-radius: 5px;
+}
+
+.character-info-panel h2 {
+    text-align: center;
+    color: #00bcd4; /* Accent color */
+    margin-bottom: 5px;
+}
+
+.character-info-panel .character-rarity {
+    text-align: center;
+    color: #ffc107; /* Star color */
+    margin-bottom: 20px;
+}
+
+.ideal-stats-group h3, .skill-levels-ideal h3,
+.spider-chart-container h3, .resonator-rating h3,
+.status-difference h3, .category-scores h3,
+.bonus-list h3, .gear-section h3 {
+    color: #00bcd4; /* Accent color */
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 15px;
     font-size: 1.1em;
 }
 
-.difference .stat-item:last-child {
-    border-bottom: none;
-}
-
-.difference .stat-icon {
-    margin-right: 10px;
-    color: #ffcc00;
-}
-
-.difference .stat-label {
-    flex-grow: 1;
-    text-align: left;
-    color: #cccccc;
-}
-
-.difference .stat-value {
-    font-weight: bold;
-    color: #00ff99;
-}
-
-/* Center Panel */
-.difference .center-panel {
+.stat-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    margin-bottom: 8px;
 }
 
-.difference .spider-chart-container {
-    width: 100%;
-    max-width: 400px;
-    height: 300px;
-    margin-bottom: 20px;
-}
-
-.difference .resonator-rating {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.difference .resonator-rating h3 {
-    color: #f0f0f0;
-    margin-bottom: 10px;
+.stat-icon {
+    margin-right: 8px;
     font-size: 1.2em;
+    color: #e91e63; /* Icon color */
 }
 
-.difference .rating-score {
-    font-size: 2.5em;
+.stat-label {
     font-weight: bold;
-    color: #ff9900;
-    text-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+    min-width: 120px; /* Align labels */
 }
 
-.difference .status-difference {
-    width: 100%;
-    text-align: center;
-}
-
-.difference .status-difference h3 {
+.stat-value {
     color: #f0f0f0;
-    margin-bottom: 15px;
-    font-size: 1.2em;
 }
 
-.difference .diff-icons {
+.skill-levels-ideal .level-numbers {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.skill-levels-ideal .skill-icons-row {
+    display: flex;
+    justify-content: space-around;
+}
+
+.skill-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: #333;
+}
+
+/* Assessment Panel */
+.spider-chart-container {
+    position: relative;
+    height: 300px; /* Fixed height for chart */
+    margin-bottom: 20px;
+}
+
+.resonator-rating {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.rating-score {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4CAF50; /* Green for good rating */
+    margin: 10px 0;
+}
+
+.rating-text {
+    font-size: 1.2em;
+    font-style: italic;
+    color: #bbb;
+}
+
+.status-difference .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Responsive grid for diffs */
     gap: 10px;
 }
 
-.difference .diff-item {
-    background-color: #3a3a3a;
-    padding: 10px;
+.diff-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 8px 12px;
     border-radius: 5px;
-    text-align: center;
-    min-width: 80px;
-    flex: 1 1 auto;
+    font-size: 0.9em;
 }
 
-.difference .diff-item p {
-    margin: 0 0 5px 0;
-    font-size: 0.85em;
-    color: #ccc;
+.diff-label {
+    color: #ddd;
 }
 
-.difference .diff-symbol {
-    font-size: 1.5em;
-    color: #66ccff;
+.diff-value {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.diff-symbol {
+    font-size: 1.1em;
 }
 
 /* Right Panel */
-.difference .right-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.difference .category-scores {
+.category-scores .score-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    margin-bottom: 20px;
 }
 
-.difference .score-box {
-    background-color: #3a3a3a;
+.score-box {
+    background-color: #333;
     padding: 15px;
-    border-radius: 5px;
     text-align: center;
+    border-radius: 5px;
     font-size: 0.9em;
-    color: #ccc;
+    line-height: 1.3;
 }
 
-.difference .score-box span {
-    display: block;
-    font-size: 1.5em;
+.score-box span {
+    font-size: 1.4em;
     font-weight: bold;
-    color: #ff0066;
-    margin-top: 5px;
+    color: #ffeb3b; /* Yellow for scores */
 }
 
-.difference .bonus-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.bonus-list .bonus-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Stack items */
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.difference .bonus-item {
+.bonus-item {
     display: flex;
     justify-content: space-between;
-    background-color: #3a3a3a;
-    padding: 8px 15px;
+    align-items: center;
+    background-color: #333;
+    padding: 8px 12px;
     border-radius: 5px;
-    font-size: 1em;
+    font-size: 0.9em;
 }
 
-.difference .bonus-item.highlight {
-    background-color: #4a4a4a;
-    border: 1px solid #ff9900;
-    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+.bonus-item .highlight {
+    color: #FF5722; /* Orange for highlight */
 }
 
-.difference .bonus-name {
-    color: #ccc;
+.gear-section {
+    margin-top: 20px;
 }
 
-.difference .bonus-value {
-    font-weight: bold;
-    color: #00ff99;
-}
-
-.difference .gear-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.difference .gear-item {
+.gear-item {
     display: flex;
     align-items: center;
-    background-color: #3a3a3a;
+    background-color: #333;
     padding: 10px;
     border-radius: 5px;
-    gap: 10px;
+    margin-bottom: 10px;
 }
 
-.difference .gear-icon {
+.gear-item .gear-icon {
     width: 50px;
     height: 50px;
-    border-radius: 5px;
-    object-fit: cover;
-    border: 1px solid #666;
+    margin-right: 10px;
+    border-radius: 3px;
+    background-color: #444; /* Placeholder background */
 }
 
-.difference .gear-details {
+.gear-details {
     flex-grow: 1;
 }
 
-.difference .gear-name {
-    margin: 0;
+.gear-details .gear-name {
     font-weight: bold;
-    color: #f0f0f0;
-    font-size: 0.9em;
-}
-
-.difference .gear-sub {
     margin: 0;
+}
+
+.gear-details .gear-sub {
     font-size: 0.8em;
-    color: #ccc;
+    color: #bbb;
+    margin: 0;
 }
 
-.difference .gear-rank {
-    background-color: #ff9900;
-    color: #3a3a3a;
-    font-weight: bold;
-    padding: 3px 8px;
-    border-radius: 3px;
-    font-size: 0.8em;
-}
-
-.difference .skill-levels {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.difference .level-numbers {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 10px;
+.gear-rank {
     font-size: 0.9em;
-    color: #ccc;
+    font-weight: bold;
+    color: #ffc107; /* Gold for rank */
+    margin-left: 10px;
 }
 
-.difference .skill-icons-row {
-    display: flex;
-    justify-content: space-around;
-    gap: 5px;
-}
-
-.difference .skill-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid #555;
-    object-fit: cover;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+.weapon-gear .gear-rank {
+    font-size: 1.1em; /* Make weapon rank slightly larger */
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
-    .difference .main-content {
-        grid-template-columns: 1fr;
+@media (max-width: 992px) {
+    .main-content-panels {
+        flex-direction: column;
+    }
+    .panel {
+        min-width: unset; /* Remove min-width for stacking */
     }
 }
 
 @media (max-width: 768px) {
-    .difference .header-left,
-    .difference .header-right {
-        font-size: 0.8em;
+    .header-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
-    
-    .difference .user-avatar {
-        width: 40px;
-        height: 40px;
+    .header-right {
+        margin-top: 15px;
     }
-    
-    .difference .character-art {
-        max-width: 150px;
-    }
-    
-    .difference .stat-item,
-    .difference .bonus-item {
-        font-size: 0.9em;
-    }
-    
-    .difference .rating-score {
-        font-size: 2em;
-    }
-    
-    .difference .diff-item {
-        min-width: 60px;
-        padding: 8px;
-    }
-    
-    .difference .skill-icon {
-        width: 35px;
-        height: 35px;
-    }
-}
-
-@media (max-width: 480px) {
-    .difference .category-scores {
-        grid-template-columns: 1fr;
-    }
-    
-    .difference .diff-icons {
-        grid-template-columns: repeat(2, 1fr);
+    .status-difference .diff-grid,
+    .category-scores .score-grid,
+    .bonus-list .bonus-grid {
+        grid-template-columns: 1fr; /* Stack on small screens */
     }
 }

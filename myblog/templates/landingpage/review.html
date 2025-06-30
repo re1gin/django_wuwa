@@ -3,20 +3,295 @@
 
 {% block title %}{{ resonator.name }} Build Review - Web ku{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+    
     <link rel="stylesheet" href="{% static 'css/build_review.css' %}">
-    <link rel="stylesheet" href="{% static 'css/difference_stat.css' %}">
 {% endblock %}
 
 {% block content %}
     <div class="review-page-container">
-        {% include 'landingpage/build_review.html' %}
-        <hr class="section-divider">
-        {% include 'landingpage/difference_stat.html' %}
+        <div class="review">
+            <header class="header-section">
+                <h1>Build Review : {{ resonator.name }}</h1>
+                <div class="user-name">
+                    <span>User: {{ user_name }}</span>
+                    <span>Date: {{ current_date }}</span>
+                </div>
+            </header>
+            <div class="container-review">
+                <div class="left-panel">
+
+                    <div class="right-stat-overview">
+                        <div class="stat-box">
+                            <div class="stat-value">{{ resonator.level|default:"90"}}</div>
+                            <div class="stat-label">
+                                <div class="label">Level</div>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">{{ resonator.resonance_chain|default:"0"}}</div>
+                            <div class="stat-label">
+                                <div class="label">R. Chain</div>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <img src="{{ resonator.attribute.icon_attribute.url }}" alt="{{ resonator.attribute.name }} Attribute Icon" class="icon-attribute">
+                            <div class="stat-label">
+                                <div class="label">{{ resonator.attribute.name }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-display">
+                        <img src="{{ images.render }}" alt="{{ resonator.name }}" class="character-art" />
+                        <div class="stars">
+                            {# Render stars based on rarity: "x"|ljust:resonator.rarity creates a string of length equal to rarity #}
+                            {% for i in "x"|ljust:resonator.rarity %}
+                                <span>&#9733;</span>
+                            {% endfor %}
+                        </div>
+                        <h2 class="character-name">{{ resonator.name|upper }}</h2>
+                    </div>
+
+                    <div class="role-hover-container">
+                        {% for role in resonator.role.all %}
+                            <div class="role-hover-item">
+                                <img src="{{ role.icon_role.url }}" class="role-icon" alt="{{ role.name }}">
+                                <span class="role-hover-name">{{ role.name }}</span>
+                            </div>
+                        {% empty %}
+                            <p class="no-roles">No roles assigned</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="left-stat-overview">
+                    {# Loop melalui daftar stat yang sudah diproses dari views.py #}
+                        {% for stat in overview_stats %}
+                            <div class="stat-item">
+                                <span class="stat-name">{{ stat.label }}</span>
+                                <span class="stat-value-placeholder" style="color: {{ stat.color }}">
+                                    {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
+                                    {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
+                                    {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
+                                    <span class="ideal-value-display">({{ stat.ideal_value }}{% if stat.is_percentage %}%{% endif %})</span>
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="center-panel">
+                    <div class="panel assessment-panel">
+                        <div class="spider-chart-container">
+                            <h3>Ideal Build Performance Radar</h3>
+                            <canvas id="performanceRadarChart"></canvas>
+                            {{ performance_data_json|json_script:"performance-data" }}
+                        </div>
+                        
+                        <div class="resonator-rating">
+                            <h3>Overall Resonator Build Rating</h3>
+                            <div class="rating-score">{{ resonator_rating|floatformat:"0" }} / 100</div> {# Tambahkan floatformat untuk kejelasan #}
+                            {% if resonator_rating_text %}
+                                <p class="rating-text">{{ resonator_rating_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="status-difference">
+                            <h3>Stat Differences</h3>
+                            <div class="diff-grid">
+                                {% for diff_item in status_differences %}
+                                    <div class="diff-item">
+                                        <span class="diff-label">{{ diff_item.label }}:</span>
+                                        <span class="diff-value">{{ diff_item.value }} {{ diff_item.label_unit }}</span> 
+                                        <span class="diff-symbol">{{ diff_item.symbol|safe }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="weapon">
+                        {% if selected_weapon_obj %}
+                            <div class="weapon-details-container">
+                                <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.weapon_name }} Icon" class="weapon-icon-large">
+                                <div class="weapon-info">
+                                    <div class="weapon-header-and-rank">
+                                        <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
+                                    </div>
+                                    
+                                    <div class="weapon-attributes">
+                                        <p>ATK: <span class="attribute-value">{{ selected_weapon_obj.base_atk }}</span></p> {# Menggunakan base_atk sesuai koreksi #}
+                                        <p>{{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
+                                        <span class="rank-label">Rank 1</span> 
+                                        <span class="rank-label">Level 90</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="weapon-details-container no-selection">
+                                <img src="{% static 'combat/images/placeholder_weapon.png' %}" alt="No Weapon Selected" class="weapon-icon-large">
+                                <div class="weapon-info">
+                                    <div class="weapon-name-display">No Weapon Selected</div>
+                                    <div class="weapon-attributes">
+                                        <p>ATK: <span class="attribute-value">0</span></p>
+                                        <p>Secondary Stat: <span class="attribute-value">0%</span></p>
+                                        <span class="rank-label">Rank N/A</span>
+                                        <span class="rank-label">Level N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="gear">
+                        <div class="equipment-gear">
+                            {% if selected_echo_obj %}
+                                <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
+                                <div class="gear-title">{{ selected_echo_obj.name }}</div>
+                            {% else %}
+                                <img src="{% static 'combat/images/placeholder_echo.png' %}" alt="No Echo Selected" class="gear-icon">
+                                <div class="gear-title">No Echo Selected</div>
+                            {% endif %}
+                        </div>
+                        <div class="equipment-gear">
+                            {% if selected_sonata_obj %}
+                                <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
+                                <div class="gear-title">{{ selected_sonata_obj.name }}</div>
+                            {% else %}
+                                <img src="{% static 'combat/images/placeholder_sonata.png' %}" alt="No Sonata Selected" class="gear-icon">
+                                <div class="gear-title">No Sonata Selected</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="category-scores">
+                        <h3>Category Scores</h3>
+                        <div class="score-grid">
+                            <div class="score-box">Character<br><span>{{ category_scores.Character }}</span></div>
+                            <div class="score-box">Weapon<br><span>{{ category_scores.Weapon }}</span></div>
+                            <div class="score-box">Echo<br><span>{{ category_scores.Echo }}</span></div>
+                            <div class="score-box">Skill<br><span>{{ category_scores.Skill }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="damage-list">
+                        <div class="damage-item">
+                            <span class="damage-name">Basic Attack Damage</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg|floatformat:"1" }}%</span>
+                        </div>
+                        <div class="damage-item">
+                            <span class="damage-name">Heavy Attack Damage</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.heavy_atk_dmg|floatformat:"1" }}%</span>
+                        </div>
+                        <div class="damage-item">
+                            <span class="damage-name">Resonance Skill Damage</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg|floatformat:"1" }}%</span>
+                        </div>
+                        <div class="damage-item">
+                            <span class="damage-name">Resonance Liberation Damage</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg|floatformat:"1" }}%</span>
+                        </div>
+                        <div class="damage-item">
+                            <span class="damage-name">Healing Bonus</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.healing_bonus|floatformat:"1" }}%</span>
+                        </div>
+                        {# Hanya menampilkan satu input untuk Attribute DMG Bonus #}
+                        {% if user_input_stats.attribute_dmg_bonus > 0 %}
+                            <div class="damage-item">
+                                <span class="damage-name">Attribute DMG Bonus</span>
+                                <span class="damage-value-placeholder">{{ user_input_stats.attribute_dmg_bonus|floatformat:"1" }}%</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="skill-levels">
+                        <div class="level-text">
+                            <span>LV/{{ basic_atk_level|default:"10" }}</span>
+                            <span>LV/{{ resonance_skill_level|default:"10" }}</span>
+                            <span>LV/{{ forte_circuit_level|default:"10" }}</span>
+                            <span>LV/{{ resonance_liberation_level|default:"10" }}</span>
+                            <span>LV/{{ intro_skill_level|default:"10" }}</span>
+                        </div>
+                        <div class="skill-icons">
+                            {# Tempat untuk ikon skill level yang akan ditambahkan secara manual #}
+                            <img src="{% static 'assets/basic_attack_icon.png' %}" alt="Basic Attack Skill Icon" class="skill-icon">
+                            <img src="{% static 'path/to/resonance_skill_icon.png' %}" alt="Resonance Skill Icon" class="skill-icon">
+                            <img src="{% static 'path/to/forte_circuit_icon.png' %}" alt="Forte Circuit Icon" class="skill-icon">
+                            <img src="{% static 'path/to/resonance_liberation_icon.png' %}" alt="Resonance Liberation Icon" class="skill-icon">
+                            <img src="{% static 'path/to/intro_skill_icon.png' %}" alt="Intro Skill Icon" class="skill-icon">
+                        </div>
+                        <div class="skill-names">
+                            <span>Basic Attack</span>
+                            <span>Resonance Skill</span>
+                            <span>Forte Circuit</span>
+                            <span>Resonance Liberation</span>
+                            <span>Intro Skill</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}
 
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    {{ performance_data_json|json_script:"performance-data" }}
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const performanceDataScript = document.getElementById('performance-data');
+            let performanceData = null;
+
+            if (performanceDataScript) {
+                try {
+                    performanceData = JSON.parse(performanceDataScript.textContent);
+                    console.log("Performance Data loaded in review.html:", performanceData); 
+                } catch (e) {
+                    console.error("Error parsing performance data JSON in review.html:", e);
+                }
+            }
+
+            const ctx = document.getElementById('performanceRadarChart');
+            if (ctx && performanceData) {
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: performanceData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(255, 255, 255, 0.3)' },
+                                grid: { color: 'rgba(255, 255, 255, 0.3)' },
+                                pointLabels: { color: 'white', font: { size: 12 } },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                ticks: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.raw.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else if (ctx && !performanceData) {
+                console.warn("Chart data is missing or invalid. Radar chart may not render in difference_stat.html.");
+                const context2d = ctx.getContext('2d');
+                if (context2d) {
+                    context2d.fillStyle = 'white';
+                    context2d.font = '16px Arial';
+                    context2d.textAlign = 'center';
+                    context2d.fillText('Chart data unavailable', ctx.width / 2, ctx.height / 2);
+                }
+            }
+        });
+    </script>
 {% endblock %}

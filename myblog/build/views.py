@@ -1,12 +1,19 @@
-from datetime import date
+import json # Pastikan ini diimpor di bagian atas file
+from datetime import datetime
 from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
-from django.http import Http404, JsonResponse
+from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from weapon.views import get_weapon_for_template
+from build.constants import (
+    HP_NORM, ATK_NORM, DEF_NORM, ENERGY_NORM, CRIT_RATE_NORM, CRIT_DMG_NORM,
+    RESONATOR_RATING_WEIGHTS, SKILL_LEVEL_FIELDS, DEFAULT_SKILL_LEVEL
+)
+
+from build.fuzzy_logic.engine import calculate_fuzzy_stat_quality, get_overall_build_rating_text
+from build.fuzzy_logic.utils import format_comparison_difference, get_interpolated_color
 from resonators.models import Resonator
 from weapon.models import Weapon
 from echo.models import Sonata, Echo
@@ -19,15 +26,12 @@ def get_icon_chars_data(current_char_obj=None):
     icon_chars_data = []
     all_resonators = Resonator.objects.all().order_by('name')
     for resonator in all_resonators:
-        # --- PERUBAHAN DI SINI: Membangun URL ikon secara manual ---
         folder_name = format_folder(resonator.name)
         icon_url = f"{settings.MEDIA_URL}resonator/{folder_name}/Icon.png"
-        # -------------------------------------------------------------
         
         try:
-            # Mengarahkan ikon ke halaman builder untuk karakter tersebut
             icon_detail_url = reverse('build:character_builder', kwargs={'name': resonator.name})
-        except Exception: # Fallback jika URL tidak ditemukan
+        except Exception: 
             icon_detail_url = '#'
             
         is_active_icon = False
@@ -60,7 +64,6 @@ def get_item_details_ajax(request):
                 'rarity': weapon_obj.rarity,
                 'weapon_type': weapon_obj.weapon_type.name if weapon_obj.weapon_type else "N/A"
             }
-            # Menggunakan ImageField URL jika ada
             image_url = weapon_obj.icon_image.url if weapon_obj.icon_image else ""
     elif item_type == 'echo':
         echo_obj = Echo.objects.filter(name=item_name).first()
@@ -69,7 +72,6 @@ def get_item_details_ajax(request):
                 'name': echo_obj.name,
                 'cost': echo_obj.cost,
             }
-            # Menggunakan ImageField URL jika ada
             image_url = echo_obj.icon_echo.url if echo_obj.icon_echo else ""
             filtered_sonatas_data = list(echo_obj.sonatas.all().values('name'))
         else:
@@ -80,7 +82,6 @@ def get_item_details_ajax(request):
             details = {
                 'name': sonata_obj.name,
             }
-            # Menggunakan ImageField URL jika ada
             image_url = sonata_obj.icon_sonata.url if sonata_obj.icon_sonata else ""
         
     if selected_echo_name:
@@ -108,12 +109,10 @@ def character_builder_view(request, name):
         if 'character_name_for_comparison' in request.session:
             del request.session['character_name_for_comparison']
             
-    # Images for the builder page (Constructed manually as requested)
     folder_name = format_folder(char_obj.name)
     image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
     images = {"render": f"{image_path}Render.png"}
 
-    # Menggunakan fungsi get_icon_chars_data
     all_characters_for_icons = get_icon_chars_data(char_obj)
 
     weapons_data_db = Weapon.objects.filter(weapon_type=char_obj.weapon_type).order_by('weapon_name')
@@ -122,9 +121,9 @@ def character_builder_view(request, name):
 
     user_input_stats = {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0, # Pastikan heavy_atk_dmg ada
+        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
         'healing_bonus': 0.0, 
-        'attribue_dmg_bonus': 0.0,
+        'attribute_dmg_bonus': 0.0,
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
@@ -133,18 +132,12 @@ def character_builder_view(request, name):
     if 'user_input_stats' in request.session and request.session.get('character_name_for_comparison') == char_obj.name:
         user_input_stats.update(request.session['user_input_stats'])
     
-    selected_weapon_obj = None
-    selected_echo_obj = None
-    selected_sonata_obj = None
-
     if request.method == 'POST':
         try:
             for stat_name in ['hp', 'attack', 'defense', 'energy', 'crit_rate', 'crit_dmg',
-                               'basic_atk_dmg', 'heavy_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg', # Pastikan heavy_atk_dmg ada di loop
-                               'healing_bonus', 
-                               'aero_dmg_bonus', 'fusion_dmg_bonus', 'electro_dmg_bonus',
-                               'glacio_dmg_bonus', 'havoc_dmg_bonus', 'spectro_dmg_bonus',
-                               'attribute_res']:
+                             'basic_atk_dmg', 'heavy_atk_dmg', 'resonance_skill_dmg', 'resonance_lib_dmg',
+                             'healing_bonus', 
+                             'attribute_dmg_bonus']:
                 user_input_stats[stat_name] = float(request.POST.get(stat_name, 0.0) or 0.0)
         except ValueError:
             messages.error(request, "Input stat harus berupa angka.")
@@ -176,25 +169,19 @@ def character_builder_view(request, name):
 
         if 'NILAI BUILD' in request.POST:
             return redirect('build:review_build_page', name=char_obj.name)
-        
-        if user_input_stats['selected_weapon']:
-            selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
-        if user_input_stats['selected_echo']:
-            selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-        if user_input_stats['selected_sonata'] and selected_echo_obj:
-            selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
-            if not selected_sonata_obj or not selected_echo_obj.sonatas.filter(name=selected_sonata_obj.name).exists():
-                 selected_sonata_obj = None
+            
+    selected_weapon_obj = None
+    selected_echo_obj = None
+    selected_sonata_obj = None
 
-    else:
-        if user_input_stats['selected_weapon']:
-            selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
-        if user_input_stats['selected_echo']:
-            selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-        if user_input_stats['selected_sonata'] and selected_echo_obj:
-            selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
-            if not selected_sonata_obj or not selected_echo_obj.sonatas.filter(name=selected_sonata_obj.name).exists():
-                 selected_sonata_obj = None
+    if user_input_stats['selected_weapon']:
+        selected_weapon_obj = Weapon.objects.filter(weapon_name=user_input_stats['selected_weapon']).first()
+    if user_input_stats['selected_echo']:
+        selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
+    if user_input_stats['selected_sonata'] and selected_echo_obj:
+        selected_sonata_obj = Sonata.objects.filter(name=user_input_stats['selected_sonata']).first()
+        if not selected_sonata_obj or not selected_echo_obj.sonatas.filter(name=selected_sonata_obj.name).exists():
+            selected_sonata_obj = None
 
     if selected_echo_obj:
         sonatas_data_db = selected_echo_obj.sonatas.all().order_by('name')
@@ -215,133 +202,97 @@ def character_builder_view(request, name):
     }
     return render(request, 'landingpage/character_builder.html', context)
 
-def _get_build_review_data(request, resonator_obj):
+def build_review_page(request, name):
+
+    resonator = get_object_or_404(Resonator, name__iexact=name)
+    folder_name = format_folder(resonator.name)
+    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
+    images = {"render": f"{image_path}Render.png"}
+    roles_with_icons = resonator.role.all().values('name', 'icon_role')
+
+    # --- Step 1: Get user input and selected equipment ---
     user_input_stats = request.session.get('user_input_stats', {
-        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0,
         'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0, 
+        'basic_atk_dmg': 0.0, 'heavy_atk_dmg': 0.0,
         'resonance_skill_dmg': 0.0, 'resonance_lib_dmg': 0.0,
-        'healing_bonus': 0.0, 
-        'attribute_dmg_bonus': 0.0, 
+        'healing_bonus': 0.0,
+        'attribute_dmg_bonus': 0.0,
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
     })
 
-    # 1. Handle Weapon Selection
-    selected_weapon_name = user_input_stats['selected_weapon']
     selected_weapon_obj = None
-    
-    if selected_weapon_name:
-        # Cari di database terlebih dahulu
+    if user_input_stats['selected_weapon']:
         selected_weapon_obj = Weapon.objects.filter(
-            weapon_name__iexact=selected_weapon_name
+            weapon_name=user_input_stats['selected_weapon']
         ).first()
-        
-        # Jika tidak ada di database, cari di JSON
-        if not selected_weapon_obj:
-            try:
-                weapon_data = get_weapon_for_template(selected_weapon_name)
-                selected_weapon_obj = type('Weapon', (object,), {
-                    'weapon_name': weapon_data['name'],
-                    'weapon_data': weapon_data,
-                    'icon_image': type('ImageFile', (object,), {
-                        'url': weapon_data['icon_url']
-                    }),
-                    'atk_value': weapon_data['base_atk'],
-                    'energy_regen_value': weapon_data['secondary_value'] 
-                        if weapon_data['secondary_stat'] == 'Energy Regen' else '0%'
-                })()
-            except Http404:
-                # Fallback jika tidak ditemukan
-                selected_weapon_obj = type('Weapon', (object,), {
-                    'weapon_name': selected_weapon_name,
-                    'weapon_data': {},
-                    'icon_image': type('ImageFile', (object,), {
-                        'url': '/static/weapons/images/placeholder.png'
-                    }),
-                    'atk_value': 0,
-                    'energy_regen_value': '0%'
-                })()
 
-    # 2. Handle Echo Selection (tetap seperti sebelumnya)
     selected_echo_obj = None
     if user_input_stats['selected_echo']:
         selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
-    if not selected_echo_obj:
-        selected_echo_obj = type('Echo', (object,), {
-            'name': user_input_stats.get('selected_echo', 'No Echo Selected'),
-            'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
-            'cost': 0, 'main_stat': 'N/A'
-        })()
 
-    # 3. Handle Sonata Selection (tetap seperti sebelumnya)
     selected_sonata_obj = None
-    if (user_input_stats['selected_sonata'] and 
-        selected_echo_obj and 
-        selected_echo_obj.name != 'No Echo Selected'):
+    if (user_input_stats['selected_sonata'] and
+            selected_echo_obj and
+            selected_echo_obj.name != 'No Echo Selected'):
         selected_sonata_obj = selected_echo_obj.sonatas.filter(
             name=user_input_stats['selected_sonata']
         ).first()
-    if not selected_sonata_obj:
-        selected_sonata_obj = type('Sonata', (object,), {
-            'name': user_input_stats.get('selected_sonata', 'No Sonata Selected'),
-            'icon_sonata': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'}),
-            'effect': 'N/A'
-        })()
 
-    return {
-        'user_input_stats': user_input_stats,
-        'selected_weapon_obj': selected_weapon_obj,  # Sudah termasuk data dari JSON jika ada
-        'selected_echo_obj': selected_echo_obj,
-        'selected_sonata_obj': selected_sonata_obj,
-    }
-
-def _get_difference_stat_data(request, resonator_obj, build_review_data):
-    
-    user_input_stats_from_session = build_review_data['user_input_stats']
-
+    # --- Step 2: Retrieve ideal build data from the database or set defaults ---
     build_instance = None
     try:
-        build_instance = resonator_obj.ideal_build # Mengakses melalui related_name 'ideal_build'
+        build_instance = resonator.ideal_build
     except ObjectDoesNotExist:
         pass
 
-    # Inisialisasi final_stats dan objek gear dari BUILD DATABASE
-    final_hp = 0.0
-    final_attack = 0.0
-    final_defense = 0.0
-    final_energy = 0.0
-    final_crit_rate = 0.0
-    final_crit_dmg = 0.0
-    final_attribute_dmg_bonus = 0.0 
-    final_healing_bonus = 0.0
+    ideal_hp = 0.0
+    ideal_attack = 0.0
+    ideal_defense = 0.0
+    ideal_energy = 0.0
+    ideal_crit_rate = 0.0
+    ideal_crit_dmg = 0.0
+    # Tambahkan ideal_val untuk bonus stat di sini jika ada dalam model IdealBuild Anda
+    # Atau tetapkan nilai default yang masuk akal sebagai "target ideal" untuk pewarnaan
+    ideal_basic_atk_dmg = getattr(build_instance, 'basic_atk_dmg_ideal', 20.0) # Contoh: ideal 20%
+    ideal_heavy_atk_dmg = getattr(build_instance, 'heavy_atk_dmg_ideal', 20.0)
+    ideal_resonance_skill_dmg = getattr(build_instance, 'resonance_skill_dmg_ideal', 20.0)
+    ideal_resonance_lib_dmg = getattr(build_instance, 'resonance_lib_dmg_ideal', 20.0)
+    ideal_attribute_dmg_bonus = getattr(build_instance, 'attribute_dmg_bonus_ideal', 20.0)
+    ideal_healing_bonus = getattr(build_instance, 'healing_bonus_ideal', 30.0) # Contoh: ideal 30%
+
 
     selected_weapon_obj_db = None
     selected_echo_obj_db = None
     selected_sonata_obj_db = None
 
     if build_instance:
-        final_hp = build_instance.hp
-        final_attack = build_instance.attack
-        final_defense = build_instance.defense
-        final_energy = build_instance.energy
-        final_crit_rate = build_instance.crit_rate
-        final_crit_dmg = build_instance.crit_dmg
+        ideal_hp = build_instance.hp
+        ideal_attack = build_instance.attack
+        ideal_defense = build_instance.defense
+        ideal_energy = build_instance.energy
+        ideal_crit_rate = build_instance.crit_rate
+        ideal_crit_dmg = build_instance.crit_dmg
 
-        selected_weapon_obj_db = build_instance.ideal_weapon 
-        selected_echo_obj_db = build_instance.ideal_echo     
-        selected_sonata_obj_db = build_instance.ideal_sonata 
+        selected_weapon_obj_db = build_instance.ideal_weapon
+        selected_echo_obj_db = build_instance.ideal_echo
+        selected_sonata_obj_db = build_instance.ideal_sonata
     else:
+        # Create dummy objects for display if no ideal build is saved
         selected_weapon_obj_db = type('Weapon', (object,), {
             'weapon_name': 'No Saved Weapon',
             'icon_image': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'}),
-            'atk_value': 0.0, 'energy_regen_value': 0.0, 'crit_dmg_value': 0.0
+            'atk_value': 0.0,
+            'secondary_stat_name': '',
+            'secondary_stat_value': 0.0,
+            'rarity': 0,
         })()
         selected_echo_obj_db = type('Echo', (object,), {
             'name': 'No Saved Echo',
             'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
-            'cost': 0, 'main_stat': 'N/A'
+            'cost': 0, 'main_stat': 'N/A', 'main_stat_value': 0.0
         })()
         selected_sonata_obj_db = type('Sonata', (object,), {
             'name': 'No Saved Sonata',
@@ -349,121 +300,232 @@ def _get_difference_stat_data(request, resonator_obj, build_review_data):
             'effect': 'N/A'
         })()
 
+    # --- Step 3: Prepare data for overview stats with dynamic coloring ---
+    resonator_roles = [r.name for r in resonator.role.all()]
+    is_main_dps = 'Main Damage Dealer' in resonator_roles
+    is_support_and_healer = 'Support and Healer' in resonator_roles
 
-    # Mengevaluasi Build: Radar Chart & Skor Performa
-    HP_NORM = 50000.0   
-    ATK_NORM = 4000.0   
-    DEF_NORM = 4000.0   
-    ENERGY_NORM = 300.0 
-    CRIT_RATE_NORM = 100.0
-    CRIT_DMG_NORM = 350.0
+    overview_stats = []
+    # Daftar konfigurasi stat untuk ditampilkan di overview
+    stats_config = [
+        {'label': "HP", 'user_val': user_input_stats.get('hp', 0.0), 'ideal_val': ideal_hp, 'category': 'flat', 'is_percentage': False},
+        {'label': "ATK", 'user_val': user_input_stats.get('attack', 0.0), 'ideal_val': ideal_attack, 'category': 'flat', 'is_percentage': False},
+        {'label': "DEF", 'user_val': user_input_stats.get('defense', 0.0), 'ideal_val': ideal_defense, 'category': 'flat', 'is_percentage': False},
+        {'label': "Energy Regen", 'user_val': user_input_stats.get('energy', 0.0), 'ideal_val': ideal_energy, 'category': 'percent', 'is_percentage': True},
+        {'label': "Critical Rate", 'user_val': user_input_stats.get('crit_rate', 0.0), 'ideal_val': ideal_crit_rate, 'category': 'percent', 'is_percentage': True},
+        {'label': "Critical Damage", 'user_val': user_input_stats.get('crit_dmg', 0.0), 'ideal_val': ideal_crit_dmg, 'category': 'percent', 'is_percentage': True},
+        # Untuk stat bonus, gunakan ideal_val yang ditetapkan di atas (atau dari DB jika ada)
+        
+    ]
+
+    for stat in stats_config:
+        user_val_float = float(stat['user_val'])
+        current_ideal_val = float(stat['ideal_val']) # Pastikan ideal_val juga float
+
+        # Hitung persentase user_val terhadap ideal_val untuk pewarnaan
+        user_val_vs_ideal_percent = 0
+        if current_ideal_val > 0:
+            user_val_vs_ideal_percent = (user_val_float / current_ideal_val) * 100
+        elif current_ideal_val == 0 and user_val_float > 0: # Ideal 0 tapi user ada nilai (misal bonus stat yang selalu "lebih baik lebih tinggi")
+            user_val_vs_ideal_percent = 200 # Asumsi sangat tinggi jika ideal 0 tapi user ada nilai
+        elif current_ideal_val == 0 and user_val_float == 0: # Ideal 0 dan user 0
+            user_val_vs_ideal_percent = 0 # Asumsi paling rendah
+
+        # Dapatkan warna interpolasi
+        interpolated_color_hex = get_interpolated_color(user_val_vs_ideal_percent)
+        
+        overview_stats.append({
+            'label': stat['label'],
+            'user_value': user_val_float,
+            'ideal_value': current_ideal_val,
+            'is_percentage': stat['is_percentage'],
+            'color': interpolated_color_hex # Mengirim warna HEX langsung ke template
+        })
+
+    # --- Step 4: Calculate differences for general display (if still needed) ---
+    # Jika Anda masih ingin daftar status_differences yang terpisah untuk tujuan lain,
+    # seperti tabel ringkasan selisih, gunakan format_comparison_difference di sini.
+    # Namun, karena overview_stats sudah lebih komprehensif, status_differences mungkin redundan
+    # untuk bagian yang sama dengan overview_stats.
+    # Saya akan mempertahankan panggilan yang sudah ada, tapi pertimbangkan apakah Anda masih memerlukannya.
+    status_differences = []
+    status_differences.append(format_comparison_difference(ideal_hp, user_input_stats.get('hp', 0.0), "HP"))
+    status_differences.append(format_comparison_difference(ideal_attack, user_input_stats.get('attack', 0.0), "ATK"))
+    status_differences.append(format_comparison_difference(ideal_defense, user_input_stats.get('defense', 0.0), "DEF"))
+    status_differences.append(format_comparison_difference(ideal_energy, user_input_stats.get('energy', 0.0), "Energy Regen", is_percentage=True))
+    status_differences.append(format_comparison_difference(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), "Crit Rate", is_percentage=True))
+    status_differences.append(format_comparison_difference(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), "Crit Dmg", is_percentage=True))
+    # Untuk stat bonus di sini, format_comparison_difference akan menggunakan ideal 0.0 seperti sebelumnya
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('basic_atk_dmg', 0.0), "Basic ATK DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('heavy_atk_dmg', 0.0), "Heavy ATK DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_skill_dmg', 0.0), "Skill DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_lib_dmg', 0.0), "Lib. DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('attribute_dmg_bonus', 0.0), "Attribute DMG", is_percentage=True))
+    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('healing_bonus', 0.0), "Healing Bonus", is_percentage=True))
+
+
+    # --- Step 5: Calculate Component Scores (menggunakan Fuzzy Logic) ---
+    component_scores = {}
+
+    # Level Score (tidak berubah)
+    level_score = 100
+    resonator_level_db = getattr(resonator, 'level', 90)
+    resonator_chain_db = getattr(resonator, 'resonance_chain', 0)
+
+    if resonator_level_db < 90:
+        level_score -= (90 - resonator_level_db) * 0.5
+    if resonator_chain_db > 0:
+        level_score += min(10, resonator_chain_db * 2)
+    component_scores['level'] = max(0, min(100, level_score))
+
+    # Overall Stat Score (menggunakan Fuzzy Logic, tidak berubah dari sebelumnya)
+    overall_stat_score = 0
+    stat_weights_for_average = {
+        'hp': 1.0, 'attack': 1.0, 'defense': 1.0, 'energy': 1.0,
+        'crit_rate': 1.0, 'crit_dmg': 1.0,
+        'basic_atk_dmg': 1.0, 'heavy_atk_dmg': 1.0, 'resonance_skill_dmg': 1.0,
+        'resonance_lib_dmg': 1.0, 'attribute_dmg_bonus': 1.0, 'healing_bonus': 1.0,
+    }
+
+    # Perhitungan fuzzy stat quality (memastikan ideal_val yang sesuai digunakan)
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_hp, user_input_stats.get('hp', 0.0), 'flat') * stat_weights_for_average['hp']
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_attack, user_input_stats.get('attack', 0.0), 'flat') * stat_weights_for_average['attack']
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_defense, user_input_stats.get('defense', 0.0), 'flat') * stat_weights_for_average['defense']
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_energy, user_input_stats.get('energy', 0.0), 'percent') * stat_weights_for_average['energy']
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), 'percent') * stat_weights_for_average['crit_rate']
+    overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), 'percent') * stat_weights_for_average['crit_dmg']
+
+    # Untuk stat bonus, calculate_fuzzy_stat_quality menggunakan 0 sebagai ideal_val
+    # karena ia menilai nilai absolut user_val jika is_role_priority True.
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('basic_atk_dmg', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['basic_atk_dmg']
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('heavy_atk_dmg', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['heavy_atk_dmg']
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_skill_dmg', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_skill_dmg']
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_lib_dmg', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_lib_dmg']
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('attribute_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['attribute_dmg_bonus']
+    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('healing_bonus', 0.0), 'bonus', is_support_and_healer) * stat_weights_for_average['healing_bonus']
+
+    total_stat_weights = sum(stat_weights_for_average.values())
+    component_scores['status'] = round(overall_stat_score / total_stat_weights, 2) if total_stat_weights > 0 else 0
+
+    # Weapon Score (tidak berubah)
+    weapon_score = 0
+    if build_instance and build_instance.ideal_weapon:
+        if selected_weapon_obj and build_instance.ideal_weapon.pk == selected_weapon_obj.pk:
+            weapon_score = 100
+        elif selected_weapon_obj:
+            weapon_rarity = getattr(selected_weapon_obj, 'rarity', 0)
+            weapon_score = (weapon_rarity / 5) * 80
+            weapon_score = min(100, weapon_score)
+    component_scores['weapon'] = weapon_score
+
+    # Echo Score (tidak berubah)
+    echo_score = 0
+    if build_instance and build_instance.ideal_echo:
+        echo_matches = (selected_echo_obj and build_instance.ideal_echo.pk == selected_echo_obj.pk)
+        sonata_matches = (echo_matches and selected_sonata_obj and build_instance.ideal_sonata and build_instance.ideal_sonata.pk == selected_sonata_obj.pk)
+
+        if echo_matches and sonata_matches:
+            echo_score = 100
+        elif echo_matches:
+            echo_score = 60
+        else:
+            echo_score = 0
+    component_scores['echo'] = min(100, echo_score)
+
+    # Skill Score (tidak berubah)
+    skill_score = 100
+    total_skill_levels = 0
+    
+    max_level_per_skill = 10 # Common max skill level
+    if build_instance and hasattr(build_instance, 'max_skill_level'): # Jika Anda memiliki ini di ideal build
+        max_level_per_skill = build_instance.max_skill_level
+    
+    total_possible_skill_levels = len(SKILL_LEVEL_FIELDS) * max_level_per_skill
+
+    for skill_field in SKILL_LEVEL_FIELDS.keys():
+        current_level = getattr(resonator, skill_field, 0)
+        total_skill_levels += current_level
+
+    if total_possible_skill_levels > 0:
+        skill_score = (total_skill_levels / total_possible_skill_levels) * 100
+    else:
+        skill_score = 100 # If no skills or max levels defined, assume perfect score
+
+    component_scores['skill'] = max(0, min(100, skill_score))
+
+    # --- Step 6: Calculate Overall Rating ---
+    weighted_sum = (
+        component_scores.get('level', 0) * RESONATOR_RATING_WEIGHTS['level'] +
+        component_scores.get('status', 0) * RESONATOR_RATING_WEIGHTS['status'] +
+        component_scores.get('weapon', 0) * RESONATOR_RATING_WEIGHTS['weapon'] +
+        component_scores.get('echo', 0) * RESONATOR_RATING_WEIGHTS['echo'] +
+        component_scores.get('skill', 0) * RESONATOR_RATING_WEIGHTS['skill']
+    )
+    total_weights = sum(RESONATOR_RATING_WEIGHTS.values())
+    resonator_rating_final = round(weighted_sum / total_weights, 2)
+
+    resonator_rating_text = get_overall_build_rating_text(resonator_rating_final)
+
+    # --- Step 7: Prepare Context for Template ---
+    category_scores = {
+        'Character': f"{resonator.rarity}/5",
+        'Level': f"{round(component_scores['level'] / 10)}/10",
+        'Weapon': f"{round(component_scores['weapon'] / 10)}/10",
+        'Echo': f"{round(component_scores['echo'] / 10)}/10",
+        'Skill': f"{round(component_scores['skill'] / 10)}/10",
+        'Stats': f"{round(component_scores['status'] / 10)}/10"
+    }
 
     chart_labels = ['HP', 'ATK', 'DEF', 'Energy Regen', 'Crit Rate', 'Crit Dmg']
     chart_data_normalized = [
-        min(100.0, (final_hp / HP_NORM) * 100.0),        
-        min(100.0, (final_attack / ATK_NORM) * 100.0),    
-        min(100.0, (final_defense / DEF_NORM) * 100.0),    
-        min(100.0, (final_energy / ENERGY_NORM) * 100.0),  
-        min(100.0, final_crit_rate),                       
-        min(100.0, final_crit_dmg),                         
+        min(100.0, (ideal_hp / HP_NORM) * 100.0),
+        min(100.0, (ideal_attack / ATK_NORM) * 100.0),
+        min(100.0, (ideal_defense / DEF_NORM) * 100.0),
+        min(100.0, (ideal_energy / ENERGY_NORM) * 100.0),
+        min(100.0, ideal_crit_rate / CRIT_RATE_NORM * 100.0),
+        min(100.0, ideal_crit_dmg / CRIT_DMG_NORM * 100.0),
     ]
-    
-    resonator_rating = round(sum(chart_data_normalized) / len(chart_data_normalized) if chart_data_normalized else 0.0, 2)
-    
-    status_differences = []
-
-    def format_comparison_difference(db_val, session_val, label, is_percentage=False):
-        diff = db_val - session_val
-        symbol = ''
-        if diff > 0:
-            symbol = '&#9650;' # Panah atas
-            diff_str = f"+{diff:.1f}" if not is_percentage else f"+{diff:.1f}%"
-        elif diff < 0:
-            symbol = '&#9660;' # Panah bawah
-            diff_str = f"{diff:.1f}" if not is_percentage else f"{diff:.1f}%"
-        else:
-            symbol = '&#x2713;' # Tanda centang
-            diff_str = "Equal"
-
-        label_parts = label.split(' ')
-        label_unit = label_parts[0] if label_parts else ''
-
-        return {'label': label, 'value': diff_str, 'symbol': symbol, 'label_unit': label_unit}
-
-    status_differences.append(format_comparison_difference(final_hp, user_input_stats_from_session['hp'], "HP"))
-    status_differences.append(format_comparison_difference(final_attack, user_input_stats_from_session['attack'], "ATK"))
-    status_differences.append(format_comparison_difference(final_defense, user_input_stats_from_session['defense'], "DEF"))
-    status_differences.append(format_comparison_difference(final_energy, user_input_stats_from_session['energy'], "Energy Regen", is_percentage=True))
-    status_differences.append(format_comparison_difference(final_crit_rate, user_input_stats_from_session['crit_rate'], "Crit Rate", is_percentage=True))
-    status_differences.append(format_comparison_difference(final_crit_dmg, user_input_stats_from_session['crit_dmg'], "Crit Dmg", is_percentage=True))
-    
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('basic_atk_dmg', 0.0), "Basic ATK DMG", is_percentage=True)) 
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('heavy_atk_dmg', 0.0), "Heavy ATK DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('resonance_skill_dmg', 0.0), "Skill DMG", is_percentage=True)) 
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('resonance_lib_dmg', 0.0), "Lib. DMG", is_percentage=True)) 
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('attribute_dmg_bonus', 0.0), "Attribute DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats_from_session.get('healing_bonus', 0.0), "Healing Bonus", is_percentage=True))
-
-    # Skor Kategori (Dummy atau Terhitung)
-    category_scores = {
-        'Character': f"{resonator_obj.rarity}/5", 
-        'Weapon': '9/10', # Placeholder
-        'Echo': '8/10',   # Placeholder
-        'Skill': '10/10', # Placeholder
+    performance_data_json = {
+        'labels': chart_labels,
+        'datasets': [{
+            'label': 'Resonator Performance (Ideal Build)',
+            'data': chart_data_normalized,
+            'backgroundColor': 'rgba(255, 99, 132, 0.2)',
+            'borderColor': 'rgba(255, 99, 132, 1)',
+            'borderWidth': 1
+        }]
     }
 
-    return {
-        'final_stats': { # Ini adalah stats dari Build yang tersimpan di DB
-            'hp': final_hp, 'attack': final_attack, 'defense': final_defense,
-            'energy': final_energy, 'crit_rate': final_crit_rate, 'crit_dmg': final_crit_dmg,
-            # Bonus DMG dasar, heavy, skill, liberation, attribute_dmg_bonus, healing_bonus TIDAK DIKEMBALIKAN DI SINI
-            # karena tidak diambil dari model Build
-        },
-        'performance_data_json': {
-            'labels': chart_labels,
-            'datasets': [{
-                'label': 'Resonator Performance',
-                'data': chart_data_normalized,
-                'backgroundColor': 'rgba(255, 99, 132, 0.2)',
-                'borderColor': 'rgba(255, 99, 132, 1)',
-                'borderWidth': 1
-            }]
-        },
-        'resonator_rating': resonator_rating,
-        'status_differences': status_differences,
-        'category_scores': category_scores,
-        'selected_weapon_obj_db': selected_weapon_obj_db, # Gear dari Build di DB
-        'selected_echo_obj_db': selected_echo_obj_db,
-        'selected_sonata_obj_db': selected_sonata_obj_db,
-    }
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    user_name = request.user.username if request.user.is_authenticated else "Guest"
 
-def build_review_page(request, name):
-    resonator = get_object_or_404(Resonator, name__iexact=name) 
-    
-    # URL gambar karakter
-    folder_name = format_folder(resonator.name) 
-    image_path = f"{settings.MEDIA_URL}resonator/{folder_name}/"
-    images = {"render": f"{image_path}Render.png"}
-
-    # Get roles with their icons
-    roles_with_icons = resonator.role.all().values('name', 'icon_role')
-
-    # Panggil helper functions untuk mendapatkan bagian-bagian data
-    build_review_data = _get_build_review_data(request, resonator)
-    difference_stat_data = _get_difference_stat_data(request, resonator, build_review_data) 
-
-    # Gabungkan semua data ke dalam satu konteks
     context = {
         'resonator': resonator,
-        'images': images, 
-        'user_name': request.user.username if request.user.is_authenticated else 'Guest',
-        'current_date': date.today().strftime("%d %B %Y"), 
-        'current_character_name': name,
-        'roles': roles_with_icons,  # Tambahkan ini
+        'images': images,
+        'user_name': user_name,
+        'current_date': current_date,
+        'roles_with_icons': roles_with_icons,
+        'user_input_stats': user_input_stats, # Ini user_input_stats mentah (untuk referensi jika diperlukan)
+        'overview_stats': overview_stats, # Ini daftar stat yang sudah diproses dengan warna
+        'selected_weapon_obj': selected_weapon_obj,
+        'selected_echo_obj': selected_echo_obj,
+        'selected_sonata_obj': selected_sonata_obj,
+        'ideal_stats': { # Ini ideal_stats mentah (untuk referensi jika diperlukan)
+            'hp': ideal_hp, 'attack': ideal_attack, 'defense': ideal_defense,
+            'energy': ideal_energy, 'crit_rate': ideal_crit_rate, 'crit_dmg': ideal_crit_dmg,
+            # Tambahkan ideal_val untuk bonus stat di sini jika ada
+            'basic_atk_dmg': ideal_basic_atk_dmg, 'heavy_atk_dmg': ideal_heavy_atk_dmg,
+            'resonance_skill_dmg': ideal_resonance_skill_dmg, 'resonance_lib_dmg': ideal_resonance_lib_dmg,
+            'attribute_dmg_bonus': ideal_attribute_dmg_bonus, 'healing_bonus': ideal_healing_bonus,
+        },
+        'status_differences': status_differences, # Ini dari format_comparison_difference (jika masih digunakan)
+        'category_scores': category_scores,
+        'performance_data_json': performance_data_json,
+        'resonator_rating': resonator_rating_final,
+        'resonator_rating_text': resonator_rating_text,
     }
-    
-    # Update konteks dengan data dari helper functions
-    context.update(build_review_data)
-    context.update(difference_stat_data)
+
+    print("DEBUG: performance_data_json (before json_script filter):")
+    print(json.dumps(performance_data_json, indent=2))
 
     return render(request, 'landingpage/review.html', context)

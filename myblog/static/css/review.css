@@ -1,23 +1,5 @@
 
-.container {
-    width: 100%; /* Scaled from 100% */
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-image: url("/static/assets/background/Background-7.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
 
-.review-page-container {
-    width: 100%;
-    margin: 20px auto; /* Pusatkan kontainer dengan margin vertikal */
-    padding: 20px;
-    display: flex;
-    flex-direction: column; /* Menumpuk section yang disertakan secara vertikal */
-    gap: 30px; /* Jarak antara build_review.html dan difference_stat.html */
-}
 
 /* Pemisah visual antar section */
 .section-divider {

@@ -1,3 +1,22 @@
+.container {
+    width: 100%; /* Scaled from 100% */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url("/static/assets/background/Background-7.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.review-page-container {
+    width: 100%;
+    margin: 20px auto; /* Pusatkan kontainer dengan margin vertikal */
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Menumpuk section yang disertakan secara vertikal */
+    gap: 30px; /* Jarak antara build_review.html dan difference_stat.html */
+}
 
 .review {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -7,7 +26,6 @@
 .review .container-review {
     display: flex;
     width: 100%;
-    height: 100vh;
     padding: 40px;
     box-sizing: border-box;
 }
@@ -393,4 +411,104 @@
 
 .review .skill-names span {
     width: 20%;
+}
+
+.ideal-value-display {
+        font-size: 0.8em; /* Ukuran font lebih kecil dari nilai user */
+        color: #888; /* Warna abu-abu untuk nilai ideal */
+        margin-left: 5px; /* Sedikit jarak dari nilai user */
+    }
+
+    .stat-value-placeholder {
+        font-weight: bold; /* Nilai user lebih menonjol */
+        /* Warna akan ditentukan oleh inline style dari `stat.color` */
+    }
+
+.ideal-stats-group h3, .skill-levels-ideal h3,
+.spider-chart-container h3, .resonator-rating h3,
+.status-difference h3, .category-scores h3,
+.bonus-list h3, .gear-section h3 {
+    color: #00bcd4; /* Accent color */
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+/* Assessment Panel */
+.spider-chart-container {
+    position: relative;
+    height: 300px; /* Fixed height for chart */
+    margin-bottom: 20px;
+}
+
+.resonator-rating {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.rating-score {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4CAF50; /* Green for good rating */
+    margin: 10px 0;
+}
+
+.rating-text {
+    font-size: 1.2em;
+    font-style: italic;
+    color: #bbb;
+}
+
+.status-difference .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Responsive grid for diffs */
+    gap: 10px;
+}
+
+.diff-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.diff-label {
+    color: #ddd;
+}
+
+.diff-value {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.diff-symbol {
+    font-size: 1.1em;
+}
+
+/* Right Panel */
+.category-scores .score-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.score-box {
+    background-color: #333;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 0.9em;
+    line-height: 1.3;
+}
+
+.score-box span {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #ffeb3b; /* Yellow for scores */
 }
