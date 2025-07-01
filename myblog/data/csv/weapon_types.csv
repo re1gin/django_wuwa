@@ -1,6 +1,6 @@
-name
-Sword
-Gauntlets
-Pistols
-Broadblade
-Rectifier
+name,icon type
+Sword,weapontype/sword.png
+Gauntlets,weapontype/gauntlets.png
+Pistols,weapontype/pistols.png
+Broadblade,weapontype/broadblade.png
+Rectifier,weapontype/rectifier.png

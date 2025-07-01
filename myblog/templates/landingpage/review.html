@@ -22,15 +22,15 @@
 
                     <div class="right-stat-overview">
                         <div class="stat-box">
-                            <div class="stat-value">{{ resonator.level|default:"90"}}</div>
+                            <div class="stat-value">{{ user_input_stats.character_level }}</div>
                             <div class="stat-label">
                                 <div class="label">Level</div>
                             </div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-value">{{ resonator.resonance_chain|default:"0"}}</div>
+                            <img src="{{ resonator.weapon.icon_weapon.url }}" alt="{{ resonator.weapon.name }} Weapon Icon" class="icon-attribute">
                             <div class="stat-label">
-                                <div class="label">R. Chain</div>
+                                <div class="label">Weapon</div>
                             </div>
                         </div>
                         <div class="stat-box">
@@ -100,7 +100,7 @@
                             <div class="diff-grid">
                                 {% for diff_item in status_differences %}
                                     <div class="diff-item">
-                                        <span class="diff-label">{{ diff_item.label }}:</span>
+                                        
                                         <span class="diff-value">{{ diff_item.value }} {{ diff_item.label_unit }}</span> 
                                         <span class="diff-symbol">{{ diff_item.symbol|safe }}</span>
                                     </div>
@@ -146,22 +146,17 @@
 
                     <div class="gear">
                         <div class="equipment-gear">
-                            {% if selected_echo_obj %}
-                                <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
-                                <div class="gear-title">{{ selected_echo_obj.name }}</div>
-                            {% else %}
-                                <img src="{% static 'combat/images/placeholder_echo.png' %}" alt="No Echo Selected" class="gear-icon">
-                                <div class="gear-title">No Echo Selected</div>
-                            {% endif %}
+                            <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
+                            <div class="gear-title">{{ selected_echo_obj.name }}</div>
+                            <div class="gear-title">
+                                <p>Cost: {{selcted_echo_obj.cost}}</p>
+                                <p>Level: {{ user_input_stats.echo_level }}</p>
+                            </div>
+
                         </div>
                         <div class="equipment-gear">
-                            {% if selected_sonata_obj %}
-                                <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
-                                <div class="gear-title">{{ selected_sonata_obj.name }}</div>
-                            {% else %}
-                                <img src="{% static 'combat/images/placeholder_sonata.png' %}" alt="No Sonata Selected" class="gear-icon">
-                                <div class="gear-title">No Sonata Selected</div>
-                            {% endif %}
+                            <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
+                            <div class="gear-title">{{ selected_sonata_obj.name }}</div>
                         </div>
                     </div>
 
@@ -172,25 +167,22 @@
                             <div class="score-box">Weapon<br><span>{{ category_scores.Weapon }}</span></div>
                             <div class="score-box">Echo<br><span>{{ category_scores.Echo }}</span></div>
                             <div class="score-box">Skill<br><span>{{ category_scores.Skill }}</span></div>
+                            <div class="score-box">Stats<br><span>{{ category_scores.Stats}}</span></div>
                         </div>
                     </div>
 
                     <div class="damage-list">
                         <div class="damage-item">
                             <span class="damage-name">Basic Attack Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg|floatformat:"1" }}%</span>
-                        </div>
-                        <div class="damage-item">
-                            <span class="damage-name">Heavy Attack Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.heavy_atk_dmg|floatformat:"1" }}%</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg_bonus|floatformat:"1" }}%</span>
                         </div>
                         <div class="damage-item">
                             <span class="damage-name">Resonance Skill Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg|floatformat:"1" }}%</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg_bonus|floatformat:"1" }}%</span>
                         </div>
                         <div class="damage-item">
                             <span class="damage-name">Resonance Liberation Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg|floatformat:"1" }}%</span>
+                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg_bonus|floatformat:"1" }}%</span>
                         </div>
                         <div class="damage-item">
                             <span class="damage-name">Healing Bonus</span>
@@ -207,11 +199,11 @@
 
                     <div class="skill-levels">
                         <div class="level-text">
-                            <span>LV/{{ basic_atk_level|default:"10" }}</span>
-                            <span>LV/{{ resonance_skill_level|default:"10" }}</span>
-                            <span>LV/{{ forte_circuit_level|default:"10" }}</span>
-                            <span>LV/{{ resonance_liberation_level|default:"10" }}</span>
-                            <span>LV/{{ intro_skill_level|default:"10" }}</span>
+                            <span>LV {{ user_input_stats.basic_atk_level }}</span>
+                            <span>LV {{ user_input_stats.resonance_skill_level }}</span>
+                            <span>LV {{ user_input_stats.forte_circuit_level }}</span>
+                            <span>LV {{ user_input_stats.resonance_liberation_level }}</span>
+                            <span>LV {{ user_input_stats.intro_skill_level }}</span>
                         </div>
                         <div class="skill-icons">
                             {# Tempat untuk ikon skill level yang akan ditambahkan secara manual #}

@@ -1,3 +1,6 @@
+
+
+/* --- 3. Gaya Umum (Container) --- */
 .container {
     width: 100%;
     display: flex;
@@ -7,63 +10,70 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: aliceblue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font dari patokan */
 }
 
+/* --- 4. Hero Section (Layout Utama) --- */
 .hero {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
-    height: 100vh;
+    
+    box-sizing: border-box;
+    animation: fadeIn 1s ease-out forwards;
 }
 
 .left {
     display: flex;
-    width: 40%; /* 40% * 0.9 */
-    height: 100%;
+    width: 40%; /* Dari patokan */
+    height: 100%; /* Dari patokan */
     justify-content: center;
     align-items: center;
 }
 
 .image-container {
-    width: 360px; /* 400px * 0.9 */
-    height: 100%;
+    width: 360px; /* Dari patokan */
+    height: 100%; /* Dari patokan */
     display: flex;
-    align-items: end;
+    align-items: flex-end; /* Dari patokan */
     justify-content: center;
     position: relative;
-    box-shadow: 0 0 13.5px #343434; /* 15px * 0.9 */
+    box-shadow: 0 0 13.5px #343434; /* Dari patokan */
 }
 
 .character-splash {
-    width: 135%; /* Proporsi tetap, ini mengatur splash relatif terhadap container */
+    width: 135%; /* Proporsi tetap */
     object-fit: cover;
+    transition: all 0.5s ease-in-out;
+}
+
+.character-splash:hover {
+    transform: scale(1.05);
 }
 
 .right {
     padding-top: 40px;
-    width: 50%; /* 50% * 0.9 */
-    height: 100%;
+    width: 50%; /* Dari patokan */
+    height: 100%; /* Dari patokan */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* Dari patokan */
 }
 
-
+/* --- 5. Icon Container (Slider Karakter) --- */
 .icon-container {
     display: flex;
     flex-direction: row;
-    width: 270px; /* 300px * 0.9 */
+    width: 270px; /* Dari patokan */
     overflow-x: auto;
     white-space: nowrap;
-    padding: 0 18px; /* 20px * 0.9 */
-    margin-left: auto;
-    gap: 13.5px; /* 15px * 0.9 */
+    padding: 0 18px; /* Dari patokan */
+    margin-left: auto; /* Dari patokan */
+    gap: 13.5px; /* Dari patokan */
     scroll-snap-type: x mandatory;
-
     mask-image: linear-gradient(
         to right,
         transparent 0%,
@@ -71,9 +81,8 @@
         black 90%,
         transparent 100%
     );
-
-    scroll-padding-left: 9px; /* 10px * 0.9 */
-    scroll-padding-right: 9px; /* 10px * 0.9 */
+    scroll-padding-left: 9px; /* Dari patokan */
+    scroll-padding-right: 9px; /* Dari patokan */
 }
 
 .icon-container::-webkit-scrollbar {
@@ -85,341 +94,41 @@
 }
 
 .character-icon {
-    width: 54px; /* 60px * 0.9 */
-    height: 54px; /* 60px * 0.9 */
+    width: 54px; /* Dari patokan */
+    height: 54px; /* Dari patokan */
     border-radius: 50%;
     object-fit: cover;
-    margin: 9px 0px; /* 10px * 0.9 */
-    border: 0.9px solid #ffffff; /* 1px * 0.9 */
+    margin: 10px 0px; /* Dari patokan */
+    border: 0.9px solid #ffffff; /* Dari patokan */
+    
     transition: all 0.2s ease-in-out;
     cursor: pointer;
     flex-shrink: 0;
-
     scroll-snap-align: start;
 }
 
 .character-icon.active {
-    border: 1.8px solid gold; /* 2px * 0.9 */
-    transform: scale(1.1); /* Skala tetap, ini adalah efek, bukan ukuran dasar */
-    box-shadow: 0 0 9px gold; /* 10px * 0.9 */
+    border: 1.8px solid gold; /* Dari patokan */
+    transform: scale(1.1);
+    box-shadow: 0 0 9px gold; /* Dari patokan */
 }
 
 .character-icon:hover:not(.active) {
-    transform: scale(1.05); /* Skala tetap */
-    box-shadow: 0 0 4.5px rgba(255, 215, 0, 0.5); /* 5px * 0.9 */
+    transform: scale(1.05);
+    box-shadow: 0 0 4.5px rgba(255, 215, 0, 0.5); /* Dari patokan */
 }
 
-.character-block {
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding-top: 20px;
-    padding-bottom: 50px;
-}
-.block-name {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    align-items: start;
-}
-
-.title-name {
-    display: flex;
-    background-color: #000000;
-    color: hsl(0, 0%, 100%);
-    padding: 3px 8px; /* 3px * 0.9, 8px * 0.9 */
-    font-size: 14px; /* 15px * 0.9 */
-}
-
-.name-character {
-    display: flex;
-    width: max-content;
-    font-size: 25px; /* 25px * 0.9 */
-    font-weight: bold;
-    color: #000000;
-    background-color: #ffffff;
-    padding: 2px 8px;
-    text-transform: uppercase;
-}
-
+/* --- 6. Form Block & Inner Layout --- */
 .form-block {
     width: 100%;
+    display: flex; /* Dari patokan */
+    flex-direction: column; /* Dari patokan */
     margin: 0;
-    padding: 0;
+    padding: 0; /* Dari patokan */
     box-sizing: border-box;
 }
 
-.input-block {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    align-items: flex-start;
-    gap: 13.5px;
-    justify-content: space-between;
-}
-
-.input-left-block {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.input-right-block {
-    width: 50%;
-    gap: 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-select {
-    border: none;
-    width: 150px;
-    color: #ffffff;
-    font-family: 'Orbitron', Arial, sans-serif;
-    font-size: 12px;
-    padding-left: 5px;
-    padding-right: 5px;
-
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;         
-
-    -ms-expand: none;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    background: none;
-}
-
-select::-webkit-scrollbar {
-    display: none;
-}
-
-select:hover {
-    opacity: 1;
-    color: rgb(255, 187, 0);
-    
-}
-
-option {
-    background-color: #e2e2e2;
-    color: #313131;
-    text-align: center;
-    padding-left: 10px;      
-}
-
-
-.block {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: flex-start;
-    border: 1px solid #b7b7b7;
-}
-
-.title-block {
-    display: flex;
-    background-color: #b7b7b7;
-    color: #000000;
-    padding: 2.7px 9px; /* 3px * 0.9, 10px * 0.9 */
-    font-size: 12.6px; /* 14px * 0.9 */
-}
-
-.stat {
-    display: flex;
-    flex-direction: column;
-    font-family: "Open Sans", sans-serif;
-    font-size: 10.8px; /* 12px * 0.9 */
-    color: #ffffff;
-    width: 100%;
-    border-top: 0.9px solid #ffffff95; /* 1px * 0.9 */
-    border-bottom: 0.9px solid #ffffff95; /* 1px * 0.9 */
-}
-
-.stat p {
-    padding: 4.5px 9px; /* 5px * 0.9, 10px * 0.9 */
-    width: 100%;
-    text-align: start;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.stat p:nth-child(odd) {
-    background-color: #0000007c;
-}
-
-.stat p:nth-child(even) {
-    background-color: #ffffff38;
-}
-
-.stat p input[type="number"] {
-    text-align: right;
-    width: auto;
-    min-width: 27px; /* 30px * 0.9 */
-    max-width: 63px; /* 70px * 0.9 */
-    color: #ffffff;
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0 4.5px; /* 5px * 0.9 */
-
-    background-color: transparent;
-    border: none;
-    outline: none;
-
-    border-radius: 2.7px; /* 3px * 0.9 */
-    outline: none;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-        pointer-events: none;
-    }
-
-    &:hover,
-    &:focus {
-        background-color: #ffffff;
-        color: #000;
-        border-color: #ffc400;
-        box-shadow: 0 0 0 0.18rem rgba(255, 225, 0, 0.539); /* 0.2rem * 0.9 */
-    }
-
-    &::placeholder {
-        color: #888;
-        opacity: 1;
-    }
-}
-
-.sonata-echo-block {
-    display: flex;
-    width: 100%;
-    margin-top: 18px; /* 20px * 0.9 */
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.block-icon {
-    width: 72px; /* 80px * 0.9 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-img {
-    width: 70px; /* 70px * 0.9 */
-    height: 70px;
-    display: block;
-    object-fit: cover;
-    margin: 10px;
-    transition: opacity 2s ease-in-out, transform 2s ease-in-out;
-}
-
-.weapons {
-    display: flex;
-    width: 100%;
-    height: 70px;
-    flex-direction: row;
-    background-color: #0e0e0eb6;
-    border-top: 1px solid #b7b7b7;
-    border-bottom: 1px solid #b7b7b7;
-    
-}
-
-.weapon-details {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-left: 10px;
-    gap: 5px;
-}
-
-.weapon-details p {
-    font-size: 12px;
-    text-align: center
-}
-
-.weapons .icon-img {
-    width: 60px; /* 70px * 0.9 */
-    height: 60px;
-    display: block;
-    object-fit: cover;
-    padding: 0;
-}
-
-.echo {
-    display: flex;
-    width: 50%;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-}
-
-.echo .title-block {
-    width: 90%;
-    justify-content: center;
-    align-items: center;
-}
-
-.echo .icon-img {
-    width: 65px;
-    height: 65px;
-    display: block;
-    object-fit: cover;
-    border-radius: 50px;
-    border: 1px solid #d4d4d4;
-    padding: 0;
-}
-
-.sonata {
-    display: flex;
-    width: 50%;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-}
-
-.sonata .title-block {
-    width: 90%;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.sonata .icon-img {
-    width: 65px;
-    height: 65px;
-    display: block;
-    object-fit: cover;
-    border-radius: 50px;
-    border: 1px solid #d4d4d4;
-    padding: 0;
-}
-
-.errorlist {
-    color: red;
-    list-style-type: none;
-    padding: 0;
-    margin-top: 5px;
-    font-size: 0.85em;
-}
+/* Pesan Error/Success dari Django */
 .messages {
     list-style-type: none;
     padding: 10px;
@@ -429,43 +138,371 @@ option {
 }
 .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 .messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-/* Style untuk input yang memiliki error */
+
+/* Gaya untuk input yang memiliki error */
 input.input-error, select.input-error {
     border: 1px solid red !important;
 }
 
+
+.character-block {
+    width: 100%; /* Dari patokan */
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.block-name {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    align-items: flex-start; /* Dari patokan */
+}
+
+.title-name {
+    display: flex;
+    background-color: #000000; /* Dari patokan */
+    color: hsl(0, 0%, 100%); /* Dari patokan */
+    padding: 5px 10px; /* Dari patokan */
+    font-size: 14px; /* Dari patokan */
+}
+
+.name-character {
+    display: flex;
+    width: max-content;
+    font-size: 25px; /* Dari patokan */
+    font-weight: bold;
+    color: #000000; /* Dari patokan */
+    background-color: #ffffff; /* Dari patokan */
+    padding: 3px 10px;
+    text-transform: uppercase;
+}
+
+/* Gaya untuk display level */
+.block-level {
+    display: flex;
+    flex-direction: row; /* Dari patokan */
+    width: fit-content;
+    align-items: center; /* Dari patokan */
+    justify-content: center; /* Dari patokan */
+}
+
+.block-level p, .weapon-level-display-wrapper {
+    font-size: 12px;
+    color: gold; /* Menggunakan warna langsung dari patokan */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+}
+
+.block-level span, .weapon-level-display-wrapper span {
+    font-weight: bold;
+    color: gold; /* Menggunakan warna langsung dari patokan */
+}
+
+.input-block {
+    display: flex;
+    flex-direction: row;
+    width: 100%; /* Dari patokan */
+    align-items: flex-start;
+    gap: 15px; /* Dari patokan */
+    justify-content: space-between;
+    
+}
+
+.input-left-block {
+    width: 50%; /* Dari patokan */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Dari patokan */
+    gap: 20px; /* Tetap dari versi sebelumnya */
+}
+
+.input-right-block {
+    width: 50%; /* Dari patokan */
+    gap: 20px; /* Dari patokan */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Dari patokan */
+}
+
+select {
+    border: none;
+    width: 150px; /* Dari patokan */
+    color: #ffffff; /* Dari patokan */
+    font-family: 'Orbitron', Arial, sans-serif;
+    border: none;
+    font-size: 12px;
+    padding-left: 5px; /* Dari patokan */
+    padding-right: 5px; /* Dari patokan */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -ms-expand: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: none; /* Dari patokan */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+select::-webkit-scrollbar {
+    display: none;
+}
+
+select:hover {
+    opacity: 1;
+    color: rgb(255, 187, 0); /* Dari patokan */
+}
+
+option {
+    background-color: #e2e2e2; /* Dari patokan */
+    color: #313131; /* Dari patokan */
+    text-align: center; /* Dari patokan */
+    padding-left: 10px; /* Dari patokan */
+}
+
+.block {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    transition: all 0.2s ease-in-out;
+}
+
+.block:hover {
+    transform: translateY(-2px); /* Dari patokan */
+}
+
+.title-block {
+    display: flex;
+    background-color: #b7b7b7; /* Dari patokan */
+    color: #000000; /* Dari patokan */
+    padding: 5px 10px; /* Dari patokan */
+    font-size: 13px; /* Dari patokan */
+    font-weight: bold;
+    box-sizing: border-box;
+    justify-content: center; /* Dari patokan */
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    font-family: "Open Sans", sans-serif;
+    font-size: 10.8px; /* Dari patokan */
+    color: #ffffff; /* Dari patokan */
+    width: 100%;
+    border-top: 0.9px solid #ffffff95; /* Dari patokan */
+    border-bottom: 0.9px solid #ffffff95; /* Dari patokan */
+}
+
+.stat p {
+    padding: 5px 10px; /* Dari patokan */
+    width: 100%;
+    text-align: start;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+}
+
+.stat p:nth-child(odd) {
+    background-color: #0000007c; /* Dari patokan */
+}
+
+.stat p:nth-child(even) {
+    background-color: #ffffff38; /* Dari patokan */
+}
+
+.stat p input[type="number"] {
+    text-align: right;
+    width: auto;
+    min-width: 27px; /* Dari patokan */
+    max-width: 63px; /* Dari patokan */
+    color: #ffffff;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0 4.5px; /* Dari patokan */
+    background-color: transparent;
+    border: none;
+    outline: none; /* Dari patokan */
+    border-radius: 2.7px; /* Dari patokan */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
+
+.stat p input[type="number"]::-webkit-outer-spin-button,
+.stat p input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    pointer-events: none;
+}
+
+.stat p input[type="number"]:hover,
+.stat p input[type="number"]:focus {
+    background-color: #ffffff;
+    color: #000;
+    border-color: #ffc400; /* Dari patokan */
+    box-shadow: 0 0 0 0.18rem rgba(255, 225, 0, 0.539); /* Dari patokan */
+}
+
+.stat p input[type="number"]::placeholder {
+    color: #888;
+    opacity: 1;
+}
+
+.sonata-echo-block {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    gap: 15px; /* Tetap dari versi sebelumnya */
+}
+
+.echo, .sonata {
+    display: flex;
+    width: 50%; /* Dari patokan */
+    justify-content: center; /* Dari patokan */
+    align-items: center; /* Dari patokan */
+    flex-direction: column; /* Dari patokan */
+    position: relative;
+    transition: transform 0.2s ease-in-out; /* Dari patokan */
+}
+
+.echo:hover, .sonata:hover {
+    transform: translateY(-2px); /* Dari patokan */
+}
+
+.echo .title-block, .sonata .title-block {
+    width: 80%; /* Dari patokan */
+    justify-content: center; /* Dari patokan */
+    align-items: center; /* Dari patokan */
+}
+
+.block-icon {
+    width: 72px; /* Dari patokan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icon-img {
+    width: 70px; /* Dari patokan */
+    height: 70px; /* Dari patokan */
+    display: block;
+    object-fit: cover;
+    margin: 10px; /* Dari patokan */
+}
+
+.echo .icon-img, .sonata .icon-img {
+    width: 65px;
+    height: 65px;
+    border-radius: 50px; /* Dari patokan */
+    border: 1px solid #d4d4d4; /* Dari patokan */
+    padding: 0; /* Dari patokan */
+}
+
+/* --- 9. Weapon Block (Dirombak total) --- */
+.weapon-content-area { /* Wrapper utama untuk ikon dan detail */
+    display: flex;
+    flex-direction: row; /* Ikon di kiri, detail di kanan */
+    background-color: #0e0e0eb6; /* Dari patokan */
+    border-top: 1px solid #b7b7b7; /* Dari patokan */
+    border-bottom: 1px solid #b7b7b7; /* Dari patokan */
+    align-items: center;
+    padding: 0; /* Dari patokan */
+    box-sizing: border-box;
+    gap: 10px; 
+    width: 100%;
+    height: auto; /* Sesuaikan tinggi agar konten tidak terpotong */
+}
+
+.weapon-details-group { /* Grup baru untuk select, rarity, dan level */
+    display: flex;
+    flex-direction: column; /* Stack select, rarity, level secara vertikal */
+    flex-grow: 1; /* Memungkinkan bagian ini mengisi ruang yang tersisa */
+    gap: 5px; /* Jarak antar elemen di dalamnya */
+    align-items: center; /* Dari patokan */
+    justify-content: center; /* Dari patokan */
+    padding-left: 10px; /* Dari patokan */
+}
+
+.weapon-rarity-display { /* Gaya untuk menampilkan bintang */
+    font-size: 1.0em;
+    color: gold; /* Menggunakan warna langsung dari patokan */
+    text-align: center; /* Dari patokan */
+    padding: 0; /* Dari patokan */
+    min-height: 20px;
+}
+
+/* Gaya untuk ikon senjata di dalam weapon-content-area */
+.weapon-content-area .block-icon .icon-img {
+    width: 60px; /* Dari patokan */
+    height: 60px; /* Dari patokan */
+    display: block;
+    object-fit: cover;
+    border-radius: 5px; /* Bentuk kotak untuk ikon senjata */
+    border: 1px solid #b7b7b7; /* Menggunakan warna langsung dari patokan */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Menggunakan warna langsung dari patokan */
+}
+
+/* --- 10. Button Group --- */
 .btn-grup {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
-    margin-top: 27px;
-    gap: 6.3px;
+    width: 100%; /* Dari patokan */
+    margin-top: 27px; /* Dari patokan */
+    gap: 6.3px; /* Dari patokan */
 }
 
 .btn {
     display: flex;
-    padding: 6.3px; /* 7px * 0.9 */
-    font-size: 9.9px; /* 11px * 0.9 */
+    padding: 6.3px; /* Dari patokan */
+    font-size: 9.9px; /* Dari patokan */
     font-weight: bold;
-    border: none;
+    border: none; /* Dari patokan */
+    border-radius: 5px; /* Tetap dari versi sebelumnya */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-transform: uppercase;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn.white {
-    background-color: #282828;
-    color: #efefef;
+    background-color: #282828; /* Dari patokan */
+    color: #efefef; /* Dari patokan */
+}
+.btn.white:hover {
+    background-color: #efefef; /* Dari patokan */
+    color: #282828; /* Dari patokan */
 }
 
 .btn.black {
-    background-color: #ffffff;
-    color: #000;
+    background-color: #ffffff; /* Dari patokan */
+    color: #000; /* Dari patokan */
+}
+.btn.black:hover {
+    background-color: #000; /* Dari patokan */
+    color: #ffffff; /* Dari patokan */
 }
 
+/* --- 11. Media Queries for Responsiveness --- */
 @media (max-width: 900px) {
     .hero {
-        height: auto;
-        padding: 13.5px; /* 15px * 0.9 */
+        height: auto; /* Dari patokan */
+        padding: 13.5px; /* Dari patokan */
         flex-wrap: wrap;
     }
 
@@ -474,27 +511,104 @@ input.input-error, select.input-error {
         align-items: center;
     }
 
+    .image-container {
+        max-width: 300px;
+        margin-bottom: 20px;
+    }
+
+    .character-splash {
+        width: 120%;
+    }
+
+    .icon-container {
+        max-width: 100%;
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .form-block {
+        width: 100%;
+    }
+
+    .character-block {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 95%;
+        padding-bottom: 20px;
+        gap: 10px;
+    }
+
+    .block-name, .block-level {
+        width: 100%;
+        align-items: center;
+    }
+
+    .input-block {
+        flex-direction: column;
+        width: 95%;
+        gap: 20px;
+    }
+
+    .input-left-block,
+    .input-right-block {
+        width: 100%;
+    }
+
+    .sonata-echo-block {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .echo, .sonata {
+        width: 100%;
+    }
+
+    .btn-grup {
+        width: 95%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 80%;
+        max-width: 250px;
+    }
+
+    /* Penyesuaian untuk layout senjata di mobile */
+    .weapon-content-area {
+        flex-direction: column; /* Tumpuk vertikal di mobile */
+        align-items: center;
+        gap: 15px;
+        height: auto; /* Sesuaikan tinggi agar konten tidak terpotong */
+    }
+
+    .weapon-details-group {
+        width: 100%;
+        align-items: center;
+    }
+
+    .weapon-rarity-display {
+        text-align: center;
+    }
+
+    /* Dari patokan, meskipun tidak ada di HTML saya saat ini */
     .character-profile {
-        width: 67%; /* Proporsi tetap */
+        width: 67%;
     }
 
     .content {
-        width: 67%; /* Proporsi tetap */
+        width: 67%;
     }
 }
 
+/* --- 12. Animations --- */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(18px); /* 20px * 0.9 */
+        transform: translateY(18px); /* Dari patokan */
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-
-.hero {
-    animation: fadeIn 1s ease-out forwards;
 }

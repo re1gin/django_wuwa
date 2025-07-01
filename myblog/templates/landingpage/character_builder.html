@@ -16,7 +16,7 @@
         </div>
 
         <div class="right">
-            
+
             <div class="icon-container">
                 {% for icon_char in all_characters_for_icons %}
                     <a href="{{ icon_char.detail_url }}"> {# Ini akan memicu pemuatan karakter baru #}
@@ -26,20 +26,24 @@
                     </a>
                 {% endfor %}
             </div>
-            
+
             <div class="form-block">
-                {# Tambahkan bagian untuk menampilkan pesan dari Django (misalnya, success/error messages) #}
+                {# Bagian untuk menampilkan pesan dari Django (misalnya, success/error messages) #}
+                {# Ini juga akan digunakan oleh JavaScript untuk menampilkan pesan error umum #}
                 {% if messages %}
                     <ul class="messages">
                         {% for message in messages %}
                             <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                         {% endfor %}
                     </ul>
+                {% else %}
+                    {# Tambahkan ul.messages kosong agar JavaScript bisa menggunakannya #}
+                    <ul class="messages" style="display: none;"></ul>
                 {% endif %}
 
                 <form id="buildForm" method="POST" action="{% url 'build:character_builder' name=character.name %}">
                     {% csrf_token %}
-                    
+
                     {# Hidden input untuk ID karakter, ini penting untuk ModelForm #}
                     <input type="hidden" name="character" value="{{ character.pk }}">
 
@@ -48,6 +52,11 @@
                             <span class="title-name">NAME</span>
                             <span class="name-character">{{ character.name|upper }}</span>
                         </div>
+
+                        {# Character Level diubah menjadi teks dalam div baru #}
+                        <div class="block-level">
+                            <p>LV: <span id="character-level-display">{{ user_input_stats.character_level }}</span></p>
+                        </div>
                     </div>
 
                     <div class="input-block">
@@ -55,25 +64,16 @@
                             <div class="block">
                                 <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
-                                    <p>HP: <input type="number" name="hp" step="0.1" placeholder="0.0" class="{% if form.hp.errors %}input-error{% endif %}"></p>
-                                    {% if form.hp.errors %}<ul class="errorlist">{% for error in form.hp.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>ATK: <input type="number" name="attack" step="0.1" placeholder="0.0" class="{% if form.attack.errors %}input-error{% endif %}"></p>
-                                    {% if form.attack.errors %}<ul class="errorlist">{% for error in form.attack.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>DEF: <input type="number" name="defense" step="0.1" placeholder="0.0" class="{% if form.defense.errors %}input-error{% endif %}"></p>
-                                    {% if form.defense.errors %}<ul class="errorlist">{% for error in form.defense.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>ENERGY REGEN: <input type="number" name="energy" step="0.1" placeholder="0.0" class="{% if form.energy.errors %}input-error{% endif %}"></p>
-                                    {% if form.energy.errors %}<ul class="errorlist">{% for error in form.energy.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" step="0.1" placeholder="0.0" class="{% if form.crit_rate.errors %}input-error{% endif %}"></p>
-                                    {% if form.crit_rate.errors %}<ul class="errorlist">{% for error in form.crit_rate.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" step="0.1" placeholder="0.0" class="{% if form.crit_dmg.errors %}input-error{% endif %}"></p>
-                                    {% if form.crit_dmg.errors %}<ul class="errorlist">{% for error in form.crit_dmg.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                                    {# Diatur tanpa default '0.0' agar benar-benar kosong jika tidak ada nilai #}
+                                    <p>HP: <input type="number" name="hp" placeholder="0.0" value="{{ form.hp.value|default:'' }}" class="{% if form.hp.errors %}input-error{% endif %}"></p>
+                                    <p>ATK: <input type="number" name="attack" placeholder="0.0" value="{{ form.attack.value|default:'' }}" class="{% if form.attack.errors %}input-error{% endif %}"></p>
+                                    <p>DEF: <input type="number" name="defense" placeholder="0.0" value="{{ form.defense.value|default:'' }}" class="{% if form.defense.errors %}input-error{% endif %}"></p>
+                                    <p>ENERGY REGEN: <input type="number" name="energy" placeholder="0.0" value="{{ form.energy.value|default:'' }}" class="{% if form.energy.errors %}input-error{% endif %}"></p>
+                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" placeholder="0.0" value="{{ form.crit_rate.value|default:'' }}" class="{% if form.crit_rate.errors %}input-error{% endif %}"></p>
+                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" placeholder="0.0" value="{{ form.crit_dmg.value|default:'' }}" class="{% if form.crit_dmg.errors %}input-error{% endif %}"></p>
                                 </div>
                             </div>
+
 
                             <div class="sonata-echo-block">
                                 <div class="echo">
@@ -90,8 +90,6 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-                                    {% if form.selected_echo.errors %}<ul class="errorlist">{% for error in form.selected_echo.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    <div class="echo-details" id="echo-details-container"></div>
                                 </div>
 
                                 <div class="sonata">
@@ -108,8 +106,6 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-                                    {% if form.selected_sonata.errors %}<ul class="errorlist">{% for error in form.selected_sonata.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    <div class="sonata-details" id="sonata-details-container"></div>
                                 </div>
                             </div>
                         </div>
@@ -117,56 +113,43 @@
                         <div class="input-right-block">
                             <div class="block">
                                 <span class="title-block">WEAPON</span>
-                                <div class="weapons">
+                                <div class="weapon-content-area"> {# Wrapper utama untuk ikon dan detail #}
                                     <div class="block-icon">
                                         <img id="weapon-icon" src="{% if selected_weapon_obj %}{{ selected_weapon_obj.icon_image.url }}{% else %}{% static 'assets/ikon/Weapon.png' %}{% endif %}" alt="Weapon Preview" class="icon-img"/>
                                     </div>
+                                    <div class="weapon-details-group"> {# Grup baru untuk select, rarity, dan level #}
+                                        <select name="selected_weapon" id="weapon-select" class="{% if form.selected_weapon.errors %}input-error{% endif %}">
+                                            <option value="">Pilih Senjata</option>
+                                            {% for weapon in weapons_data %}
+                                                <option value="{{ weapon.weapon_name }}"
+                                                    {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
+                                                    {{ weapon.weapon_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
 
-                                    {# Pindahkan select ke luar weapon-details-container agar tidak terhapus #}
-                                    <select name="selected_weapon" id="weapon-select" class="{% if form.selected_weapon.errors %}input-error{% endif %}">
-                                        <option value="">Pilih Senjata</option>
-                                        {% for weapon in weapons_data %}
-                                            <option value="{{ weapon.weapon_name }}"
-                                                {% if weapon.weapon_name == user_input_stats.selected_weapon %}selected{% endif %}>
-                                                {{ weapon.weapon_name }} 
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    {% if form.selected_weapon.errors %}<ul class="errorlist">{% for error in form.selected_weapon.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                                        {# Kontainer untuk rarity #}
+                                        <div class="weapon-rarity-display" id="weapon-rarity-display-container">
+                                            {# Bintang akan diisi oleh JavaScript di sini #}
+                                        </div>
 
-                                    
-                                    <div class="weapon-details" id="weapon-text-details-container">
-                                        {% if selected_weapon_obj %}
-                                            <p><strong>Tipe:</strong> {{ selected_weapon_obj.weapon_type}}</p>
-                                            <p><strong>Rarity:</strong> {{ selected_weapon_obj.rarity }}</p>
-                                        {% endif %}
+                                        {# Weapon Level diubah menjadi teks dalam div baru #}
+                                        <div class="weapon-level-display-wrapper">
+                                            <span>Weapon Level: </span>
+                                            <span id="weapon-level-display">{{ user_input_stats.weapon_level|default:'90' }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="block">
                                 <span class="title-block">BONUS STAT</span>
                                 <div class="stat">
-                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.basic_attack_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.basic_attack_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>Heavy Attack DMG Bonus: <input type="number" name="heavy_attack_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.heavy_attack_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.heavy_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.heavy_attack_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.heavy_attack_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.resonance_skill_dmg_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.resonance_skill_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.resonance_skill_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.resonance_lib_dmg_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.resonance_lib_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.resonance_lib_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>{{ character.attribute.name }} DMG Bonus: <input type="number" name="attribute_dmg_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|default_if_none:'0.0' }}" class="{% if form.attribute_dmg_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.attribute_dmg_bonus.errors %}<ul class="errorlist">{% for error in form.attribute_dmg_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>Healing Bonus: <input type="number" name="healing_bonus" step="0.1" placeholder="0.0" value="{{ user_input_stats.healing_bonus|default_if_none:'0.0' }}" class="{% if form.healing_bonus.errors %}input-error{% endif %}"></p>
-                                    {% if form.healing_bonus.errors %}<ul class="errorlist">{% for error in form.healing_bonus.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-                                    
-                                    <p>Attribute Resistance: <input type="number" name="attribute_res" step="0.1" placeholder="0.0" value="{{ user_input_stats.attribute_res|default_if_none:'0.0' }}" class="{% if form.attribute_res.errors %}input-error{% endif %}"></p>
-                                    {% if form.attribute_res.errors %}<ul class="errorlist">{% for error in form.attribute_res.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus|default_if_none:'' }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus|default_if_none:'' }}" class="{% if form.resonance_skill_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus|default_if_none:'' }}" class="{% if form.resonance_lib_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>{{ character.attribute.name }} DMG Bonus: <input type="number" name="attribute_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|default_if_none:'' }}" class="{% if form.attribute_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Healing Bonus: <input type="number" name="healing_bonus" placeholder="0.0" value="{{ user_input_stats.healing_bonus|default_if_none:'' }}" class="{% if form.healing_bonus.errors %}input-error{% endif %}"></p>
                                 </div>
                             </div>
                         </div>
@@ -174,7 +157,8 @@
 
                     <div class="btn-grup">
                         <button type="submit" name="NILAI BUILD" class="btn black">NILAI BUILD</button>
-                        <button type="reset" class="btn white">RESET INPUT</button>
+                        {# Mengubah type="reset" menjadi button biasa agar bisa mengontrol reset via JS #}
+                        <button type="button" id="reset-builder-button" class="btn white">RESET INPUT</button>
                     </div>
                 </form>
             </div>
@@ -188,22 +172,32 @@
                 const weaponSelect = document.getElementById('weapon-select');
                 const echoSelect = document.getElementById('echo-select');
                 const sonataSelect = document.getElementById('sonata-select');
+                
                 const weaponIcon = document.getElementById('weapon-icon');
                 const echoIcon = document.getElementById('echo-icon');
                 const sonataIcon = document.getElementById('sonata-icon');
-                const weaponTextDetailsContainer = document.getElementById('weapon-text-details-container');
-                const echoDetailsContainer = document.getElementById('echo-details-container');
-                const sonataDetailsContainer = document.getElementById('sonata-details-container');
+
+                // Mengembalikan referensi ke kontainer rarity senjata yang baru
+                const weaponRarityDisplayContainer = document.getElementById('weapon-rarity-display-container');
+
+                // Menambahkan referensi ke elemen display level yang baru
+                const characterLevelDisplay = document.getElementById('character-level-display');
+                const weaponLevelDisplay = document.getElementById('weapon-level-display');
+
                 const buildForm = document.getElementById('buildForm');
                 const resetButton = document.getElementById('reset-builder-button');
+                
+                // Tempat untuk menampilkan pesan error umum
+                const messagesContainer = document.querySelector('.messages'); 
 
-                // State management
+                // Data dari Django yang diinjeksikan ke JavaScript
+                // Hanya menyimpan nilai yang perlu dikelola oleh JS untuk inisialisasi UI
                 const user_input_stats_js = {
-                    selected_weapon: "{{ user_input_stats.selected_weapon }}",
-                    selected_echo: "{{ user_input_stats.selected_echo }}",
-                    selected_sonata: "{{ user_input_stats.selected_sonata }}",
-                    attribute_dmg_bonus: parseFloat("{{ user_input_stats.attribute_dmg_bonus|default:'0.0' }}") || 0
+                    selected_weapon: "{{ user_input_stats.selected_weapon|default:'' }}",
+                    selected_echo: "{{ user_input_stats.selected_echo|default:'' }}",
+                    selected_sonata: "{{ user_input_stats.selected_sonata|default:'' }}",
                 };
+
 
                 // Utility Functions
                 function getCookie(name) {
@@ -217,16 +211,23 @@
                     return null;
                 }
 
-                function showError(element, message) {
-                    element.classList.add('input-error');
-                    const errorList = document.createElement('ul');
-                    errorList.classList.add('errorlist');
-                    errorList.innerHTML = `<li>${message}</li>`;
-                    element.parentNode.appendChild(errorList);
+                // Fungsi untuk menampilkan pesan error umum
+                function displayGeneralError(message) {
+                    if (messagesContainer) {
+                        messagesContainer.innerHTML = `<li class="error">${message}</li>`;
+                        messagesContainer.style.display = 'block'; // Pastikan terlihat
+                    } else {
+                        // Fallback jika .messages container tidak ditemukan
+                        alert(message);
+                    }
                 }
 
+                // Fungsi untuk menghapus semua pesan error (sebelum validasi baru)
                 function clearErrors() {
-                    document.querySelectorAll('.errorlist').forEach(el => el.remove());
+                    if (messagesContainer) {
+                        messagesContainer.innerHTML = '';
+                        messagesContainer.style.display = 'none'; // Sembunyikan jika kosong
+                    }
                     document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
                 }
 
@@ -236,9 +237,9 @@
                 }
 
                 function updateSelectOptions(selectElement, data, selectedValue) {
-                    const placeholderOption = selectElement.querySelector('option[value=""]') || 
+                    const placeholderOption = selectElement.querySelector('option[value=""]') ||
                         document.createElement('option');
-                    
+
                     selectElement.innerHTML = '';
                     placeholderOption.value = "";
                     placeholderOption.textContent = `Pilih ${selectElement.id.replace('-select', '')}`;
@@ -253,53 +254,36 @@
                     });
                 }
 
+                // Fungsi untuk menghasilkan bintang berdasarkan kelangkaan
+                function generateStars(rarity) {
+                    if (typeof rarity !== 'number' || rarity < 1) {
+                        return ''; // Mengembalikan string kosong jika rarity tidak valid
+                    }
+                    return '⭐'.repeat(rarity); // Menggunakan emoji bintang
+                }
+
                 // Reset Functionality
                 async function resetBuilder() {
                     try {
                         const csrfToken = getCookie('csrftoken');
+                        const response = await fetch("{% url 'build:reset_build_session' %}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrfToken,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ character_name: "{{ character.name }}" })
+                        });
 
                         if (response.ok) {
-                            return await response.json();
+                            window.location.reload(); // Reload the page to get default values from the server
+                        } else {
+                            throw new Error('Failed to reset session');
                         }
-                        throw new Error('Failed to reset session');
                     } catch (error) {
                         console.error('Reset error:', error);
-                        throw error;
+                        displayGeneralError('Gagal mereset builder. Silakan coba lagi.'); // Tampilkan error umum
                     }
-                }
-
-                function resetUI() {
-                    // Reset icons
-                    updateImage(weaponIcon, "{% static 'assets/ikon/Weapon.png' %}");
-                    updateImage(echoIcon, "{% static 'assets/ikon/Echo.png' %}");
-                    updateImage(sonataIcon, "{% static 'assets/ikon/Sonata.png' %}");
-                    
-                    // Clear details
-                    weaponTextDetailsContainer.innerHTML = '';
-                    echoDetailsContainer.innerHTML = '';
-                    sonataDetailsContainer.innerHTML = '';
-                    
-                    // Reset selects
-                    weaponSelect.value = "";
-                    echoSelect.value = "";
-                    sonataSelect.value = "";
-                    
-                    // Reset state
-                    Object.keys(user_input_stats_js).forEach(key => {
-                        if (key !== 'attribute_dmg_bonus') {
-                            user_input_stats_js[key] = "";
-                        } else {
-                            user_input_stats_js[key] = 0;
-                        }
-                    });
-                    
-                    // Reset form inputs
-                    document.querySelectorAll('input[type="number"]').forEach(input => {
-                        input.value = "0.0";
-                    });
-                    
-                    // Clear errors
-                    clearErrors();
                 }
 
                 // Item Display Functions
@@ -307,21 +291,18 @@
                     const config = {
                         'weapon': {
                             imgElement: weaponIcon,
-                            detailsContainer: weaponTextDetailsContainer,
+                            detailsContainer: weaponRarityDisplayContainer, // Mengarahkan ke kontainer rarity baru
                             defaultIcon: "{% static 'assets/ikon/Weapon.png' %}",
                             detailsHTML: data?.details ? `
-                                <p><strong>Tipe:</strong> ${data.details.weapon_type}</p>
-                                <p><strong>Rarity:</strong> ${data.details.rarity}</p>
-                            ` : ''
+                                ${generateStars(data.details.rarity)}
+                            ` : '' // Hanya menampilkan bintang
                         },
                         'echo': {
                             imgElement: echoIcon,
-                            detailsContainer: echoDetailsContainer,
                             defaultIcon: "{% static 'assets/ikon/Echo.png' %}",
                         },
                         'sonata': {
                             imgElement: sonataIcon,
-                            detailsContainer: sonataDetailsContainer,
                             defaultIcon: "{% static 'assets/ikon/Sonata.png' %}",
                         }
                     };
@@ -330,15 +311,20 @@
                     if (!imgElement) return;
 
                     updateImage(imgElement, data?.image_url || defaultIcon);
-                    detailsContainer.innerHTML = detailsHTML || '';
+                    
+                    // Hanya mengisi detailsContainer jika ada dan detailsHTML disediakan
+                    if (detailsContainer && detailsHTML !== undefined) {
+                        detailsContainer.innerHTML = detailsHTML;
+                    }
                 }
 
                 function updateUI(itemType, data) {
                     updateDetails(itemType, data);
-                    
+
                     if (itemType === 'echo') {
+                        // If selected echo changes, filter sonatas and reset sonata selection if current is invalid
                         updateSelectOptions(sonataSelect, data.filtered_sonatas || [], user_input_stats_js.selected_sonata);
-                        
+
                         if (!data.filtered_sonatas?.some(s => s.name === sonataSelect.value)) {
                             sonataSelect.value = "";
                             updateDetails('sonata', null);
@@ -351,7 +337,7 @@
                 async function fetchDetails(itemType, itemName, selectedEchoName = '') {
                     const csrfToken = getCookie('csrftoken');
                     const formData = new FormData();
-                    
+
                     formData.append('item_type', itemType);
                     formData.append('item_name', itemName);
                     formData.append('selected_echo_name', selectedEchoName);
@@ -364,19 +350,21 @@
                         });
 
                         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                        
+
                         const data = await response.json();
                         updateUI(itemType, data);
                         user_input_stats_js[`selected_${itemType}`] = itemName;
 
                     } catch (error) {
                         console.error('Error fetching item details:', error);
-                        updateDetails(itemType, null);
-                        
+                        updateDetails(itemType, null); // Reset display on error
+
                         if (itemType === 'echo') {
-                            updateSelectOptions(sonataSelect, [], '');
+                            updateSelectOptions(sonataSelect, [], ''); // Clear sonata options
                             user_input_stats_js.selected_sonata = "";
                         }
+                        // Tampilkan pesan error umum jika fetch gagal
+                        displayGeneralError(`Gagal memuat detail ${itemType}. Silakan coba lagi.`);
                     }
                 }
 
@@ -386,8 +374,8 @@
                     const itemType = selectElement.id.replace('-select', '');
                     const itemName = selectElement.value;
 
-                    const selectedEchoForFilter = itemType === 'sonata' ? echoSelect.value : 
-                                                (itemType === 'echo' ? itemName : '');
+                    const selectedEchoForFilter = itemType === 'sonata' ? echoSelect.value :
+                                                  (itemType === 'echo' ? itemName : '');
 
                     if (itemType === 'echo') {
                         sonataSelect.value = "";
@@ -403,7 +391,7 @@
                 }
 
                 function validateForm(event) {
-                    clearErrors();
+                    clearErrors(); // Bersihkan pesan error sebelumnya
                     let isValid = true;
 
                     // Validate required number inputs
@@ -413,32 +401,38 @@
                         { name: 'defense', label: 'DEF' },
                         { name: 'energy', label: 'ENERGY REGEN' },
                         { name: 'crit_rate', label: 'CRITICAL RATE' },
-                        { name: 'crit_dmg', label: 'CRITICAL DAMAGE' }
+                        { name: 'crit_dmg', label: 'CRITICAL DAMAGE' },
+                        // character_level dan weapon_level tidak lagi divalidasi sebagai input form
                     ];
 
-                    requiredNumberInputs.forEach(({name, label}) => {
+                    requiredNumberInputs.forEach(({name, label, min, max}) => {
                         const input = document.querySelector(`input[name="${name}"]`);
-                        if (!input) return;
+                        if (!input) return; // Lewati jika input tidak ditemukan
 
                         const value = input.value.trim();
                         if (value === '') {
-                            showError(input, `${label} tidak boleh kosong.`);
+                            input.classList.add('input-error'); // Tetap tandai inputnya
                             isValid = false;
-                        } else if (isNaN(value) || parseFloat(value) < 0) {
-                            showError(input, `${label} harus angka positif.`);
-                            isValid = false;
+                        } else {
+                            const numValue = parseFloat(value);
+                            if (isNaN(numValue) || numValue < (min || 0)) {
+                                input.classList.add('input-error'); // Tetap tandai inputnya
+                                isValid = false;
+                            }
+                            if (max && numValue > max) {
+                                input.classList.add('input-error'); // Tetap tandai inputnya
+                                isValid = false;
+                            }
                         }
                     });
 
-                    // Validate optional number inputs
+                    // Validate optional number inputs (unchanged - hanya memastikan numerik positif jika diisi)
                     const optionalNumberInputs = [
                         { name: 'basic_attack_dmg_bonus', label: 'Basic Attack DMG Bonus' },
-                        { name: 'heavy_attack_dmg_bonus', label: 'Heavy Attack DMG Bonus' },
                         { name: 'resonance_skill_dmg_bonus', label: 'Resonance Skill DMG Bonus' },
                         { name: 'resonance_lib_dmg_bonus', label: 'Resonance Liberation DMG Bonus' },
                         { name: 'attribute_dmg_bonus', label: 'Attribute DMG Bonus' },
                         { name: 'healing_bonus', label: 'Healing Bonus' },
-                        { name: 'attribute_res', label: 'Attribute Resistance' }
                     ];
 
                     optionalNumberInputs.forEach(({name, label}) => {
@@ -447,7 +441,7 @@
 
                         const value = input.value.trim();
                         if (value !== '' && (isNaN(value) || parseFloat(value) < 0)) {
-                            showError(input, `${label} harus angka positif.`);
+                            input.classList.add('input-error'); // Tetap tandai inputnya
                             isValid = false;
                         }
                     });
@@ -461,14 +455,15 @@
 
                     requiredSelects.forEach(({element, label}) => {
                         if (element && element.value === '') {
-                            showError(element, `Mohon pilih ${label}.`);
+                            element.classList.add('input-error'); // Tetap tandai selectnya
                             isValid = false;
                         }
                     });
 
                     if (!isValid) {
-                        event.preventDefault();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        event.preventDefault(); // Mencegah pengiriman form
+                        displayGeneralError('Terdapat kesalahan pada input Anda. Mohon periksa kembali bidang yang ditandai.');
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Gulir ke atas
                     }
                 }
 
@@ -478,7 +473,6 @@
                         e.preventDefault();
                         try {
                             await resetBuilder();
-                            resetUI();
                             console.log('Builder successfully reset');
                         } catch (error) {
                             console.error('Error resetting builder:', error);
@@ -487,12 +481,22 @@
                 }
 
                 // Event Listeners
-                weaponSelect.addEventListener('change', handleSelectChange);
-                echoSelect.addEventListener('change', handleSelectChange);
-                sonataSelect.addEventListener('change', handleSelectChange);
-                buildForm.addEventListener('submit', validateForm);
+                if (weaponSelect) weaponSelect.addEventListener('change', handleSelectChange);
+                if (echoSelect) echoSelect.addEventListener('change', handleSelectChange);
+                if (sonataSelect) sonataSelect.addEventListener('change', handleSelectChange);
+                if (buildForm) buildForm.addEventListener('submit', validateForm);
 
-                // Initialize
+                // Initialize form fields with values from `user_input_stats_js`
+                function initializeFormFields() {
+                    // Fungsi ini sekarang tidak melakukan apa-apa pada input numerik
+                    // karena mereka diinisialisasi langsung di HTML dengan default ''
+                    // atau readonly.
+                }
+
+                initializeFormFields(); // Call on DOMContentLoaded (meskipun sekarang lebih sederhana)
+
+                // Initial fetch for selected items if they are already set (e.g., after form submission with errors)
+                // This will populate weapon/echo/sonata details and icons
                 if (user_input_stats_js.selected_weapon) {
                     fetchDetails('weapon', user_input_stats_js.selected_weapon);
                 }
@@ -504,5 +508,5 @@
                 }
             });
         </script>
-    {% endblock extra_js %}
+    {% endblock %}
 {% endblock %}

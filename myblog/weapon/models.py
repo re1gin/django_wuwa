@@ -12,9 +12,15 @@ def weapon_icon_upload_path(instance, filename):
 
 class WeaponType(models.Model):
     name = models.CharField(max_length=50, unique=True)
+    icon_weapon_type = models.ImageField(upload_to='weapontype/', blank=True, null=True)
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Weapon_Type"
+        verbose_name_plural = "Weapons Types"
+        ordering = ['name']
 
 class Weapon(models.Model):
     weapon_name = models.CharField(max_length=100, unique=True)
@@ -39,7 +45,7 @@ class Weapon(models.Model):
     passive_skill_description = models.TextField(null=True, blank=True)
     
     # Image field
-    icon_image = models.ImageField(upload_to='weapons/icons/', blank=True, null=True)
+    icon_image = models.ImageField(upload_to=weapon_icon_upload_path, blank=True, null=True)
 
     def __str__(self):
         return self.weapon_name

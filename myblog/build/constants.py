@@ -18,7 +18,7 @@ RESONATOR_RATING_WEIGHTS = {
 
 # Field level skill yang akan diperiksa dan nama tampilannya
 SKILL_LEVEL_FIELDS = {
-    'basic_atk_level': 'Basic ATK',
+    'basic_atk_level': 'Basic Attack',
     'resonance_skill_level': 'Resonance Skill',
     'forte_circuit_level': 'Forte Circuit',
     'resonance_liberation_level': 'Resonance Liberation',
