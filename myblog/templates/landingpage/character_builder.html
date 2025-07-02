@@ -145,7 +145,7 @@
                             <div class="block">
                                 <span class="title-block">BONUS STAT</span>
                                 <div class="stat">
-                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.basic_attack_dmg_bonus|default_if_none:'' }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
+                                    <p>Basic Attack DMG Bonus: <input type="number" name="basic_attack_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.basic_atk_dmg_bonus|default_if_none:'' }}" class="{% if form.basic_attack_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     <p>Resonance Skill DMG Bonus: <input type="number" name="resonance_skill_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.resonance_skill_dmg_bonus|default_if_none:'' }}" class="{% if form.resonance_skill_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     <p>Resonance Liberation DMG Bonus: <input type="number" name="resonance_lib_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.resonance_lib_dmg_bonus|default_if_none:'' }}" class="{% if form.resonance_lib_dmg_bonus.errors %}input-error{% endif %}"></p>
                                     <p>{{ character.attribute.name }} DMG Bonus: <input type="number" name="attribute_dmg_bonus" placeholder="0.0" value="{{ user_input_stats.attribute_dmg_bonus|default_if_none:'' }}" class="{% if form.attribute_dmg_bonus.errors %}input-error{% endif %}"></p>

@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <div class="stat-box">
-                            <img src="{{ resonator.weapontype.icon_type.url }}" alt="{{ resonator.weapon.name }} Weapon Icon" class="icon-attribute">
+                            <img src="{{ resonator.weapon_type.icon_type.url }}" alt="{{ resonator.weapon.name }} Weapon Icon" class="icon-attribute">
                             <div class="stat-label">
                                 <div class="label">Weapon</div>
                             </div>
@@ -112,36 +112,21 @@
 
                 <div class="right-panel">
                     <div class="weapon">
-                        {% if selected_weapon_obj %}
-                            <div class="weapon-details-container">
-                                <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.weapon_name }} Icon" class="weapon-icon-large">
-                                <div class="weapon-info">
-                                    <div class="weapon-header-and-rank">
-                                        <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
-                                    </div>
-                                    
-                                    <div class="weapon-attributes">
-                                        <p>ATK: <span class="attribute-value">{{ selected_weapon_obj.base_atk }}</span></p> {# Menggunakan base_atk sesuai koreksi #}
-                                        <p>{{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
-                                        <span class="rank-label">Rank 1</span> 
-                                        <span class="rank-label">Level 90</span>
-                                    </div>
+                        <div class="weapon-details-container">
+                            <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.weapon_name }} Icon" class="weapon-icon-large">
+                            <div class="weapon-info">
+                                <div class="weapon-header-and-rank">
+                                    <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
+                                </div>
+                                
+                                <div class="weapon-attributes">
+                                    <p>ATK: <span class="attribute-value">{{ selected_weapon_obj.base_atk }}</span></p> {# Menggunakan base_atk sesuai koreksi #}
+                                    <p>{{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
+                                    <span class="rank-label">Rank 1</span> 
+                                    <span class="rank-label">Level 90</span>
                                 </div>
                             </div>
-                        {% else %}
-                            <div class="weapon-details-container no-selection">
-                                <img src="{% static 'combat/images/placeholder_weapon.png' %}" alt="No Weapon Selected" class="weapon-icon-large">
-                                <div class="weapon-info">
-                                    <div class="weapon-name-display">No Weapon Selected</div>
-                                    <div class="weapon-attributes">
-                                        <p>ATK: <span class="attribute-value">0</span></p>
-                                        <p>Secondary Stat: <span class="attribute-value">0%</span></p>
-                                        <span class="rank-label">Rank N/A</span>
-                                        <span class="rank-label">Level N/A</span>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
+                        </div>
                     </div>
 
                     <div class="gear">
@@ -149,8 +134,7 @@
                             <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
                             <div class="gear-title">{{ selected_echo_obj.name }}</div>
                             <div class="gear-title">
-                                <p>Cost: {{selcted_echo_obj.cost}}</p>
-                                <p>Level: {{ user_input_stats.echo_level }}</p>
+                                <p>Cost: {{selected_echo_obj.cost}}</p>
                             </div>
 
                         </div>

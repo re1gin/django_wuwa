@@ -2,19 +2,17 @@
 from django.db import models
 import os
 
-def weapon_icon_upload_path(instance, filename):
-    ext = filename.split('.')[-1]
+def weapon_icon_upload_path(instance):
     base_filename = instance.weapon_name.replace(' ', '_')
-    new_filename = f"{base_filename}.{ext}"
+    new_filename = f"{base_filename}.png"
     
     return os.path.join('weapon', new_filename)
 
-def weapontype_icon_upload_path(instance, filename):
-    ext = filename.split('.')[-1]
+def weapontype_icon_upload_path(instance):
     base_filename = instance.name.replace(' ', '_')
-    new_filename = f"{base_filename}.{ext}"
+    new_filename = f"{base_filename}.png"
     
-    return os.path.join('weapontype', new_filename)
+    return os.path.join('type', new_filename)
 
 
 class WeaponType(models.Model):
@@ -23,11 +21,6 @@ class WeaponType(models.Model):
     
     def __str__(self):
         return self.name
-    
-    class Meta:
-        verbose_name = "Weapon Type"
-        verbose_name_plural = "Weapon Types"
-        ordering = ['name']
 
 class Weapon(models.Model):
     weapon_name = models.CharField(max_length=100, unique=True)

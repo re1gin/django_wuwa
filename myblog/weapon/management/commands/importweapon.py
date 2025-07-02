@@ -1,4 +1,3 @@
-# weapon/management/commands/import_weapon_data.py
 import csv
 import os
 from django.core.management.base import BaseCommand
@@ -16,53 +15,47 @@ class Command(BaseCommand):
         path_csv_jenis_senjata = os.path.join(csv_data_dir, 'weapon_types.csv')
         self.stdout.write(self.style.SUCCESS(f'Mengimpor Jenis Senjata dari {path_csv_jenis_senjata}...'))
         
-        # Create default weapon types if file doesn't exist
-        if not os.path.exists(path_csv_jenis_senjata):
-            self.stdout.write(self.style.WARNING('File weapon_types.csv tidak ditemukan, membuat default weapon types...'))
-            default_types = ['Sword', 'Broadblade', 'Gauntlets', 'Rectifier', 'Pistols', 'Gauntlet']
-            for weapon_type_name in default_types:
-                # Generate default icon path for default types
-                ext = 'png'
-                sanitized_base_filename = weapon_type_name.replace(' ', '_')
-                icon_img_path = os.path.join('weapontype', f"{sanitized_base_filename}.{ext}")
-                WeaponType.objects.get_or_create(name=weapon_type_name, defaults={'icon_image': icon_img_path})
-            self.stdout.write(self.style.SUCCESS('Berhasil membuat default weapon types'))
-        else:
-            try:
-                with open(path_csv_jenis_senjata, 'r', encoding='utf-8') as file_csv:
-                    csv_reader = csv.DictReader(file_csv)
-                    for no_baris, baris_data in enumerate(csv_reader, 1):
-                        try:
-                            weapon_type_name = baris_data['name']
-                            icon_img_path_from_csv = baris_data.get('icon_image', '').strip() # Get icon_image, remove whitespace
+        try:
+            with open(path_csv_jenis_senjata, 'r', encoding='utf-8') as file_csv:
+                csv_reader = csv.DictReader(file_csv)
+                for no_baris, baris_data in enumerate(csv_reader, 1):
+                    try:
+                        weapon_type_name = baris_data['name']
+                        icon_filename_from_csv = baris_data.get('icon_image', '').strip()
 
-                            # Determine the icon image path
-                            if not icon_img_path_from_csv:
-                                # Generate default path if not provided in CSV
-                                ext = 'png'
-                                sanitized_base_filename = weapon_type_name.replace(' ', '_')
-                                icon_img_path_db = os.path.join('weapontype', f"{sanitized_base_filename}.{ext}")
-                            else:
-                                icon_img_path_db = icon_img_path_from_csv # Use path from CSV if provided
+                        ext = icon_filename_from_csv.split('.')[-1] if '.' in icon_filename_from_csv else 'png'
+                        sanitized_base_filename = weapon_type_name.replace(' ', '_')
+                        icon_img_path_db = os.path.join('type', f"{sanitized_base_filename}.{ext}")
 
-                            obj, created = WeaponType.objects.update_or_create(
-                                name=weapon_type_name,
-                                defaults={'icon_type': icon_img_path_db}
-                            )
+                        obj, created = WeaponType.objects.get_or_create(
+                            name=weapon_type_name, 
+                            defaults={'icon_type': icon_img_path_db}
+                        )
+                        
+                        if not created:
+                            updated = False
+                            if str(obj.icon_type) != icon_img_path_db:
+                                obj.icon_type = icon_img_path_db
+                                updated = True
                             
-                            if created:
-                                self.stdout.write(self.style.SUCCESS(f'Created WeaponType: {weapon_type_name} with icon: {icon_img_path_db}'))
+                            if updated:
+                                obj.save()
+                                self.stdout.write(self.style.SUCCESS(f'Updated WeaponType: {weapon_type_name} with icon: {icon_img_path_db}'))
                             else:
-                                self.stdout.write(self.style.WARNING(f'Updated WeaponType: {weapon_type_name} with icon: {icon_img_path_db}'))
+                                self.stdout.write(self.style.WARNING(f'WeaponType exists: {weapon_type_name} (no updates)'))
+                        else:
+                            self.stdout.write(self.style.SUCCESS(f'Created WeaponType: {weapon_type_name} with icon: {icon_img_path_db}'))
 
-                        except KeyError as e:
-                            self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Kolom "{e}" hilang di weapon_types.csv.'))
-                        except Exception as e:
-                            self.stdout.write(self.style.ERROR(f'Error tak terduga baris {no_baris}: {e} di weapon_types.csv.'))
-                self.stdout.write(self.style.SUCCESS('Selesai impor WeaponTypes.'))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f'Error persiapan impor WeaponType: {e}'))
-                return
+                    except KeyError as e:
+                        self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Kolom "{e}" hilang di weapon_types.csv. Pastikan header "name" dan "icon_image" benar.'))
+                    except Exception as e:
+                        self.stdout.write(self.style.ERROR(f'Error tak terduga baris {no_baris}: {e} di weapon_types.csv.'))
+            self.stdout.write(self.style.SUCCESS('Selesai impor WeaponTypes.'))
+        except FileNotFoundError:
+            self.stdout.write(self.style.ERROR(f'Error: {path_csv_jenis_senjata} tidak ditemukan. Silakan buat file weapon_types.csv.'))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'Error persiapan impor WeaponType: {e}'))
+            return
 
         self.stdout.write("\n")
 
@@ -84,31 +77,25 @@ class Command(BaseCommand):
                         secondary_value = baris_data['secondary_value']
                         passive_skill_description = baris_data['passive_skill_description']
                         
-                        # Handle icon image path
-                        icon_img_path_from_csv = baris_data.get('icon_image', '').strip()
-                        if not icon_img_path_from_csv:
-                            # Generate default path if not provided
-                            ext = 'png'
-                            sanitized_base_filename = weapon_name.replace(' ', '_')
-                            icon_img_path_db = os.path.join('weapon', f"{sanitized_base_filename}.{ext}")
-                        else:
-                            icon_img_path_db = icon_img_path_from_csv # Use path from CSV if provided
+                        # ***** BAGIAN UNTUK ICON_IMAGE *****
+                        icon_img_filename_from_csv = baris_data.get('icon_image', '').strip()
+                        ext = icon_img_filename_from_csv.split('.')[-1] if '.' in icon_img_filename_from_csv else 'png'
+                        sanitized_base_filename = weapon_name.replace(' ', '_')
+                        icon_img_path_db = os.path.join('weapon', f"{sanitized_base_filename}.{ext}")
 
                         # Get or create WeaponType
                         weapon_type_obj = None
                         try:
                             weapon_type_obj = WeaponType.objects.get(name=weapon_type_name)
                         except WeaponType.DoesNotExist:
-                            self.stdout.write(self.style.WARNING(f"Peringatan baris {no_baris}: WeaponType '{weapon_type_name}' tidak ditemukan. Membuat baru."))
-                            # Create new WeaponType with a default icon if not found
-                            ext = 'png'
+                            self.stdout.write(self.style.WARNING(f"Peringatan baris {no_baris}: WeaponType '{weapon_type_name}' tidak ditemukan. Membuat baru dengan ikon default."))
+                            ext_default_type = 'png'
                             sanitized_base_filename_type = weapon_type_name.replace(' ', '_')
-                            default_type_icon_path = os.path.join('weapontype', f"{sanitized_base_filename_type}.{ext}")
-                            weapon_type_obj = WeaponType.objects.create(name=weapon_type_name, icon_image=default_type_icon_path)
-
+                            default_type_icon_path = os.path.join('weapontype', f"{sanitized_base_filename_type}.{ext_default_type}")
+                            weapon_type_obj = WeaponType.objects.create(name=weapon_type_name, icon_type=default_type_icon_path)
 
                         # Create or update Weapon with all fields
-                        weapon_obj, created = Weapon.objects.update_or_create(
+                        weapon_obj, created = Weapon.objects.get_or_create(
                             weapon_name=weapon_name,
                             defaults={
                                 'rarity': rarity,
@@ -121,13 +108,40 @@ class Command(BaseCommand):
                             }
                         )
 
-                        if created:
-                            self.stdout.write(self.style.SUCCESS(f'Created Weapon: {weapon_name}'))
+                        if not created:
+                            updated = False
+                            if weapon_obj.rarity != rarity:
+                                weapon_obj.rarity = rarity
+                                updated = True
+                            if weapon_obj.weapon_type != weapon_type_obj:
+                                weapon_obj.weapon_type = weapon_type_obj
+                                updated = True
+                            if weapon_obj.base_atk != base_atk:
+                                weapon_obj.base_atk = base_atk
+                                updated = True
+                            if weapon_obj.secondary_stat != secondary_stat:
+                                weapon_obj.secondary_stat = secondary_stat
+                                updated = True
+                            if weapon_obj.secondary_value != secondary_value:
+                                weapon_obj.secondary_value = secondary_value
+                                updated = True
+                            if weapon_obj.passive_skill_description != passive_skill_description:
+                                weapon_obj.passive_skill_description = passive_skill_description
+                                updated = True
+                            if str(weapon_obj.icon_image) != icon_img_path_db:
+                                weapon_obj.icon_image = icon_img_path_db
+                                updated = True
+
+                            if updated:
+                                weapon_obj.save()
+                                self.stdout.write(self.style.SUCCESS(f'Updated Weapon: {weapon_name}'))
+                            else:
+                                self.stdout.write(self.style.WARNING(f'Weapon exists: {weapon_name} (no updates to main fields or icon)'))
                         else:
-                            self.stdout.write(self.style.WARNING(f'Updated Weapon: {weapon_name}'))
+                            self.stdout.write(self.style.SUCCESS(f'Created Weapon: {weapon_name}'))
 
                     except KeyError as e:
-                        self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Kolom "{e}" hilang di weapons.csv.'))
+                        self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Kolom "{e}" hilang di weapons.csv. Pastikan header benar.'))
                     except ValueError as e:
                         self.stdout.write(self.style.ERROR(f'Error baris {no_baris}: Nilai tidak valid ({e}) di weapons.csv.'))
                     except Exception as e:
