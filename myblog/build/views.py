@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from build.constants import (
     HP_NORM, ATK_NORM, DEF_NORM, ENERGY_NORM, CRIT_RATE_NORM, CRIT_DMG_NORM,
-    RESONATOR_RATING_WEIGHTS, SKILL_LEVEL_FIELDS, DEFAULT_SKILL_LEVEL
+    RESONATOR_RATING_WEIGHTS, DEFAULT_SKILL_LEVEL, STAT_WEIGHTS_FOR_AVERAGE
 )
 from build.fuzzy_logic.engine import calculate_fuzzy_stat_quality, get_overall_build_rating_text
 from build.fuzzy_logic.utils import format_comparison_difference, get_interpolated_color
@@ -263,19 +263,19 @@ def build_review_page(request, name):
     images = {"render": f"{image_path}Render.png"}
     roles_with_icons = resonator.role.all().values('name', 'icon_role')
 
-    # Inisialisasi user_input_stats dari sesi, dengan kamus default yang diperbarui
     user_input_stats = request.session.get('user_input_stats', {
-        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0,
-        'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg_bonus': 0.0,'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
-        'healing_bonus': 0.0,'attribute_dmg_bonus': 0.0,
-        'character_level': 90, # Dipertahankan sebagai nilai statis dari builder
-        'weapon_level': 90,   # Dipertahankan sebagai nilai statis dari builder
-        'basic_atk_level': 10, # Ditambahkan kembali, default max level
-        'resonance_skill_level': 10, # Ditambahkan kembali, default max level
-        'forte_circuit_level': 10, # Ditambahkan kembali, default max level
-        'resonance_liberation_level': 10, # Ditambahkan kembali, default max level
-        'intro_skill_level': 10, # Ditambahkan kembali, default max level
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy_regen': 0.0,
+        'critical_rate': 0.0, 'critical_damage': 0.0,
+        'basic_atk_dmg_bonus': 0.0, 'heavy_atk_dmg_bonus': 0.0,
+        'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
+        'attribute_dmg_bonus': 0.0, 'healing_bonus': 0.0,
+        'character_level': DEFAULT_SKILL_LEVEL['character_level'],
+        'weapon_level': DEFAULT_SKILL_LEVEL['weapon_level'],
+        'basic_atk_level': DEFAULT_SKILL_LEVEL['skill_level'],
+        'resonance_skill_level': DEFAULT_SKILL_LEVEL['skill_level'],
+        'forte_circuit_level': DEFAULT_SKILL_LEVEL['skill_level'],
+        'resonance_liberation_level': DEFAULT_SKILL_LEVEL['skill_level'],
+        'intro_skill_level': DEFAULT_SKILL_LEVEL['skill_level'],
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
@@ -292,7 +292,6 @@ def build_review_page(request, name):
         selected_echo_obj = Echo.objects.filter(name=user_input_stats['selected_echo']).first()
 
     selected_sonata_obj = None
-    # Kondisi disederhanakan
     if user_input_stats['selected_sonata'] and selected_echo_obj:
         selected_sonata_obj = selected_echo_obj.sonatas.filter(
             name=user_input_stats['selected_sonata']
@@ -304,142 +303,202 @@ def build_review_page(request, name):
     except ObjectDoesNotExist:
         pass
 
-    ideal_hp = 0.0
-    ideal_attack = 0.0
-    ideal_defense = 0.0
-    ideal_energy = 0.0
-    ideal_crit_rate = 0.0
-    ideal_crit_dmg = 0.0
+    ideal_build_stats = {
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy_regen': 0.0,
+        'critical_rate': 0.0, 'critical_damage': 0.0,
+        'basic_atk_dmg_bonus': 0.0, 'heavy_atk_dmg_bonus': 0.0,
+        'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
+        'attribute_dmg_bonus': 0.0, 'healing_bonus': 0.0,
+    }
 
     selected_weapon_obj_db = None
     selected_echo_obj_db = None
     selected_sonata_obj_db = None
 
     if build_instance:
-        ideal_hp = build_instance.hp
-        ideal_attack = build_instance.attack
-        ideal_defense = build_instance.defense
-        ideal_energy = build_instance.energy
-        ideal_crit_rate = build_instance.crit_rate
-        ideal_crit_dmg = build_instance.crit_dmg
+        ideal_build_stats.update({
+            'hp': build_instance.hp,
+            'attack': build_instance.attack,
+            'defense': build_instance.defense,
+            'energy_regen': build_instance.energy,
+            'critical_rate': build_instance.crit_rate,
+            'critical_damage': build_instance.crit_dmg,
+            'basic_atk_dmg_bonus': 0, # build_instance.basic_atk_dmg_bonus,
+            'heavy_atk_dmg_bonus': 0, # build_instance.heavy_atk_dmg_bonus,
+            'resonance_skill_dmg_bonus': 0, # build_instance.resonance_skill_dmg_bonus,
+            'resonance_lib_dmg_bonus': 0, # build_instance.resonance_lib_dmg_bonus,
+            'attribute_dmg_bonus': build_instance.attribute_dmg_bonus,
+            'healing_bonus': build_instance.healing_bonus,
+        })
         selected_weapon_obj_db = build_instance.ideal_weapon
         selected_echo_obj_db = build_instance.ideal_echo
         selected_sonata_obj_db = build_instance.ideal_sonata
     else:
-        # Placeholder objek yang diperbarui
-        selected_weapon_obj_db = type('Weapon', (object,), {
-            'weapon_name': 'No Saved Weapon',
-            'icon_image': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'}),
-            'base_atk': 0.0, # Mengganti atk_value menjadi base_atk
-            'rarity': 0, # Menambahkan rarity
-        })()
-        selected_echo_obj_db = type('Echo', (object,), {
-            'name': 'No Saved Echo',
-            'icon_echo': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'}),
-            'cost': 0, # Menambahkan cost
-        })()
-        selected_sonata_obj_db = type('Sonata', (object,), {
-            'name': 'No Saved Sonata',
-            'icon_sonata': type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'}),
-        })()
+        # Placeholder objek yang diperbarui (tetap diperlukan jika build_instance tidak ada)
+        class DummyWeapon:
+            def __init__(self):
+                self.weapon_name = 'No Saved Weapon'
+                self.icon_image = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'})()
+                self.base_atk = 0.0
+                self.rarity = 0
+                self.pk = None
+        class DummyEcho:
+            def __init__(self):
+                self.name = 'No Saved Echo'
+                self.icon_echo = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'})()
+                self.cost = 0
+                self.pk = None
+                self.sonatas = type('DummySonataQuerySet', (object,), {'filter': lambda self, **kwargs: None})()
+        class DummySonata:
+            def __init__(self):
+                self.name = 'No Saved Sonata'
+                self.icon_sonata = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'})()
+                self.pk = None
+
+        selected_weapon_obj_db = DummyWeapon()
+        selected_echo_obj_db = DummyEcho()
+        selected_sonata_obj_db = DummySonata()
+
 
     resonator_roles = [r.name for r in resonator.role.all()]
-    is_main_dps = 'Main Damage Dealer' in resonator_roles
-    is_support_and_healer = 'Support and Healer' in resonator_roles
 
-    overview_stats = []
-    stats_config = [
-        {'label': "HP", 'user_val': user_input_stats.get('hp', 0.0), 'ideal_val': ideal_hp, 'category': 'flat', 'is_percentage': False},
-        {'label': "ATK", 'user_val': user_input_stats.get('attack', 0.0), 'ideal_val': ideal_attack, 'category': 'flat', 'is_percentage': False},
-        {'label': "DEF", 'user_val': user_input_stats.get('defense', 0.0), 'ideal_val': ideal_defense, 'category': 'flat', 'is_percentage': False},
-        {'label': "Energy Regen", 'user_val': user_input_stats.get('energy', 0.0), 'ideal_val': ideal_energy, 'category': 'percent', 'is_percentage': True},
-        {'label': "Critical Rate", 'user_val': user_input_stats.get('crit_rate', 0.0), 'ideal_val': ideal_crit_rate, 'category': 'percent', 'is_percentage': True},
-        {'label': "Critical Damage", 'user_val': user_input_stats.get('crit_dmg', 0.0), 'ideal_val': ideal_crit_dmg, 'category': 'percent', 'is_percentage': True},
+    prioritized_specific_dmg_bonus_stats = {
+        'basic_atk_dmg_bonus': False,
+        'heavy_atk_dmg_bonus': False,
+        'resonance_skill_dmg_bonus': False,
+        'resonance_lib_dmg_bonus': False,
+    }
+
+    ROLE_SPECIFIC_DMG_PRIORITIES_MAP = {
+        'Basic Attack Damage': ['basic_atk_dmg_bonus'],
+        'Heavy Attack Damage': ['heavy_atk_dmg_bonus'],
+        'Resonance Skill Damage': ['resonance_skill_dmg_bonus'],
+        'Resonance Liberation Damage': ['resonance_lib_dmg_bonus'],
+        
+    }
+
+    for role_name in resonator_roles:
+        if role_name in ROLE_SPECIFIC_DMG_PRIORITIES_MAP:
+            for stat_key in ROLE_SPECIFIC_DMG_PRIORITIES_MAP[role_name]:
+                if stat_key in prioritized_specific_dmg_bonus_stats:
+                    prioritized_specific_dmg_bonus_stats[stat_key] = True
+                    
+    # Daftar stat yang akan ditampilkan dan bagaimana mereka harus diproses
+    display_stats_config = [
+        {'label': "HP", 'key': 'hp', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
+        {'label': "ATK", 'key': 'attack', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
+        {'label': "DEF", 'key': 'defense', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
+        {'label': "Energy Regen", 'key': 'energy_regen', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Critical Rate", 'key': 'critical_rate', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Critical Damage", 'key': 'critical_damage', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Basic ATK DMG Bonus", 'key': 'basic_atk_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
+        {'label': "Heavy ATK DMG Bonus", 'key': 'heavy_atk_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
+        {'label': "Resonance Skill DMG Bonus", 'key': 'resonance_skill_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
+        {'label': "Resonance Liberation DMG Bonus", 'key': 'resonance_lib_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
+        {'label': "Attribute DMG Bonus", 'key': 'attribute_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
+        {'label': "Healing Bonus", 'key': 'healing_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
     ]
 
-    for stat in stats_config:
-        user_val_float = float(stat['user_val'])
-        current_ideal_val = float(stat['ideal_val'])
-        user_val_vs_ideal_percent = 0
-        if current_ideal_val > 0:
-            user_val_vs_ideal_percent = (user_val_float / current_ideal_val) * 100
-        elif current_ideal_val == 0 and user_val_float > 0:
-            user_val_vs_ideal_percent = 200 # Nilai user ada tapi ideal 0, anggap sangat baik
-        elif current_ideal_val == 0 and user_val_float == 0:
-            user_val_vs_ideal_percent = 0 # Keduanya 0, netral atau tidak relevan
-        interpolated_color_hex = get_interpolated_color(user_val_vs_ideal_percent)
-        overview_stats.append({
-            'label': stat['label'],
-            'user_value': user_val_float,
-            'ideal_value': current_ideal_val,
-            'is_percentage': stat['is_percentage'],
-            'color': interpolated_color_hex
-        })
+    if 'Main Damage Dealer' in resonator_roles and not any(r in resonator_roles for r in ['Basic Attack Focused', 'Heavy Attack Focused', 'Resonance Skill Focused', 'Resonance Liberation Focused', 'Hybrid DPS', 'Omni DPS']):
+        prioritized_specific_dmg_bonus_stats['basic_atk_dmg_bonus'] = True
+        prioritized_specific_dmg_bonus_stats['heavy_atk_dmg_bonus'] = True
+        prioritized_specific_dmg_bonus_stats['resonance_skill_dmg_bonus'] = True
+        prioritized_specific_dmg_bonus_stats['resonance_lib_dmg_bonus'] = True
+        prioritized_specific_dmg_bonus_stats['attribute_dmg_bonus'] = True # Untuk Main DPS umum
 
-    status_differences = []
-    status_differences.append(format_comparison_difference(ideal_hp, user_input_stats.get('hp', 0.0), "HP"))
-    status_differences.append(format_comparison_difference(ideal_attack, user_input_stats.get('attack', 0.0), "ATK"))
-    status_differences.append(format_comparison_difference(ideal_defense, user_input_stats.get('defense', 0.0), "DEF"))
-    status_differences.append(format_comparison_difference(ideal_energy, user_input_stats.get('energy', 0.0), "Energy Regen", is_percentage=True))
-    status_differences.append(format_comparison_difference(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), "Crit Rate", is_percentage=True))
-    status_differences.append(format_comparison_difference(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), "Crit Dmg", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('basic_atk_dmg_bonus', 0.0), "Basic ATK DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_skill_dmg_bonus', 0.0), "Skill DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_lib_dmg_bonus', 0.0), "Lib. DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('attribute_dmg_bonus', 0.0), "Attribute DMG", is_percentage=True))
-    status_differences.append(format_comparison_difference(0.0, user_input_stats.get('healing_bonus', 0.0), "Healing Bonus", is_percentage=True))
 
+    # -----------------------------------------------------------
+    # 3. MENGHITUNG COMPONENT SCORES
+    # -----------------------------------------------------------
     component_scores = {}
+    total_weighted_score = 0
+    total_actual_weights = 0
 
-    level_score = 100
-    character_level = int(user_input_stats.get('character_level', 90))
-    if character_level < 90:
-        level_score -= (90 - character_level) * 0.5
-    component_scores['level'] = max(0, min(100, level_score))
+    # a. Level Score (tetap sama)
+    character_level = int(user_input_stats.get('character_level', DEFAULT_SKILL_LEVEL['character_level']))
+    if character_level >= DEFAULT_SKILL_LEVEL['character_level']:
+        component_scores['level'] = 100
+    else:
+        component_scores['level'] = (character_level / DEFAULT_SKILL_LEVEL['character_level']) * 100
+    total_weighted_score += component_scores['level'] * RESONATOR_RATING_WEIGHTS['level']
+    total_actual_weights += RESONATOR_RATING_WEIGHTS['level']
 
+    # b. Status Score (menggunakan Fuzzy Logic)
     overall_stat_score = 0
-    stat_weights_for_average = {
-        'hp': 1.0, 'attack': 1.0, 'defense': 1.0, 'energy': 1.0,
-        'crit_rate': 1.0, 'crit_dmg': 1.0,
-        'basic_atk_dmg': 1.0,
-        'resonance_skill_dmg': 1.0,
-        'resonance_lib_dmg': 1.0,
-        'attribute_dmg_bonus': 1.0,
-        'healing_bonus': 1.0,
-    }
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_hp, user_input_stats.get('hp', 0.0), 'flat') * stat_weights_for_average['hp']
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_attack, user_input_stats.get('attack', 0.0), 'flat') * stat_weights_for_average['attack']
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_defense, user_input_stats.get('defense', 0.0), 'flat') * stat_weights_for_average['defense']
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_energy, user_input_stats.get('energy', 0.0), 'percent') * stat_weights_for_average['energy']
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), 'percent') * stat_weights_for_average['crit_rate']
-    overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), 'percent') * stat_weights_for_average['crit_dmg']
-    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('basic_atk_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['basic_atk_dmg']
-    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_skill_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_skill_dmg']
-    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_lib_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_lib_dmg']
-    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('attribute_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['attribute_dmg_bonus']
-    overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('healing_bonus', 0.0), 'bonus', is_support_and_healer) * stat_weights_for_average['healing_bonus']
-    total_stat_weights = sum(stat_weights_for_average.values())
-    
-    component_scores['status'] = round(overall_stat_score / total_stat_weights, 2) if total_stat_weights > 0 else 0
+    total_stat_weights_for_average_calc = 0
 
+    FUZZY_STAT_CATEGORIES = {
+        'hp': 'flat',
+        'attack': 'flat',
+        'defense': 'flat',
+        'energy_regen': 'percent',
+        'critical_rate': 'percent',
+        'critical_damage': 'percent',
+        'basic_atk_dmg_bonus': 'bonus',
+        'heavy_atk_dmg_bonus': 'bonus',
+        'resonance_skill_dmg_bonus': 'bonus',
+        'resonance_lib_dmg_bonus': 'bonus',
+        'attribute_dmg_bonus': 'bonus',
+        'healing_bonus': 'bonus',
+    }
+
+    # Untuk menyimpan pesan peringatan
+    warning_messages = []
+    status_differences = []
+
+    for stat_info_config in display_stats_config: # Gunakan display_stats_config
+        stat_name = stat_info_config['key']
+        category = FUZZY_STAT_CATEGORIES.get(stat_name) # Ambil kategori dari mapping FUZZY_STAT_CATEGORIES
+        label = stat_info_config['label']
+        is_percentage_display = stat_info_config['is_percentage_display']
+
+
+        user_val = user_input_stats.get(stat_name, 0.0)
+        ideal_val = ideal_build_stats.get(stat_name, 0.0)
+        is_priority_for_fuzzy = prioritized_specific_dmg_bonus_stats.get(stat_name, False)
+
+        # Lewatkan stat_name ke calculate_fuzzy_stat_quality jika kategorinya 'bonus'
+        if category == 'bonus':
+            score = calculate_fuzzy_stat_quality(
+                ideal_val, user_val, category, stat_name=stat_name, is_role_priority=is_priority_for_fuzzy
+            )
+            # Logika pesan peringatan untuk bonus DMG yang diprioritaskan tapi 0
+            if is_priority_for_fuzzy and user_val == 0.0:
+                warning_messages.append(f"Peringatan: {label} adalah stat **penting** bagi {resonator.name}, tetapi Anda tidak memiliki nilai sama sekali (0%). Ini sangat memengaruhi performa!")
+        else:
+            score = calculate_fuzzy_stat_quality(
+                ideal_val, user_val, category, is_role_priority=is_priority_for_fuzzy # is_role_priority mungkin tidak relevan untuk flat/percent
+            )
+        
+        overall_stat_score += score * STAT_WEIGHTS_FOR_AVERAGE.get(stat_name, 1.0)
+        total_stat_weights_for_average_calc += STAT_WEIGHTS_FOR_AVERAGE.get(stat_name, 1.0)
+
+        # TAMBAH: Panggil format_comparison_difference untuk menghasilkan pesan saran
+        status_differences.append(format_comparison_difference(
+            ideal_val, user_val, label, is_percentage=is_percentage_display, is_prioritized=is_priority_for_fuzzy
+        ))
+
+    component_scores['status'] = round(overall_stat_score / total_stat_weights_for_average_calc, 2) if total_stat_weights_for_average_calc > 0 else 0
+    total_weighted_score += component_scores['status'] * RESONATOR_RATING_WEIGHTS['status']
+    total_actual_weights += RESONATOR_RATING_WEIGHTS['status']
+
+    # c. Weapon Score (tetap sama)
     weapon_score = 0
     if build_instance and build_instance.ideal_weapon:
         if selected_weapon_obj and build_instance.ideal_weapon.pk == selected_weapon_obj.pk:
             weapon_score = 100
-        elif selected_weapon_obj:
-            weapon_rarity = getattr(selected_weapon_obj, 'rarity', 0)
-            weapon_level = int(user_input_stats.get('weapon_level', 90)) # Akan selalu 90 dari user_input_stats
-            # 'weapon_rank' dihapus
-            level_part = (min(weapon_level, 90) / 90) * 50 # Bobot level 50%
-            rarity_part = (weapon_rarity / 5) * 50 # Bobot rarity 50%
-            weapon_score = rarity_part + level_part
-            weapon_score = min(100, weapon_score)
+        else:
+            weapon_score = 0
     component_scores['weapon'] = weapon_score
+    total_weighted_score += component_scores['weapon'] * RESONATOR_RATING_WEIGHTS['weapon']
+    total_actual_weights += RESONATOR_RATING_WEIGHTS['weapon']
 
+    # d. Echo Score (tetap sama)
     echo_score = 0
     if build_instance and build_instance.ideal_echo:
         echo_matches = (selected_echo_obj and build_instance.ideal_echo.pk == selected_echo_obj.pk)
         sonata_matches = (echo_matches and selected_sonata_obj and build_instance.ideal_sonata and build_instance.ideal_sonata.pk == selected_sonata_obj.pk)
+
         if echo_matches and sonata_matches:
             echo_score = 100
         elif echo_matches:
@@ -447,56 +506,86 @@ def build_review_page(request, name):
         else:
             echo_score = 0
     component_scores['echo'] = min(100, echo_score)
+    total_weighted_score += component_scores['echo'] * RESONATOR_RATING_WEIGHTS['echo']
+    total_actual_weights += RESONATOR_RATING_WEIGHTS['echo']
 
-    # Perhitungan skill_score diaktifkan kembali
-    skill_score = 100
-    total_skill_levels = 0
-    max_level_per_skill = 10
-    total_possible_skill_levels = 5 * max_level_per_skill
-    for skill_field in [
-        'basic_atk_level',
-        'resonance_skill_level',
-        'forte_circuit_level',
-        'resonance_liberation_level',
-        'intro_skill_level'
-    ]:
-        current_level = int(user_input_stats.get(skill_field, max_level_per_skill)) # Mengambil dari user_input_stats
-        total_skill_levels += current_level
-    
-    if total_possible_skill_levels > 0:
-        skill_score = (total_skill_levels / total_possible_skill_levels) * 100
-    else:
-        skill_score = 100 # Fallback jika total_possible_skill_levels adalah 0
-    component_scores['skill'] = max(0, min(100, skill_score))
-
-    weighted_sum = (
-        component_scores.get('level', 0) * RESONATOR_RATING_WEIGHTS['level'] +
-        component_scores.get('status', 0) * RESONATOR_RATING_WEIGHTS['status'] +
-        component_scores.get('weapon', 0) * RESONATOR_RATING_WEIGHTS['weapon'] +
-        component_scores.get('echo', 0) * RESONATOR_RATING_WEIGHTS['echo'] +
-        component_scores.get('skill', 0) * RESONATOR_RATING_WEIGHTS['skill'] # Skill diaktifkan kembali
+    # e. Skill Score (tetap sama)
+    total_user_skill_levels = (
+        user_input_stats.get('basic_atk_level', DEFAULT_SKILL_LEVEL['skill_level']) +
+        user_input_stats.get('resonance_skill_level', DEFAULT_SKILL_LEVEL['skill_level']) +
+        user_input_stats.get('forte_circuit_level', DEFAULT_SKILL_LEVEL['skill_level']) +
+        user_input_stats.get('resonance_liberation_level', DEFAULT_SKILL_LEVEL['skill_level']) +
+        user_input_stats.get('intro_skill_level', DEFAULT_SKILL_LEVEL['skill_level'])
     )
-    total_weights = sum(RESONATOR_RATING_WEIGHTS.values())
-    resonator_rating_final = round(weighted_sum / total_weights, 2)
+    total_possible_skill_levels = 5 * DEFAULT_SKILL_LEVEL['skill_level']
+    component_scores['skill'] = round((total_user_skill_levels / total_possible_skill_levels) * 100, 2) if total_possible_skill_levels > 0 else 0
+    total_weighted_score += component_scores['skill'] * RESONATOR_RATING_WEIGHTS['skill']
+    total_actual_weights += RESONATOR_RATING_WEIGHTS['skill']
+
+
+    # -----------------------------------------------------------
+    # 4. FINAL RATING
+    # -----------------------------------------------------------
+    resonator_rating_final = round(total_weighted_score / total_actual_weights, 2) if total_actual_weights > 0 else 0
     resonator_rating_text = get_overall_build_rating_text(resonator_rating_final)
 
+    # -----------------------------------------------------------
+    # 5. DATA UNTUK TAMPILAN
+    # -----------------------------------------------------------
     category_scores = {
         'Character': f"{resonator.rarity}/5",
-        'Level': f"{round(component_scores['level'] / 10)}/10",
-        'Weapon': f"{round(component_scores['weapon'] / 10)}/10",
-        'Echo': f"{round(component_scores['echo'] / 10)}/10",
-        'Skill': f"{round(component_scores['skill'] / 10)}/10", # Skill diaktifkan kembali
-        'Stats': f"{round(component_scores['status'] / 10)}/10"
+        'Level': f"{round(component_scores['level'] / 10, 1)}/10",
+        'Weapon': f"{round(component_scores['weapon'] / 10, 1)}/10",
+        'Echo': f"{round(component_scores['echo'] / 10, 1)}/10",
+        'Skill': f"{round(component_scores['skill'] / 10, 1)}/10",
+        'Stats': f"{round(component_scores['status'] / 10, 1)}/10",
     }
+
+    # Pisahkan overview_stats menjadi dua bagian
+    overview_main_stats = []
+    overview_bonus_stats = []
+
+    for stat_info in display_stats_config:
+        label = stat_info['label']
+        key = stat_info['key']
+        category = stat_info['category']
+        is_percentage_display = stat_info['is_percentage_display']
+        stat_type = stat_info['type'] # 'main' or 'bonus'
+
+        user_val = user_input_stats.get(key, 0.0)
+        ideal_val = ideal_build_stats.get(key, 0.0)
+        is_priority_for_fuzzy_calc = prioritized_specific_dmg_bonus_stats.get(key, False)
+
+        # Hitung skor fuzzy untuk penentuan warna
+        # Perhatikan: stat_name harus dilewatkan untuk kategori 'bonus'
+        score_for_color = calculate_fuzzy_stat_quality(
+            ideal_val, user_val, category, stat_name=key if category == 'bonus' else None, is_role_priority=is_priority_for_fuzzy_calc
+        )
+        color = get_interpolated_color(score_for_color)
+
+        stat_entry = {
+            'label': label,
+            'user_value': user_val,
+            'ideal_value': ideal_val,
+            'is_percentage': is_percentage_display,
+            'color': color,
+            'is_prioritized': is_priority_for_fuzzy_calc # Tambahkan info ini untuk tampilan
+        }
+
+        if stat_type == 'main':
+            overview_main_stats.append(stat_entry)
+        else: # type == 'bonus'
+            overview_bonus_stats.append(stat_entry)
+
 
     chart_labels = ['HP', 'ATK', 'DEF', 'Energy Regen', 'Crit Rate', 'Crit Dmg']
     chart_data_normalized = [
-        min(100.0, (ideal_hp / HP_NORM) * 100.0),
-        min(100.0, (ideal_attack / ATK_NORM) * 100.0),
-        min(100.0, (ideal_defense / DEF_NORM) * 100.0),
-        min(100.0, (ideal_energy / ENERGY_NORM) * 100.0),
-        min(100.0, ideal_crit_rate / CRIT_RATE_NORM * 100.0),
-        min(100.0, ideal_crit_dmg / CRIT_DMG_NORM * 100.0),
+        min(100.0, (ideal_build_stats['hp'] / HP_NORM) * 100.0),
+        min(100.0, (ideal_build_stats['attack'] / ATK_NORM) * 100.0),
+        min(100.0, (ideal_build_stats['defense'] / DEF_NORM) * 100.0),
+        min(100.0, (ideal_build_stats['energy_regen'] / ENERGY_NORM) * 100.0),
+        min(100.0, ideal_build_stats['critical_rate'] / CRIT_RATE_NORM * 100.0),
+        min(100.0, ideal_build_stats['critical_damage'] / CRIT_DMG_NORM * 100.0),
     ]
     performance_data_json = {
         'labels': chart_labels,
@@ -519,17 +608,23 @@ def build_review_page(request, name):
         'current_date': current_date,
         'roles_with_icons': roles_with_icons,
         'user_input_stats': user_input_stats,
-        
+
         'selected_weapon_obj': selected_weapon_obj,
         'selected_echo_obj': selected_echo_obj,
         'selected_sonata_obj': selected_sonata_obj,
-        
-        'overview_stats': overview_stats,
+
+        'ideal_weapon_obj': selected_weapon_obj_db,
+        'ideal_echo_obj': selected_echo_obj_db,
+        'ideal_sonata_obj': selected_sonata_obj_db,
+
+        'overview_main_stats': overview_main_stats,   # Dipisahkan
+        'overview_bonus_stats': overview_bonus_stats, # Dipisahkan
         'status_differences': status_differences,
         'category_scores': category_scores,
         'performance_data_json': performance_data_json,
         'resonator_rating': resonator_rating_final,
         'resonator_rating_text': resonator_rating_text,
+        'warning_messages': warning_messages, # Pesan peringatan
     }
 
     print("DEBUG: performance_data_json (before json_script filter):")

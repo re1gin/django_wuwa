@@ -65,7 +65,7 @@
 
                     <div class="left-stat-overview">
                     {# Loop melalui daftar stat yang sudah diproses dari views.py #}
-                        {% for stat in overview_stats %}
+                        {% for stat in overview_main_stats %}
                             <div class="stat-item">
                                 <span class="stat-name">{{ stat.label }}</span>
                                 <span class="stat-value-placeholder" style="color: {{ stat.color }}">
@@ -86,26 +86,37 @@
                             <canvas id="performanceRadarChart"></canvas>
                             {{ performance_data_json|json_script:"performance-data" }}
                         </div>
+                    </div>
                         
+                    <div class="content-section">
                         <div class="resonator-rating">
                             <h3>Overall Resonator Build Rating</h3>
-                            <div class="rating-score">{{ resonator_rating|floatformat:"0" }} / 100</div> {# Tambahkan floatformat untuk kejelasan #}
+                            {# Gunakan resonator_rating_color untuk warna teks #}
+                            <div class="rating-score" style="color: {{ resonator_rating_color }};">{{ resonator_rating|floatformat:"0" }} / 100</div>
                             {% if resonator_rating_text %}
                                 <p class="rating-text">{{ resonator_rating_text }}</p>
                             {% endif %}
                         </div>
 
-                        <div class="status-difference">
-                            <h3>Stat Differences</h3>
-                            <div class="diff-grid">
-                                {% for diff_item in status_differences %}
-                                    <div class="diff-item">
-                                        
-                                        <span class="diff-value">{{ diff_item.value }} {{ diff_item.label_unit }}</span> 
-                                        <span class="diff-symbol">{{ diff_item.symbol|safe }}</span>
-                                    </div>
-                                {% endfor %}
+                        {% if warning_messages %}
+                            <div class="alert alert-warning" role="alert">
+                                <h3>Perhatian! Ada kekurangan pada build Anda:</h3>
+                                <ul>
+                                    {% for message in warning_messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
+                        {% endif %}
+
+                        <div class="saran">Saran & Analisis Stat</div>
+
+                        <div class="suggestion-section">
+                            <ul class="suggestion-list"> {# Tambahkan kelas untuk styling #}
+                                {% for suggestion in status_differences %}
+                                    <li>{{ suggestion|safe }}</li>
+                                {% endfor %}
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -145,9 +156,7 @@
                     </div>
 
                     <div class="category-scores">
-                        <h3>Category Scores</h3>
                         <div class="score-grid">
-                            <div class="score-box">Character<br><span>{{ category_scores.Character }}</span></div>
                             <div class="score-box">Weapon<br><span>{{ category_scores.Weapon }}</span></div>
                             <div class="score-box">Echo<br><span>{{ category_scores.Echo }}</span></div>
                             <div class="score-box">Skill<br><span>{{ category_scores.Skill }}</span></div>
@@ -156,29 +165,24 @@
                     </div>
 
                     <div class="damage-list">
-                        <div class="damage-item">
-                            <span class="damage-name">Basic Attack Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.basic_atk_dmg_bonus|floatformat:"1" }}%</span>
-                        </div>
-                        <div class="damage-item">
-                            <span class="damage-name">Resonance Skill Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_skill_dmg_bonus|floatformat:"1" }}%</span>
-                        </div>
-                        <div class="damage-item">
-                            <span class="damage-name">Resonance Liberation Damage</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.resonance_lib_dmg_bonus|floatformat:"1" }}%</span>
-                        </div>
-                        <div class="damage-item">
-                            <span class="damage-name">Healing Bonus</span>
-                            <span class="damage-value-placeholder">{{ user_input_stats.healing_bonus|floatformat:"1" }}%</span>
-                        </div>
-                        {# Hanya menampilkan satu input untuk Attribute DMG Bonus #}
-                        {% if user_input_stats.attribute_dmg_bonus > 0 %}
+                        {% for stat in overview_bonus_stats %}
                             <div class="damage-item">
-                                <span class="damage-name">Attribute DMG Bonus</span>
-                                <span class="damage-value-placeholder">{{ user_input_stats.attribute_dmg_bonus|floatformat:"1" }}%</span>
+                                <span class="damage-name">{{ stat.label }}</span>
+                                <span class="damage-value-placeholder" style="color: {{ stat.color }}">
+                                    {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
+                                    {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
+                                    {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
+                                    <span class="ideal-value-display">({{ stat.ideal_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %})</span>
+                                </span>
+                                <span class="priority-indicator">
+                                    {% if stat.is_prioritized %}
+                                        <span class="badge badge-priority-high">PRIORITY</span> {# Tambahkan CSS untuk styling #}
+                                    {% else %}
+                                        <span class="badge badge-priority-normal">NORMAL</span> {# Tambahkan CSS untuk styling #}
+                                    {% endif %}
+                                </span>
                             </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
 
                     <div class="skill-levels">

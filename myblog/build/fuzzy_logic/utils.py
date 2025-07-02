@@ -1,5 +1,12 @@
 # build/fuzzy_logic/utils.py
 
+import math
+from ..constants import MAX_BONUS_DMG_PERCENT # Pastikan ini diimpor dari lokasi yang benar relatif terhadap utils.py
+
+def format_folder(name):
+    """Mengubah nama menjadi format folder yang aman (lowercase, spasi diganti underscore)."""
+    return name.replace(" ", "_").lower()
+
 def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
@@ -14,102 +21,126 @@ def interpolate_color(color1_rgb, color2_rgb, factor):
     b = color1_rgb[2] + factor * (color2_rgb[2] - color1_rgb[2])
     return (r, g, b)
 
-def get_interpolated_color(user_val_vs_ideal_percent):
+def get_interpolated_color(score):
     """
-    Menentukan warna berdasarkan persentase user_val terhadap ideal_val,
-    dengan interpolasi di antara titik-titik warna yang ditentukan.
+    Menentukan warna berdasarkan skor 0-100 (dari Fuzzy Logic).
+    Ini adalah versi yang disederhanakan dari yang Anda berikan, fokus pada skor 0-100.
+    Score 0 = Merah
+    Score 50 = Kuning
+    Score 100 = Hijau
     """
-    # Warna dasar dalam format HEX
-    COLOR_WHITE = '#FFFFFF'
-    COLOR_BLUE = '#007BFF'   # Biru
-    COLOR_GREEN = '#28A745'  # Hijau (ideal)
-    COLOR_GOLD = '#FFD700'   # Emas (150%)
-    COLOR_RED = '#DC3545'    # Merah (200%)
+    if score < 0:
+        score = 0
+    elif score > 100:
+        score = 100
 
-    # Konversi ke RGB untuk interpolasi
-    WHITE_RGB = hex_to_rgb(COLOR_WHITE)
-    BLUE_RGB = hex_to_rgb(COLOR_BLUE)
-    GREEN_RGB = hex_to_rgb(COLOR_GREEN)
-    GOLD_RGB = hex_to_rgb(COLOR_GOLD)
-    RED_RGB = hex_to_rgb(COLOR_RED)
-
-    # Definisikan titik-titik persentase dan warnanya
-    # (Persentase, RGB_Color)
-    color_points = [
-        (0, WHITE_RGB),      # Jika 0% atau kurang dari 1% (nilai yang sangat rendah)
-        (1, WHITE_RGB),      # 1% dari ideal -> Putih
-        (50, BLUE_RGB),      # 50% dari ideal -> Biru
-        (100, GREEN_RGB),    # 100% dari ideal -> Hijau (ideal)
-        (150, GOLD_RGB),     # 150% dari ideal -> Emas
-        (200, RED_RGB),      # 200% dari ideal -> Merah
-        (float('inf'), RED_RGB) # Lebih dari 200% -> Merah
-    ]
-
-    # Pastikan persentase berada dalam rentang yang masuk akal
-    percent = max(0, min(user_val_vs_ideal_percent, 200)) # Batasi dari 0% hingga 200%
-
-    # Cari dua titik warna di antara persentase saat ini
-    lower_point = color_points[0]
-    upper_point = color_points[0]
-
-    for i in range(len(color_points) - 1):
-        if color_points[i][0] <= percent <= color_points[i+1][0]:
-            lower_point = color_points[i]
-            upper_point = color_points[i+1]
-            break
-        elif percent > color_points[len(color_points)-2][0]: # Jika lebih dari titik terakhir yang didefinisikan
-            lower_point = color_points[len(color_points)-2]
-            upper_point = color_points[len(color_points)-1]
-            break # pastikan tidak keluar dari range color_points index
-
-    # Jika percent tepat di salah satu titik
-    if percent == lower_point[0]:
-        return rgb_to_hex(lower_point[1])
-    if percent == upper_point[0]:
-        return rgb_to_hex(upper_point[1])
-
-    # Interpolasi jika berada di antara dua titik
-    range_percent = upper_point[0] - lower_point[0]
-    if range_percent == 0: # Hindari pembagian oleh nol jika poinnya sama
-        return rgb_to_hex(lower_point[1])
-
-    factor = (percent - lower_point[0]) / range_percent
-    interpolated_rgb = interpolate_color(lower_point[1], upper_point[1], factor)
-    
-    return rgb_to_hex(interpolated_rgb)
-
-
-# Fungsi format_comparison_difference mungkin tidak lagi diperlukan jika Anda menampilkan
-# nilai user dan ideal secara langsung dengan warna.
-# Jika Anda masih ingin selisih juga ditampilkan, Anda bisa mempertahankannya
-# tetapi mungkin tidak lagi memerlukan `color_class` di dalamnya,
-# karena warna akan ditentukan di `views.py` dan langsung diteruskan.
-
-def format_comparison_difference(db_val, session_val, label, is_percentage=False):
-    """
-    Memformat selisih antara nilai stat ideal (DB) dan input user (sesi) untuk ditampilkan di UI.
-    """
-    # Pastikan session_val adalah float untuk operasi aritmatika
-    session_val_float = float(session_val) if isinstance(session_val, (int, float, str)) else 0.0
-    diff = db_val - session_val_float
-    symbol = ''
-    if diff > 0:
-        symbol = '&#9650;' # Panah atas
-        diff_str = f"+{diff:.1f}" if not is_percentage else f"+{diff:.1f}%"
-    elif diff < 0:
-        symbol = '&#9660;' # Panah bawah
-        diff_str = f"{diff:.1f}" if not is_percentage else f"{diff:.1f}%"
+    if score <= 50:
+        # Interpolasi dari Merah ke Kuning
+        r = 255
+        g = int(255 * (score / 50))
+        b = 0
     else:
-        symbol = '&#x2713;' # Tanda centang
-        diff_str = "Equal"
+        # Interpolasi dari Kuning ke Hijau
+        r = int(255 * ((100 - score) / 50))
+        g = 255
+        b = 0
 
-    # Membersihkan label untuk tampilan unit, memastikan '%' ditambahkan jika diperlukan
-    label_unit = label.replace(' DMG', '').replace('Lib.', 'Liberation').replace('Regen', 'Regeneration').strip()
-    if is_percentage and not label_unit.endswith('%'):
-        label_unit += '%'
-    return {'label': label, 'value': diff_str, 'symbol': symbol, 'label_unit': label_unit}
+    return f"#{r:02x}{g:02x}{b:02x}"
 
-# Anda bisa menambahkan fungsi helper lain di sini di masa mendatang
-# Contoh:
-# def clamp(value, min_value, max_value):
-#     return max(min_value, min(value, max_value))
+
+def format_comparison_difference(ideal_val, user_val, stat_label, is_percentage=False, is_prioritized=False):
+    """
+    Membandingkan nilai pengguna dengan nilai ideal dan menghasilkan pesan saran.
+
+    Args:
+        ideal_val (float): Nilai ideal stat dari database.
+        user_val (float): Nilai stat pengguna.
+        stat_label (str): Nama stat (misal "HP", "Critical Rate").
+        is_percentage (bool): True jika stat adalah persentase.
+        is_prioritized (bool): True jika stat ini diprioritaskan untuk role karakter.
+
+    Returns:
+        str: Pesan saran deskriptif.
+    """
+    diff = user_val - ideal_val
+    unit = "%" if is_percentage else ""
+    formatted_ideal = f"{ideal_val:.1f}{unit}"
+    formatted_user = f"{user_val:.1f}{unit}"
+
+    # Untuk mempermudah perbandingan, kita akan mengubah persentase menjadi desimal untuk perhitungan
+    # Namun, tetap tampilkan sebagai persentase di pesan akhir.
+    # Hindari pembagian oleh nol jika ideal_val adalah 0
+    ideal_for_calc = ideal_val / 100 if is_percentage else ideal_val
+    user_for_calc = user_val / 100 if is_percentage else user_val
+
+    # Thresholds untuk saran (sesuaikan sesuai kebutuhan Anda)
+    VERY_LOW_THRESHOLD_PCT = 0.30  # Kurang dari 30% dari ideal
+    LOW_THRESHOLD_PCT = 0.60     # Kurang dari 60% dari ideal
+    SLIGHTLY_LOW_THRESHOLD_PCT = 0.90 # Kurang dari 90% dari ideal
+    SLIGHTLY_HIGH_THRESHOLD_PCT = 1.10 # Lebih dari 110% dari ideal
+    VERY_HIGH_THRESHOLD_PCT = 1.30   # Lebih dari 130% dari ideal
+
+    # Khusus untuk stat bonus DMG, nama stat harus cocok dengan key di MAX_BONUS_DMG_PERCENT
+    stat_key_for_bonus_max = stat_label.replace(' ', '_').lower()
+
+    if is_prioritized:
+        # Logika untuk stat yang diprioritaskan (biasanya stat DMG bonus untuk DPS)
+        if user_val == 0:
+            return f"Untuk {stat_label}, ini adalah stat **KRITIS** bagi {stat_label.replace(' Bonus', '')} karakter ini, tetapi Anda tidak memiliki nilai sama sekali (0%). Anda sangat perlu mencari stat ini!"
+        
+        # Penanganan kasus di mana ideal_val adalah 0 (karena tidak ada target spesifik, hanya 'semakin banyak semakin baik')
+        if ideal_val == 0:
+            max_val_for_bonus = MAX_BONUS_DMG_PERCENT.get(stat_key_for_bonus_max, 50.0) # Default 50 jika tidak ditemukan
+            if user_val >= max_val_for_bonus * 0.95: # Di atas 95% dari 'maksimal sempurna'
+                return f"Nilai {stat_label} Anda ({formatted_user}) sudah sangat optimal untuk karakter ini. Luar biasa!"
+            elif user_val > max_val_for_bonus * 0.6:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sudah baik, namun masih bisa dioptimalkan lebih lanjut untuk meningkatkan potensi karakter."
+            else:
+                return f"Nilai {stat_label} Anda ({formatted_user}) masih terlalu rendah untuk stat prioritas ini. Anda perlu mencari lebih banyak lagi."
+        
+        # Penanganan kasus di mana ideal_val > 0 untuk stat yang diprioritaskan (jika ada target spesifik)
+        elif ideal_val > 0:
+            if user_for_calc < ideal_for_calc * VERY_LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sangat rendah dibandingkan ideal ({formatted_ideal}). Perlu peningkatan drastis untuk performa maksimal."
+            elif user_for_calc < ideal_for_calc * LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) masih rendah. Usahakan untuk mendapatkan lebih banyak lagi untuk mencapai potensi penuh."
+            elif user_for_calc < ideal_for_calc * SLIGHTLY_LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sedikit di bawah ideal ({formatted_ideal}). Sedikit peningkatan akan sangat membantu."
+            elif user_val >= ideal_val:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sudah ideal atau sangat baik. Pertahankan!"
+
+    else:
+        # Logika untuk stat yang TIDAK diprioritaskan atau stat utama
+        # Penanganan kasus ideal_val = 0 (stat tidak relevan)
+        if ideal_val == 0:
+            if user_val == 0:
+                return f"Stat {stat_label} tidak terlalu relevan untuk karakter ini, dan Anda sudah mengelolanya dengan baik (nilai 0%)."
+            else: # user_val > 0 meskipun idealnya 0
+                return f"Stat {stat_label} Anda ({formatted_user}) tidak relevan untuk karakter ini. Alokasikan stat ini ke yang lebih bermanfaat."
+
+        # Penanganan kasus ideal_val > 0 (stat relevan tapi mungkin bukan prioritas utama DMG)
+        # Toleransi kecil untuk nilai yang hampir sama
+        if abs(diff) < 0.1 and not is_percentage: # Untuk flat stats
+            return f"Nilai {stat_label} Anda ({formatted_user}) sudah sangat mendekati nilai ideal ({formatted_ideal}). Baik!"
+        elif is_percentage and abs(user_val - ideal_val) < 1.0: # Untuk persentase, toleransi 1%
+            return f"Nilai {stat_label} Anda ({formatted_user}) sudah sangat mendekati nilai ideal ({formatted_ideal}). Baik!"
+
+        if user_val > ideal_val:
+            if user_for_calc > ideal_for_calc * VERY_HIGH_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) **terlalu tinggi** dari ideal ({formatted_ideal}). Pertimbangkan mengalokasikan stat ini ke yang lebih relevan."
+            elif user_for_calc > ideal_for_calc * SLIGHTLY_HIGH_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sedikit lebih tinggi dari ideal ({formatted_ideal}). Masih bagus, tapi bisa dioptimalkan."
+            else: # Di atas ideal tapi tidak terlalu jauh
+                return f"Nilai {stat_label} Anda ({formatted_user}) sudah melebihi nilai ideal ({formatted_ideal}). Bagus!"
+        else: # user_val < ideal_val
+            if user_for_calc < ideal_for_calc * VERY_LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) **sangat rendah** dibandingkan ideal ({formatted_ideal}). Ini perlu peningkatan drastis."
+            elif user_for_calc < ideal_for_calc * LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) rendah dibandingkan ideal ({formatted_ideal}). Perlu ditingkatkan."
+            elif user_for_calc < ideal_for_calc * SLIGHTLY_LOW_THRESHOLD_PCT:
+                return f"Nilai {stat_label} Anda ({formatted_user}) sedikit di bawah ideal ({formatted_ideal}). Masih bisa ditingkatkan."
+            else: # user_val mendekati ideal tapi sedikit di bawah
+                return f"Nilai {stat_label} Anda ({formatted_user}) sudah cukup baik mendekati ideal ({formatted_ideal})."
+
+    # Fallback jika tidak ada kondisi yang cocok (seharusnya tidak terjadi)
+    return f"Saran untuk {stat_label} tidak tersedia (user: {formatted_user}, ideal: {formatted_ideal})."

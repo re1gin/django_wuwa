@@ -1,55 +1,82 @@
-from .rules import diff_stat_simulation, bonus_stat_simulation, overall_text_quality_sim
+# engine.py
 
-def calculate_fuzzy_stat_quality(ideal_val, user_val, stat_category='flat', is_role_priority=False):
-    
-    try:
-        if stat_category in ['flat', 'percent']:
-            diff = ideal_val - user_val
-            if stat_category == 'flat':
-                diff_stat_simulation.input['selisih_besar'] = diff
-            else: # percent
-                diff_stat_simulation.input['selisih_kecil'] = diff
-            diff_stat_simulation.compute()
-            return diff_stat_simulation.output['kualitas_stat']
-        
-        elif stat_category == 'bonus':
-            if is_role_priority:
-                # Untuk stat bonus yang diprioritaskan, nilai input absolutnya yang dinilai
-                bonus_stat_simulation.input['bonus_nilai_input'] = user_val
-                bonus_stat_simulation.compute()
-                return bonus_stat_simulation.output['kualitas_stat']
+import numpy as np
+from build.constants import MAX_BONUS_DMG_PERCENT
+
+def triangular_membership_flat(x, a, b, c):
+    if x <= a:
+        return 0.0
+    elif a < x <= b:
+        return (x - a) / (b - a)
+    elif b < x <= c:
+        return 1.0 - (x - b) / (c - b)
+    else:
+        return 0.0
+
+def trapezoidal_membership_percent(x, a, b, c, d):
+    if x <= a or x >= d:
+        return 0.0
+    elif b <= x <= c:
+        return 1.0
+    elif a < x < b:
+        return (x - a) / (b - a)
+    elif c < x < d:
+        return 1.0 - (x - c) / (d - c)
+
+def bonus_stat_membership(x, max_val):
+    if x <= 0:
+        return 0.0
+    elif x >= max_val:
+        return 1.0
+    else:
+        return x / max_val
+
+def calculate_fuzzy_stat_quality(ideal_val, user_val, stat_category, stat_name=None, is_role_priority=False):
+    score = 0.0
+    if stat_category == 'flat':
+        if ideal_val <= 0:
+            if user_val == 0:
+                score = 100.0
             else:
-                # Jika tidak diprioritaskan, nilai netral
-                return 50 
-    except ValueError:
-        # Menangani kasus di mana nilai input berada di luar universe yang didefinisikan
-        print(f"Peringatan: Nilai stat input ({user_val}) di luar rentang yang diharapkan untuk kategori '{stat_category}'. Mengembalikan skor netral.")
-        return 50 
-    except Exception as e:
-        print(f"Error dalam perhitungan fuzzy stat: {e}") 
-        return 0 
-
-
-def get_overall_build_rating_text(overall_score):
-    """
-    Menghitung dan mengembalikan teks penilaian kualitas build keseluruhan
-    berdasarkan skor numerik (0-100) menggunakan Fuzzy Logic.
-    """
-    if not isinstance(overall_score, (int, float)):
-        return "Tidak Dapat Dinilai" # Menangani input non-numerik
-
-    overall_text_quality_sim.input['overall_performance_score'] = overall_score
-    try:
-        overall_text_quality_sim.compute()
-        deffuzified_value = overall_text_quality_sim.output['text_quality_output']
-
-        # Mengonversi nilai defuzzified ke string teks
-        if deffuzified_value < 35: # Ambang batas ini bisa disesuaikan
-            return "Perlu Peningkatan"
-        elif 35 <= deffuzified_value < 75:
-            return "Cukup Baik"
+                score = max(0.0, 100.0 - (user_val / ideal_val if ideal_val else user_val) * 10)
         else:
-            return "Sangat Baik"
-    except Exception as e:
-        print(f"Error dalam perhitungan teks kualitas build keseluruhan: {e}")
-        return "Error Penilaian"
+            score = (user_val / ideal_val) * 100.0
+    elif stat_category == 'percent':
+        if ideal_val <= 0:
+             if user_val == 0:
+                score = 100.0
+             else:
+                score = max(0.0, 100.0 - user_val * 2)
+        else:
+            score = (user_val / ideal_val) * 100.0
+    elif stat_category == 'bonus':
+        if stat_name not in MAX_BONUS_DMG_PERCENT:
+            return 0.0
+        max_bonus = MAX_BONUS_DMG_PERCENT[stat_name]
+        if is_role_priority:
+            score = bonus_stat_membership(user_val, max_bonus) * 100.0
+            if user_val == 0:
+                score = 0.0
+        else:
+            if user_val == 0:
+                score = 100.0
+            else:
+                penalty = (user_val / max_bonus) * 100.0
+                score = max(0.0, 100.0 - penalty)
+    return max(0.0, min(100.0, score))
+
+def get_overall_build_rating_text(rating):
+    if rating >= 95:
+        return "Masterpiece Build!"
+    elif rating >= 90:
+        return "Exceptional Build!"
+    elif rating >= 80:
+        return "Great Build!"
+    elif rating >= 70:
+        return "Good Build"
+    elif rating >= 60:
+        return "Decent Build"
+    elif rating >= 50:
+        return "Acceptable Build"
+    else:
+        return "Needs Improvement"

@@ -3,7 +3,8 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    background-image: url("/static/assets/background/Background-7.png");
+    /* background-image: url("/static/assets/background/Background-7.png"); */
+    background-color: #1a1a1a;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -12,10 +13,9 @@
 .review-page-container {
     width: 100%;
     margin: 20px auto; /* Pusatkan kontainer dengan margin vertikal */
-    padding: 20px;
     display: flex;
     flex-direction: column; /* Menumpuk section yang disertakan secara vertikal */
-    gap: 30px; /* Jarak antara build_review.html dan difference_stat.html */
+
 }
 
 .review {
@@ -25,8 +25,11 @@
 
 .review .container-review {
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    padding: 40px;
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -36,16 +39,15 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 20px;
-    border: 1px solid #fff6f6;
+    gap: 10px;
 }
 
 .review .center-panel {
-    flex: 1;
+    width: 500px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    border: 1px solid #fff6f6;
+    gap: 10px;
 }
 
 .review .right-panel {
@@ -55,7 +57,6 @@
     flex-direction: column;
     justify-content: center;
     gap: 20px;
-    border: #fff6f6 1px solid;
 }
 
 /* Header Section */
@@ -161,12 +162,49 @@
     font-weight: bold;
 }
 
+.review .content-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    padding: 15px;
+}
 .review .rank-label {
     background-color: #3a3a3a;
     padding: 3px 8px;
     border-radius: 10px;
     font-size: 12px;
     float: right;
+}
+
+.review .saran {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 20px;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+}
+
+.review .suggestion-section {
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    scrollbar-width: none;
+    width: 100%;
+    height: 300px;
+}
+.review .suggestion-list {
+    list-style: disc inside; /* Atau none jika Anda tidak ingin bullet point */
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+.review .suggestion-list li {
+    margin-bottom: 8px; /* Jarak antar item saran */
+    line-height: 1.5; /* Spasi baris untuk keterbacaan */
 }
 
 /* Gear Section */
@@ -205,7 +243,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid #ffffff;
 }
 
 .review .character-art {
@@ -439,8 +476,9 @@
 /* Assessment Panel */
 .spider-chart-container {
     position: relative;
-    height: 300px; /* Fixed height for chart */
+    height: 350px; /* Fixed height for chart */
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .resonator-rating {
@@ -495,7 +533,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 20px;
 }
 
 .score-box {
