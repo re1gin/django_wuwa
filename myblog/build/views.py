@@ -267,16 +267,10 @@ def build_review_page(request, name):
     user_input_stats = request.session.get('user_input_stats', {
         'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0,
         'crit_rate': 0.0, 'crit_dmg': 0.0,
-        'basic_atk_dmg_bonus': 0.0,
-        # 'heavy_atk_dmg_bonus' dihapus karena tidak ada di HTML builder
-        'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
-        'healing_bonus': 0.0,
-        'attribute_dmg_bonus': 0.0,
+        'basic_atk_dmg_bonus': 0.0,'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
+        'healing_bonus': 0.0,'attribute_dmg_bonus': 0.0,
         'character_level': 90, # Dipertahankan sebagai nilai statis dari builder
-        # 'resonance_chain' dihapus karena tidak ada di HTML builder
         'weapon_level': 90,   # Dipertahankan sebagai nilai statis dari builder
-        # 'weapon_rank' dihapus karena tidak ada di HTML builder
-        # 'echo_level' dihapus karena tidak ada di HTML builder
         'basic_atk_level': 10, # Ditambahkan kembali, default max level
         'resonance_skill_level': 10, # Ditambahkan kembali, default max level
         'forte_circuit_level': 10, # Ditambahkan kembali, default max level
@@ -390,7 +384,6 @@ def build_review_page(request, name):
     status_differences.append(format_comparison_difference(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), "Crit Rate", is_percentage=True))
     status_differences.append(format_comparison_difference(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), "Crit Dmg", is_percentage=True))
     status_differences.append(format_comparison_difference(0.0, user_input_stats.get('basic_atk_dmg_bonus', 0.0), "Basic ATK DMG", is_percentage=True))
-    # 'heavy_atk_dmg_bonus' dihapus
     status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_skill_dmg_bonus', 0.0), "Skill DMG", is_percentage=True))
     status_differences.append(format_comparison_difference(0.0, user_input_stats.get('resonance_lib_dmg_bonus', 0.0), "Lib. DMG", is_percentage=True))
     status_differences.append(format_comparison_difference(0.0, user_input_stats.get('attribute_dmg_bonus', 0.0), "Attribute DMG", is_percentage=True))
@@ -400,7 +393,6 @@ def build_review_page(request, name):
 
     level_score = 100
     character_level = int(user_input_stats.get('character_level', 90))
-    # 'resonance_chain' dihapus
     if character_level < 90:
         level_score -= (90 - character_level) * 0.5
     component_scores['level'] = max(0, min(100, level_score))
@@ -410,7 +402,6 @@ def build_review_page(request, name):
         'hp': 1.0, 'attack': 1.0, 'defense': 1.0, 'energy': 1.0,
         'crit_rate': 1.0, 'crit_dmg': 1.0,
         'basic_atk_dmg': 1.0,
-        # 'heavy_atk_dmg' dihapus
         'resonance_skill_dmg': 1.0,
         'resonance_lib_dmg': 1.0,
         'attribute_dmg_bonus': 1.0,
@@ -423,12 +414,12 @@ def build_review_page(request, name):
     overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_rate, user_input_stats.get('crit_rate', 0.0), 'percent') * stat_weights_for_average['crit_rate']
     overall_stat_score += calculate_fuzzy_stat_quality(ideal_crit_dmg, user_input_stats.get('crit_dmg', 0.0), 'percent') * stat_weights_for_average['crit_dmg']
     overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('basic_atk_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['basic_atk_dmg']
-    # overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('heavy_atk_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['heavy_atk_dmg'] # Dihapus
     overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_skill_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_skill_dmg']
     overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('resonance_lib_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['resonance_lib_dmg']
     overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('attribute_dmg_bonus', 0.0), 'bonus', is_main_dps) * stat_weights_for_average['attribute_dmg_bonus']
     overall_stat_score += calculate_fuzzy_stat_quality(0, user_input_stats.get('healing_bonus', 0.0), 'bonus', is_support_and_healer) * stat_weights_for_average['healing_bonus']
     total_stat_weights = sum(stat_weights_for_average.values())
+    
     component_scores['status'] = round(overall_stat_score / total_stat_weights, 2) if total_stat_weights > 0 else 0
 
     weapon_score = 0
@@ -461,7 +452,7 @@ def build_review_page(request, name):
     skill_score = 100
     total_skill_levels = 0
     max_level_per_skill = 10
-    total_possible_skill_levels = 5 * max_level_per_skill # 5 skill * max level 10
+    total_possible_skill_levels = 5 * max_level_per_skill
     for skill_field in [
         'basic_atk_level',
         'resonance_skill_level',
