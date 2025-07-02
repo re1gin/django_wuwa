@@ -9,17 +9,24 @@ def weapon_icon_upload_path(instance, filename):
     
     return os.path.join('weapon', new_filename)
 
+def weapontype_icon_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    base_filename = instance.name.replace(' ', '_')
+    new_filename = f"{base_filename}.{ext}"
+    
+    return os.path.join('weapontype', new_filename)
+
 
 class WeaponType(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    icon_weapon_type = models.ImageField(upload_to='weapontype/', blank=True, null=True)
+    icon_type = models.ImageField(upload_to=weapontype_icon_upload_path, blank=True, null=True)
     
     def __str__(self):
         return self.name
     
     class Meta:
-        verbose_name = "Weapon_Type"
-        verbose_name_plural = "Weapons Types"
+        verbose_name = "Weapon Type"
+        verbose_name_plural = "Weapon Types"
         ordering = ['name']
 
 class Weapon(models.Model):
@@ -41,7 +48,6 @@ class Weapon(models.Model):
         default='ATK%'
     )
     secondary_value = models.CharField(max_length=20, default='0')
-    passive_skill_description = models.TextField(null=True, blank=True)
     passive_skill_description = models.TextField(null=True, blank=True)
     
     # Image field
