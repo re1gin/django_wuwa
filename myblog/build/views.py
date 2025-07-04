@@ -263,19 +263,14 @@ def build_review_page(request, name):
     images = {"render": f"{image_path}Render.png"}
     roles_with_icons = resonator.role.all().values('name', 'icon_role')
 
+    # Menggunakan 'energy' secara konsisten, bukan 'energy_regen'
     user_input_stats = request.session.get('user_input_stats', {
-        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy_regen': 0.0,
-        'critical_rate': 0.0, 'critical_damage': 0.0,
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg_bonus': 0.0, 'heavy_atk_dmg_bonus': 0.0,
         'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
         'attribute_dmg_bonus': 0.0, 'healing_bonus': 0.0,
         'character_level': DEFAULT_SKILL_LEVEL['character_level'],
         'weapon_level': DEFAULT_SKILL_LEVEL['weapon_level'],
-        'basic_atk_level': DEFAULT_SKILL_LEVEL['skill_level'],
-        'resonance_skill_level': DEFAULT_SKILL_LEVEL['skill_level'],
-        'forte_circuit_level': DEFAULT_SKILL_LEVEL['skill_level'],
-        'resonance_liberation_level': DEFAULT_SKILL_LEVEL['skill_level'],
-        'intro_skill_level': DEFAULT_SKILL_LEVEL['skill_level'],
         'selected_weapon': '',
         'selected_echo': '',
         'selected_sonata': '',
@@ -304,25 +299,24 @@ def build_review_page(request, name):
         pass
 
     ideal_build_stats = {
-        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy_regen': 0.0,
-        'critical_rate': 0.0, 'critical_damage': 0.0,
+        'hp': 0.0, 'attack': 0.0, 'defense': 0.0, 'energy': 0.0, 'crit_rate': 0.0, 'crit_dmg': 0.0,
         'basic_atk_dmg_bonus': 0.0, 'heavy_atk_dmg_bonus': 0.0,
         'resonance_skill_dmg_bonus': 0.0, 'resonance_lib_dmg_bonus': 0.0,
         'attribute_dmg_bonus': 0.0, 'healing_bonus': 0.0,
     }
 
-    selected_weapon_obj_db = None
-    selected_echo_obj_db = None
-    selected_sonata_obj_db = None
+    ideal_weapons_db = []
+    ideal_echos_db = []
+    ideal_sonatas_db = []
 
     if build_instance:
         ideal_build_stats.update({
             'hp': build_instance.hp,
             'attack': build_instance.attack,
             'defense': build_instance.defense,
-            'energy_regen': build_instance.energy,
-            'critical_rate': build_instance.crit_rate,
-            'critical_damage': build_instance.crit_dmg,
+            'energy': build_instance.energy,
+            'crit_rate': build_instance.crit_rate,
+            'crit_dmg': build_instance.crit_dmg,
             'basic_atk_dmg_bonus': 0, # build_instance.basic_atk_dmg_bonus,
             'heavy_atk_dmg_bonus': 0, # build_instance.heavy_atk_dmg_bonus,
             'resonance_skill_dmg_bonus': 0, # build_instance.resonance_skill_dmg_bonus,
@@ -330,34 +324,10 @@ def build_review_page(request, name):
             'attribute_dmg_bonus': build_instance.attribute_dmg_bonus,
             'healing_bonus': build_instance.healing_bonus,
         })
-        selected_weapon_obj_db = build_instance.ideal_weapon
-        selected_echo_obj_db = build_instance.ideal_echo
-        selected_sonata_obj_db = build_instance.ideal_sonata
-    else:
-        # Placeholder objek yang diperbarui (tetap diperlukan jika build_instance tidak ada)
-        class DummyWeapon:
-            def __init__(self):
-                self.weapon_name = 'No Saved Weapon'
-                self.icon_image = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_weapon.png'})()
-                self.base_atk = 0.0
-                self.rarity = 0
-                self.pk = None
-        class DummyEcho:
-            def __init__(self):
-                self.name = 'No Saved Echo'
-                self.icon_echo = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_echo.png'})()
-                self.cost = 0
-                self.pk = None
-                self.sonatas = type('DummySonataQuerySet', (object,), {'filter': lambda self, **kwargs: None})()
-        class DummySonata:
-            def __init__(self):
-                self.name = 'No Saved Sonata'
-                self.icon_sonata = type('ImageFile', (object,), {'url': '/static/combat/images/placeholder_sonata.png'})()
-                self.pk = None
-
-        selected_weapon_obj_db = DummyWeapon()
-        selected_echo_obj_db = DummyEcho()
-        selected_sonata_obj_db = DummySonata()
+        # Mengambil semua objek terkait dari ManyToManyField, bukan mencoba mengaksesnya sebagai satu objek
+        ideal_weapons_db = build_instance.ideal_weapon.all()
+        ideal_echos_db = build_instance.ideal_echo.all()
+        ideal_sonatas_db = build_instance.ideal_sonata.all()
 
 
     resonator_roles = [r.name for r in resonator.role.all()]
@@ -388,9 +358,9 @@ def build_review_page(request, name):
         {'label': "HP", 'key': 'hp', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
         {'label': "ATK", 'key': 'attack', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
         {'label': "DEF", 'key': 'defense', 'category': 'flat', 'is_percentage_display': False, 'type': 'main'},
-        {'label': "Energy Regen", 'key': 'energy_regen', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
-        {'label': "Critical Rate", 'key': 'critical_rate', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
-        {'label': "Critical Damage", 'key': 'critical_damage', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Energy Regen", 'key': 'energy', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Critical Rate", 'key': 'crit_rate', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
+        {'label': "Critical Damage", 'key': 'crit_dmg', 'category': 'percent', 'is_percentage_display': True, 'type': 'main'},
         {'label': "Basic ATK DMG Bonus", 'key': 'basic_atk_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
         {'label': "Heavy ATK DMG Bonus", 'key': 'heavy_atk_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
         {'label': "Resonance Skill DMG Bonus", 'key': 'resonance_skill_dmg_bonus', 'category': 'bonus', 'is_percentage_display': True, 'type': 'bonus'},
@@ -431,9 +401,9 @@ def build_review_page(request, name):
         'hp': 'flat',
         'attack': 'flat',
         'defense': 'flat',
-        'energy_regen': 'percent',
-        'critical_rate': 'percent',
-        'critical_damage': 'percent',
+        'energy': 'percent',
+        'crit_rate': 'percent',
+        'crit_dmg': 'percent',
         'basic_atk_dmg_bonus': 'bonus',
         'heavy_atk_dmg_bonus': 'bonus',
         'resonance_skill_dmg_bonus': 'bonus',
@@ -484,20 +454,21 @@ def build_review_page(request, name):
 
     # c. Weapon Score (tetap sama)
     weapon_score = 0
-    if build_instance and build_instance.ideal_weapon:
-        if selected_weapon_obj and build_instance.ideal_weapon.pk == selected_weapon_obj.pk:
+    if build_instance and ideal_weapons_db.exists():
+        # Cek apakah senjata yang dipilih pengguna ada di dalam daftar senjata ideal
+        if selected_weapon_obj and ideal_weapons_db.filter(weapon__pk=selected_weapon_obj.pk).exists():
             weapon_score = 100
-        else:
-            weapon_score = 0
+
     component_scores['weapon'] = weapon_score
     total_weighted_score += component_scores['weapon'] * RESONATOR_RATING_WEIGHTS['weapon']
     total_actual_weights += RESONATOR_RATING_WEIGHTS['weapon']
 
     # d. Echo Score (tetap sama)
     echo_score = 0
-    if build_instance and build_instance.ideal_echo:
-        echo_matches = (selected_echo_obj and build_instance.ideal_echo.pk == selected_echo_obj.pk)
-        sonata_matches = (echo_matches and selected_sonata_obj and build_instance.ideal_sonata and build_instance.ideal_sonata.pk == selected_sonata_obj.pk)
+    if build_instance and ideal_echos_db.exists() and ideal_sonatas_db.exists():
+        # Cek apakah echo dan sonata yang dipilih ada di daftar ideal
+        echo_matches = selected_echo_obj and ideal_echos_db.filter(echo__pk=selected_echo_obj.pk).exists()
+        sonata_matches = echo_matches and selected_sonata_obj and ideal_sonatas_db.filter(sonata__pk=selected_sonata_obj.pk).exists()
 
         if echo_matches and sonata_matches:
             echo_score = 100
@@ -510,15 +481,8 @@ def build_review_page(request, name):
     total_actual_weights += RESONATOR_RATING_WEIGHTS['echo']
 
     # e. Skill Score (tetap sama)
-    total_user_skill_levels = (
-        user_input_stats.get('basic_atk_level', DEFAULT_SKILL_LEVEL['skill_level']) +
-        user_input_stats.get('resonance_skill_level', DEFAULT_SKILL_LEVEL['skill_level']) +
-        user_input_stats.get('forte_circuit_level', DEFAULT_SKILL_LEVEL['skill_level']) +
-        user_input_stats.get('resonance_liberation_level', DEFAULT_SKILL_LEVEL['skill_level']) +
-        user_input_stats.get('intro_skill_level', DEFAULT_SKILL_LEVEL['skill_level'])
-    )
-    total_possible_skill_levels = 5 * DEFAULT_SKILL_LEVEL['skill_level']
-    component_scores['skill'] = round((total_user_skill_levels / total_possible_skill_levels) * 100, 2) if total_possible_skill_levels > 0 else 0
+    # Logika skill score bisa disederhanakan atau dihilangkan jika tidak ada input level skill
+    component_scores['skill'] = 100 # Asumsi skill max untuk sementara
     total_weighted_score += component_scores['skill'] * RESONATOR_RATING_WEIGHTS['skill']
     total_actual_weights += RESONATOR_RATING_WEIGHTS['skill']
 
@@ -583,9 +547,9 @@ def build_review_page(request, name):
         min(100.0, (ideal_build_stats['hp'] / HP_NORM) * 100.0),
         min(100.0, (ideal_build_stats['attack'] / ATK_NORM) * 100.0),
         min(100.0, (ideal_build_stats['defense'] / DEF_NORM) * 100.0),
-        min(100.0, (ideal_build_stats['energy_regen'] / ENERGY_NORM) * 100.0),
-        min(100.0, ideal_build_stats['critical_rate'] / CRIT_RATE_NORM * 100.0),
-        min(100.0, ideal_build_stats['critical_damage'] / CRIT_DMG_NORM * 100.0),
+        min(100.0, (ideal_build_stats['energy'] / ENERGY_NORM) * 100.0),
+        min(100.0, ideal_build_stats['crit_rate'] / CRIT_RATE_NORM * 100.0),
+        min(100.0, ideal_build_stats['crit_dmg'] / CRIT_DMG_NORM * 100.0),
     ]
     performance_data_json = {
         'labels': chart_labels,
@@ -613,9 +577,9 @@ def build_review_page(request, name):
         'selected_echo_obj': selected_echo_obj,
         'selected_sonata_obj': selected_sonata_obj,
 
-        'ideal_weapon_obj': selected_weapon_obj_db,
-        'ideal_echo_obj': selected_echo_obj_db,
-        'ideal_sonata_obj': selected_sonata_obj_db,
+        'ideal_weapons_db': ideal_weapons_db,
+        'ideal_echos_db': ideal_echos_db,
+        'ideal_sonatas_db': ideal_sonatas_db,
 
         'overview_main_stats': overview_main_stats,   # Dipisahkan
         'overview_bonus_stats': overview_bonus_stats, # Dipisahkan
