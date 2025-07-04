@@ -589,6 +589,8 @@ def build_review_page(request, name):
         'resonator_rating': resonator_rating_final,
         'resonator_rating_text': resonator_rating_text,
         'warning_messages': warning_messages, # Pesan peringatan
+        
+        "damager_url": reverse('damager:character_damage', kwargs={'name': resonator}),
     }
 
     print("DEBUG: performance_data_json (before json_script filter):")

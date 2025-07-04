@@ -1,0 +1,28 @@
+skill__character__name,skill__name,attack_name,multiplier_value,attack_type
+Carlotta,Basic Attack,Basic Attack Stage 1,54.08,basic
+Carlotta,Basic Attack,Basic Attack Stage 2,131.83,basic
+Carlotta,Basic Attack,Necessary Measures Stage 1 DMG,65.91,basic
+Carlotta,Basic Attack,Necessary Measures Stage 2 DMG,133.51,basic
+Carlotta,Basic Attack,Necessary Measures Stage 3 DMG,233.25,basic
+Carlotta,Heavy Attack,Heavy Attack DMG,152.12,heavy
+Carlotta,Heavy Attack,Containment Tactics DMG,228.18,heavy
+Carlotta,Mid-air Attack,Mid-air Attack DMG,104.78,basic
+Carlotta,Mid-air Attack,Customary Greetings DMG,239.98,basic
+Carlotta,Dodge Counter,Dodge Counter DMG,241.32,basic
+Carlotta,Resonance Skill,Graceful Step DMG,288.22,skill
+Carlotta,Resonance Skill,Chromatic Splendor DMG,563.64,skill
+Carlotta,Resonance Liberation,Skill DMG,402.71,liberation
+Carlotta,Resonance Liberation,Death Knell DMG,241.64,liberation
+Carlotta,Resonance Liberation,Fatal Finale DMG,644.33,liberation
+Cantarella,Basic Attack,Stage 1 DMG,79.53,basic
+Cantarella,Basic Attack,Stage 2 DMG,145.76,basic
+Cantarella,Basic Attack,Stage 3 DMG,145.14,basic
+Cantarella,Heavy Attack,Heavy Attack DMG,114.36,heavy
+Cantarella,Heavy Attack,Delusive Dive DMG,106.10,heavy
+Cantarella,Mid-air Attack,Mid-air Attack DMG,104.98,basic
+Cantarella,Dodge Counter,Dodge Counter DMG,212.04,basic
+Cantarella,Resonance Skill,Graceful Step DMG,147.20,skill
+Cantarella,Resonance Skill,Flickering Reverie DMG,196.23,skill
+Cantarella,Resonance Skill,Jolt DMG,198.81,basic
+Cantarella,Resonance Liberation,Flowing Suffocation DMG,376.00,basic
+Cantarella,Resonance Liberation,Diffusion DMG,305.34,basic

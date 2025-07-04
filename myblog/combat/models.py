@@ -37,3 +37,4 @@ class Role(models.Model):
         verbose_name = "Role"
         verbose_name_plural = "Roles"
         ordering = ['name']
+        

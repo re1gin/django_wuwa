@@ -11,6 +11,7 @@ urlpatterns = [
     path('', main_views.home, name='home'),
     path('', include('resonators.urls')),
     path('', include('build.urls')),
+    path('dmg/', include('damager.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('accounts/', include('django.contrib.auth.urls'))
 ]

@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'combat',
     'dashboard',
     'echo',
-    'enemy',
+    'damager',
     'region',
     'resonators',
     'weapon',
