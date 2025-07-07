@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+
     <div class="hero">
         <div class="left">
             <div class="image-container">
@@ -65,12 +66,12 @@
                                 <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
                                     {# Diatur tanpa default '0.0' agar benar-benar kosong jika tidak ada nilai #}
-                                    <p>HP: <input type="number" name="hp" placeholder="0.0" value="{{ form.hp.value|default:'' }}" class="{% if form.hp.errors %}input-error{% endif %}"></p>
+                                    <p>HP: <input type="number" name="hp" min="900"  max="55000" placeholder="0.0" value="{{ form.hp.value|default:'' }}" class="{% if form.hp.errors %}input-error{% endif %}"></p>
                                     <p>ATK: <input type="number" name="attack" placeholder="0.0" value="{{ form.attack.value|default:'' }}" class="{% if form.attack.errors %}input-error{% endif %}"></p>
                                     <p>DEF: <input type="number" name="defense" placeholder="0.0" value="{{ form.defense.value|default:'' }}" class="{% if form.defense.errors %}input-error{% endif %}"></p>
-                                    <p>ENERGY REGEN: <input type="number" name="energy" placeholder="0.0" value="{{ form.energy.value|default:'' }}" class="{% if form.energy.errors %}input-error{% endif %}"></p>
-                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" placeholder="0.0" value="{{ form.crit_rate.value|default:'' }}" class="{% if form.crit_rate.errors %}input-error{% endif %}"></p>
-                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" placeholder="0.0" value="{{ form.crit_dmg.value|default:'' }}" class="{% if form.crit_dmg.errors %}input-error{% endif %}"></p>
+                                    <p>ENERGY REGEN: <input type="number" name="energy" min="100" placeholder="0.0" value="{{ form.energy.value|default:'' }}" class="{% if form.energy.errors %}input-error{% endif %}"></p>
+                                    <p>CRITICAL RATE: <input type="number" name="crit_rate" min="5.0" placeholder="0.0" value="{{ form.crit_rate.value|default:'' }}" class="{% if form.crit_rate.errors %}input-error{% endif %}"></p>
+                                    <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" min="150.0" placeholder="0.0" value="{{ form.crit_dmg.value|default:'' }}" class="{% if form.crit_dmg.errors %}input-error{% endif %}"></p>
                                 </div>
                             </div>
 
@@ -167,346 +168,24 @@
 
     {% block extra_js %}
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // DOM Elements
-                const weaponSelect = document.getElementById('weapon-select');
-                const echoSelect = document.getElementById('echo-select');
-                const sonataSelect = document.getElementById('sonata-select');
-                
-                const weaponIcon = document.getElementById('weapon-icon');
-                const echoIcon = document.getElementById('echo-icon');
-                const sonataIcon = document.getElementById('sonata-icon');
-
-                // Mengembalikan referensi ke kontainer rarity senjata yang baru
-                const weaponRarityDisplayContainer = document.getElementById('weapon-rarity-display-container');
-
-                // Menambahkan referensi ke elemen display level yang baru
-                const characterLevelDisplay = document.getElementById('character-level-display');
-                const weaponLevelDisplay = document.getElementById('weapon-level-display');
-
-                const buildForm = document.getElementById('buildForm');
-                const resetButton = document.getElementById('reset-builder-button');
-                
-                // Tempat untuk menampilkan pesan error umum
-                const messagesContainer = document.querySelector('.messages'); 
-
-                // Data dari Django yang diinjeksikan ke JavaScript
-                // Hanya menyimpan nilai yang perlu dikelola oleh JS untuk inisialisasi UI
-                const user_input_stats_js = {
+            window.builderConfig = {
+                characterName: "{{ character.name }}",
+                resetUrl: "{% url 'build:reset_build_session' %}",
+                detailsUrl: "{% url 'build:get_item_details_ajax' %}",
+                weaponIconPlaceholder: "{% static 'assets/ikon/Weapon.png' %}",
+                echoIconPlaceholder: "{% static 'assets/ikon/Echo.png' %}",
+                sonataIconPlaceholder: "{% static 'assets/ikon/Sonata.png' %}",
+                userInputStats: {
                     selected_weapon: "{{ user_input_stats.selected_weapon|default:'' }}",
                     selected_echo: "{{ user_input_stats.selected_echo|default:'' }}",
                     selected_sonata: "{{ user_input_stats.selected_sonata|default:'' }}",
-                };
-
-
-                // Utility Functions
-                function getCookie(name) {
-                    const cookies = document.cookie.split(';');
-                    for (let cookie of cookies) {
-                        cookie = cookie.trim();
-                        if (cookie.startsWith(name + '=')) {
-                            return decodeURIComponent(cookie.substring(name.length + 1));
-                        }
-                    }
-                    return null;
-                }
-
-                // Fungsi untuk menampilkan pesan error umum
-                function displayGeneralError(message) {
-                    if (messagesContainer) {
-                        messagesContainer.innerHTML = `<li class="error">${message}</li>`;
-                        messagesContainer.style.display = 'block'; // Pastikan terlihat
-                    } else {
-                        // Fallback jika .messages container tidak ditemukan
-                        alert(message);
-                    }
-                }
-
-                // Fungsi untuk menghapus semua pesan error (sebelum validasi baru)
-                function clearErrors() {
-                    if (messagesContainer) {
-                        messagesContainer.innerHTML = '';
-                        messagesContainer.style.display = 'none'; // Sembunyikan jika kosong
-                    }
-                    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-                }
-
-                function updateImage(imgElement, src) {
-                    imgElement.src = src;
-                    imgElement.alt = imgElement.alt || 'Preview Image';
-                }
-
-                function updateSelectOptions(selectElement, data, selectedValue) {
-                    const placeholderOption = selectElement.querySelector('option[value=""]') ||
-                        document.createElement('option');
-
-                    selectElement.innerHTML = '';
-                    placeholderOption.value = "";
-                    placeholderOption.textContent = `Pilih ${selectElement.id.replace('-select', '')}`;
-                    selectElement.appendChild(placeholderOption);
-
-                    data.forEach(item => {
-                        const option = document.createElement('option');
-                        option.value = item.name || item.weapon_name;
-                        option.textContent = item.name || item.weapon_name;
-                        option.selected = (option.value === selectedValue);
-                        selectElement.appendChild(option);
-                    });
-                }
-
-                // Fungsi untuk menghasilkan bintang berdasarkan kelangkaan
-                function generateStars(rarity) {
-                    if (typeof rarity !== 'number' || rarity < 1) {
-                        return ''; // Mengembalikan string kosong jika rarity tidak valid
-                    }
-                    return '⭐'.repeat(rarity); // Menggunakan emoji bintang
-                }
-
-                // Reset Functionality
-                async function resetBuilder() {
-                    try {
-                        const csrfToken = getCookie('csrftoken');
-                        const response = await fetch("{% url 'build:reset_build_session' %}", {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': csrfToken,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ character_name: "{{ character.name }}" })
-                        });
-
-                        if (response.ok) {
-                            window.location.reload(); // Reload the page to get default values from the server
-                        } else {
-                            throw new Error('Failed to reset session');
-                        }
-                    } catch (error) {
-                        console.error('Reset error:', error);
-                        displayGeneralError('Gagal mereset builder. Silakan coba lagi.'); // Tampilkan error umum
-                    }
-                }
-
-                // Item Display Functions
-                function updateDetails(itemType, data) {
-                    const config = {
-                        'weapon': {
-                            imgElement: weaponIcon,
-                            detailsContainer: weaponRarityDisplayContainer, // Mengarahkan ke kontainer rarity baru
-                            defaultIcon: "{% static 'assets/ikon/Weapon.png' %}",
-                            detailsHTML: data?.details ? `
-                                ${generateStars(data.details.rarity)}
-                            ` : '' // Hanya menampilkan bintang
-                        },
-                        'echo': {
-                            imgElement: echoIcon,
-                            defaultIcon: "{% static 'assets/ikon/Echo.png' %}",
-                        },
-                        'sonata': {
-                            imgElement: sonataIcon,
-                            defaultIcon: "{% static 'assets/ikon/Sonata.png' %}",
-                        }
-                    };
-
-                    const { imgElement, detailsContainer, defaultIcon, detailsHTML } = config[itemType] || {};
-                    if (!imgElement) return;
-
-                    updateImage(imgElement, data?.image_url || defaultIcon);
-                    
-                    // Hanya mengisi detailsContainer jika ada dan detailsHTML disediakan
-                    if (detailsContainer && detailsHTML !== undefined) {
-                        detailsContainer.innerHTML = detailsHTML;
-                    }
-                }
-
-                function updateUI(itemType, data) {
-                    updateDetails(itemType, data);
-
-                    if (itemType === 'echo') {
-                        // If selected echo changes, filter sonatas and reset sonata selection if current is invalid
-                        updateSelectOptions(sonataSelect, data.filtered_sonatas || [], user_input_stats_js.selected_sonata);
-
-                        if (!data.filtered_sonatas?.some(s => s.name === sonataSelect.value)) {
-                            sonataSelect.value = "";
-                            updateDetails('sonata', null);
-                            user_input_stats_js.selected_sonata = "";
-                        }
-                    }
-                }
-
-                // Data Fetching
-                async function fetchDetails(itemType, itemName, selectedEchoName = '') {
-                    const csrfToken = getCookie('csrftoken');
-                    const formData = new FormData();
-
-                    formData.append('item_type', itemType);
-                    formData.append('item_name', itemName);
-                    formData.append('selected_echo_name', selectedEchoName);
-                    formData.append('csrfmiddlewaretoken', csrfToken);
-
-                    try {
-                        const response = await fetch("{% url 'build:get_item_details_ajax' %}", {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                        const data = await response.json();
-                        updateUI(itemType, data);
-                        user_input_stats_js[`selected_${itemType}`] = itemName;
-
-                    } catch (error) {
-                        console.error('Error fetching item details:', error);
-                        updateDetails(itemType, null); // Reset display on error
-
-                        if (itemType === 'echo') {
-                            updateSelectOptions(sonataSelect, [], ''); // Clear sonata options
-                            user_input_stats_js.selected_sonata = "";
-                        }
-                        // Tampilkan pesan error umum jika fetch gagal
-                        displayGeneralError(`Gagal memuat detail ${itemType}. Silakan coba lagi.`);
-                    }
-                }
-
-                // Event Handlers
-                function handleSelectChange(event) {
-                    const selectElement = event.target;
-                    const itemType = selectElement.id.replace('-select', '');
-                    const itemName = selectElement.value;
-
-                    const selectedEchoForFilter = itemType === 'sonata' ? echoSelect.value :
-                                                  (itemType === 'echo' ? itemName : '');
-
-                    if (itemType === 'echo') {
-                        sonataSelect.value = "";
-                        user_input_stats_js.selected_sonata = "";
-                    }
-
-                    if (itemName) {
-                        fetchDetails(itemType, itemName, selectedEchoForFilter);
-                    } else {
-                        updateDetails(itemType, null);
-                        user_input_stats_js[`selected_${itemType}`] = "";
-                    }
-                }
-
-                function validateForm(event) {
-                    clearErrors(); // Bersihkan pesan error sebelumnya
-                    let isValid = true;
-
-                    // Validate required number inputs
-                    const requiredNumberInputs = [
-                        { name: 'hp', label: 'HP' },
-                        { name: 'attack', label: 'ATK' },
-                        { name: 'defense', label: 'DEF' },
-                        { name: 'energy', label: 'ENERGY REGEN' },
-                        { name: 'crit_rate', label: 'CRITICAL RATE' },
-                        { name: 'crit_dmg', label: 'CRITICAL DAMAGE' },
-                        // character_level dan weapon_level tidak lagi divalidasi sebagai input form
-                    ];
-
-                    requiredNumberInputs.forEach(({name, label, min, max}) => {
-                        const input = document.querySelector(`input[name="${name}"]`);
-                        if (!input) return; // Lewati jika input tidak ditemukan
-
-                        const value = input.value.trim();
-                        if (value === '') {
-                            input.classList.add('input-error'); // Tetap tandai inputnya
-                            isValid = false;
-                        } else {
-                            const numValue = parseFloat(value);
-                            if (isNaN(numValue) || numValue < (min || 0)) {
-                                input.classList.add('input-error'); // Tetap tandai inputnya
-                                isValid = false;
-                            }
-                            if (max && numValue > max) {
-                                input.classList.add('input-error'); // Tetap tandai inputnya
-                                isValid = false;
-                            }
-                        }
-                    });
-
-                    // Validate optional number inputs (unchanged - hanya memastikan numerik positif jika diisi)
-                    const optionalNumberInputs = [
-                        { name: 'basic_atk_dmg_bonus', label: 'Basic Attack DMG Bonus' },
-                        { name: 'resonance_skill_dmg_bonus', label: 'Resonance Skill DMG Bonus' },
-                        { name: 'resonance_lib_dmg_bonus', label: 'Resonance Liberation DMG Bonus' },
-                        { name: 'attribute_dmg_bonus', label: 'Attribute DMG Bonus' },
-                        { name: 'healing_bonus', label: 'Healing Bonus' },
-                    ];
-
-                    optionalNumberInputs.forEach(({name, label}) => {
-                        const input = document.querySelector(`input[name="${name}"]`);
-                        if (!input) return;
-
-                        const value = input.value.trim();
-                        if (value !== '' && (isNaN(value) || parseFloat(value) < 0)) {
-                            input.classList.add('input-error'); // Tetap tandai inputnya
-                            isValid = false;
-                        }
-                    });
-
-                    // Validate required selects
-                    const requiredSelects = [
-                        { element: weaponSelect, label: 'Senjata' },
-                        { element: echoSelect, label: 'Echo' },
-                        { element: sonataSelect, label: 'Efek Sonata' }
-                    ];
-
-                    requiredSelects.forEach(({element, label}) => {
-                        if (element && element.value === '') {
-                            element.classList.add('input-error'); // Tetap tandai selectnya
-                            isValid = false;
-                        }
-                    });
-
-                    if (!isValid) {
-                        event.preventDefault(); // Mencegah pengiriman form
-                        displayGeneralError('Terdapat kesalahan pada input Anda. Mohon periksa kembali bidang yang ditandai.');
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Gulir ke atas
-                    }
-                }
-
-                // Initialize Reset Button
-                if (resetButton) {
-                    resetButton.addEventListener('click', async function(e) {
-                        e.preventDefault();
-                        try {
-                            await resetBuilder();
-                            console.log('Builder successfully reset');
-                        } catch (error) {
-                            console.error('Error resetting builder:', error);
-                        }
-                    });
-                }
-
-                // Event Listeners
-                if (weaponSelect) weaponSelect.addEventListener('change', handleSelectChange);
-                if (echoSelect) echoSelect.addEventListener('change', handleSelectChange);
-                if (sonataSelect) sonataSelect.addEventListener('change', handleSelectChange);
-                if (buildForm) buildForm.addEventListener('submit', validateForm);
-
-                // Initialize form fields with values from `user_input_stats_js`
-                function initializeFormFields() {
-                    // Fungsi ini sekarang tidak melakukan apa-apa pada input numerik
-                    // karena mereka diinisialisasi langsung di HTML dengan default ''
-                    // atau readonly.
-                }
-
-                initializeFormFields(); // Call on DOMContentLoaded (meskipun sekarang lebih sederhana)
-
-                // Initial fetch for selected items if they are already set (e.g., after form submission with errors)
-                // This will populate weapon/echo/sonata details and icons
-                if (user_input_stats_js.selected_weapon) {
-                    fetchDetails('weapon', user_input_stats_js.selected_weapon);
-                }
-                if (user_input_stats_js.selected_echo) {
-                    fetchDetails('echo', user_input_stats_js.selected_echo);
-                }
-                if (user_input_stats_js.selected_sonata && user_input_stats_js.selected_echo) {
-                    fetchDetails('sonata', user_input_stats_js.selected_sonata, user_input_stats_js.selected_echo);
-                }
-            });
+                    character_level: "{{ user_input_stats.character_level|default:'' }}",
+                    weapon_level: "{{ user_input_stats.weapon_level|default:'' }}"
+                },
+                csrfToken: "{{ csrf_token }}"
+            };
         </script>
+        <!-- File JavaScript eksternal -->
+        <script src="{% static 'js/character_builder.js' %}"></script>
     {% endblock %}
 {% endblock %}

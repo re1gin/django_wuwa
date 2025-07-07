@@ -1,66 +1,48 @@
-.container {
-    width: 100%; /* Scaled from 100% */
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    /* background-image: url("/static/assets/background/Background-7.png"); */
-    background-color: #1a1a1a;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
 
-.review-page-container {
-    width: 100%;
-    margin: 20px auto; /* Pusatkan kontainer dengan margin vertikal */
-    display: flex;
-    flex-direction: column; /* Menumpuk section yang disertakan secara vertikal */
 
-}
-
-.review {
+.hero{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #ffffff;
+    background-color: #3a3a3a;
 }
 
-.review .container-review {
+.container-review {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
-    padding: 20px;
+    padding: 30px;
     box-sizing: border-box;
 }
 
-.review .left-panel {
+.left-panel {
     width: 380px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     gap: 10px;
 }
 
-.review .center-panel {
+.center-panel {
     width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
 }
 
-.review .right-panel {
+.right-panel {
     width: 380px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 /* Header Section */
-.review .header-section {
+.header-section {
     padding: 15px;
     text-align: left;
     padding-bottom: 10px;
@@ -68,7 +50,7 @@
     border-top: 1px solid #aaaaaa;
 }
 
-.review .header-section h1 {
+.header-section h1 {
     font-size: 24px;
     font-weight: bold;
     margin: 0;
@@ -77,14 +59,14 @@
 }
 
 /* Stat Overview */
-.review .left-stat-overview {
+.left-stat-overview {
     display: flex;
     width: 100%;
     flex-direction: column;
     align-items: center;
 }
 
-.review .stat-item {
+.stat-item {
     display: flex;
     flex-direction: row;
     background-color: #2a2a2a;
@@ -93,21 +75,21 @@
     justify-content: space-between;
 }
 
-.review .stat-item:nth-child(odd) {
+.stat-item:nth-child(odd) {
     background-color: rgba(58, 58, 58, 0.33);
 }
 
-.review .stat-item:nth-child(even) {
+.stat-item:nth-child(even) {
     background-color: rgba(111, 111, 111, 0.43);
 }
 
-.review .stat-name {
+.stat-name {
     padding-left: 10px;
     font-size: 14px;
     color: #ffffff;
 }
 
-.review .stat-value-placeholder {
+.stat-value-placeholder {
     font-size: 16px;
     padding-right: 10px;
     font-weight: bold;
@@ -115,61 +97,61 @@
 }
 
 /* Weapon Section */
-.review .weapon {
+.weapon {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 15px;
 }
 
-.review .weapon-details-container {
+.weapon-details-container {
     display: flex;
     gap: 15px;
     align-items: center;
 }
 
-.review .weapon-icon-large {
+.weapon-icon-large {
     width: 80px;
     height: 80px;
     object-fit: cover;
     border-radius: 5px;
 }
 
-.review .weapon-info {
+.weapon-info {
     flex: 1;
 }
 
-.review .weapon-header-and-rank {
+.weapon-header-and-rank {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.review .weapon-name-display {
+.weapon-name-display {
     font-size: 18px;
     font-weight: bold;
 }
 
-.review .weapon-attributes {
+.weapon-attributes {
     font-size: 14px;
 }
 
-.review .weapon-attributes p {
+.weapon-attributes p {
     margin: 5px 0;
 }
 
-.review .attribute-value {
+.attribute-value {
     font-weight: bold;
 }
 
-.review .content-section {
+.content-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
     text-align: center;
     padding: 15px;
 }
-.review .rank-label {
+.rank-label {
     background-color: #3a3a3a;
     padding: 3px 8px;
     border-radius: 10px;
@@ -177,7 +159,7 @@
     float: right;
 }
 
-.review .saran {
+.saran {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 10px;
@@ -189,7 +171,7 @@
     text-align: center;
 }
 
-.review .suggestion-section {
+.suggestion-section {
     display: flex;
     flex-direction: column;
     overflow: scroll;
@@ -197,23 +179,23 @@
     width: 100%;
     height: 300px;
 }
-.review .suggestion-list {
+.suggestion-list {
     list-style: disc inside; /* Atau none jika Anda tidak ingin bullet point */
     padding-left: 0;
     margin-bottom: 20px;
 }
-.review .suggestion-list li {
-    margin-bottom: 8px; /* Jarak antar item saran */
-    line-height: 1.5; /* Spasi baris untuk keterbacaan */
+.suggestion-list li {
+    margin-bottom: 8px;
+    line-height: 1.5;
 }
 
 /* Gear Section */
-.review .gear {
+.gear {
     display: flex;
     gap: 15px;
 }
 
-.review .equipment-gear {
+.equipment-gear {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 15px;
@@ -224,20 +206,20 @@
     gap: 10px;
 }
 
-.review .gear-icon {
+.gear-icon {
     width: 60px;
     height: 60px;
     object-fit: cover;
     border-radius: 5px;
 }
 
-.review .gear-title {
+.gear-title {
     font-size: 14px;
     text-align: center;
 }
 
 /* Character Display */
-.review .character-display {
+.character-display {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -245,7 +227,7 @@
     justify-content: center;
 }
 
-.review .character-art {
+.character-art {
     display: flex;
     z-index: 1;
     position: relative;
@@ -254,8 +236,8 @@
     object-position: center;
 }
 
-.review .stars,
-.review .character-name {
+.stars,
+.character-name {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -263,19 +245,19 @@
     pointer-events: none;
 }
 
-.review .stars {
+.stars {
     bottom: 10px;
     display: flex;
     margin: 0;
 }
 
-.review .stars span {
+.stars span {
     color: gold;
     font-size: 20px;
     margin: 0 2px;
 }
 
-.review .character-name {
+.character-name {
     bottom: 40px;
     font-size: 24px;
     font-weight: bold;
@@ -285,13 +267,13 @@
     text-shadow: 0 2px 8px #000;
 }
 
-.review .right-stat-overview {
+.right-stat-overview {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
 }
 
-.review .stat-box {
+.stat-box {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 15px;
@@ -301,48 +283,48 @@
     width: 30%;
 }
 
-.review .stat-value {
+.stat-value {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.review .stat-label {
+.stat-label {
     font-size: 14px;
     color: #aaaaaa;
     text-align: center;
 }
 
-.review .icon-attribute {
+.icon-attribute {
     width: 30px;
     height: 30px;
     margin-bottom: 5px;
 }
 
-.review .role-hover-container {
+.role-hover-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 15px;
 }
 
-.review .role-hover-item {
+.role-hover-item {
     position: relative;
     display: inline-block;
 }
 
-.review .role-icon {
+.role-icon {
     width: 50px;
     height: 50px;
     object-fit: contain;
     transition: transform 0.2s;
 }
 
-.review .role-hover-item:hover .role-icon {
+.role-hover-item:hover .role-icon {
     transform: scale(1.1);
 }
 
-.review .role-hover-name {
+.role-hover-name {
     position: absolute;
     bottom: -25px;
     left: 50%;
@@ -358,76 +340,76 @@
     transition: all 0.2s ease;
 }
 
-.review .role-hover-item:hover .role-hover-name {
+.role-hover-item:hover .role-hover-name {
     opacity: 1;
     visibility: visible;
     bottom: -30px;
 }
 
-.review .no-roles {
+.no-roles {
     color: #999;
     font-style: italic;
     font-size: 14px;
 }
 
-.review .icon-small {
+.icon-small {
     width: 50px;
     height: 50px;
 }
 
 /* Damage List */
-.review .damage-list {
+.damage-list {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 15px;
 }
 
-.review .damage-item {
+.damage-item {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
     border-bottom: 1px solid #3a3a3a;
 }
 
-.review .damage-item:last-child {
+.damage-item:last-child {
     border-bottom: none;
 }
 
-.review .damage-name {
+.damage-name {
     font-size: 14px;
     color: #aaaaaa;
 }
 
-.review .damage-value-placeholder {
+.damage-value-placeholder {
     font-size: 14px;
     font-weight: bold;
 }
 
 /* Skill Levels */
-.review .skill-levels {
+.skill-levels {
     background-color: #2a2a2a;
     border-radius: 10px;
     padding: 15px;
 }
 
-.review .level-text {
+.level-text {
     display: flex;
     justify-content: space-around;
     margin-bottom: 10px;
 }
 
-.review .level-text span {
+.level-text span {
     font-size: 12px;
     color: #aaaaaa;
 }
 
-.review .skill-icons {
+.skill-icons {
     display: flex;
     justify-content: space-around;
     margin-bottom: 10px;
 }
 
-.review .skill-icon {
+.skill-icon {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -438,7 +420,7 @@
     font-weight: bold;
 }
 
-.review .skill-names {
+.skill-names {
     display: flex;
     justify-content: space-around;
     font-size: 12px;
@@ -446,7 +428,7 @@
     text-align: center;
 }
 
-.review .skill-names span {
+.skill-names span {
     width: 20%;
 }
 
@@ -465,7 +447,7 @@
 .spider-chart-container h3, .resonator-rating h3,
 .status-difference h3, .category-scores h3,
 .bonus-list h3, .gear-section h3 {
-    color: #00bcd4; /* Accent color */
+    color: #ffd900; /* Accent color */
     border-bottom: 1px solid #444;
     padding-bottom: 10px;
     margin-top: 0;

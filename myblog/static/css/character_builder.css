@@ -1,18 +1,4 @@
 
-
-/* --- 3. Gaya Umum (Container) --- */
-.container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-image: url("/static/assets/background/Background-7.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font dari patokan */
-}
-
 /* --- 4. Hero Section (Layout Utama) --- */
 .hero {
     display: flex;
@@ -20,9 +6,9 @@
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
-    
     box-sizing: border-box;
     animation: fadeIn 1s ease-out forwards;
+    background-color: #717171;
 }
 
 .left {
@@ -35,12 +21,10 @@
 
 .image-container {
     width: 360px; /* Dari patokan */
-    height: 100%; /* Dari patokan */
     display: flex;
     align-items: flex-end; /* Dari patokan */
     justify-content: center;
     position: relative;
-    box-shadow: 0 0 13.5px #343434; /* Dari patokan */
 }
 
 .character-splash {

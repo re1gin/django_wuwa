@@ -6,12 +6,6 @@ body {
     padding: 1rem;
 }
 
-@media (min-width: 768px) {
-    body {
-        padding: 2rem;
-    }
-}
-
 /* Layout */
 .container {
     max-width: 72rem;

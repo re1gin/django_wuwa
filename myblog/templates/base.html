@@ -20,17 +20,18 @@
 <body>
 
     <div class="container">
-        
         {% include 'component/navbar.html' %}
-        
-        <main>
+        <main class="main-content">
             {% block content %}
             {% endblock %}
+            <footer class="footer">
+                {% include 'component/footer.html' %}
+            </footer>
+            
         </main>
         
     </div>
 
-    {% include 'component/footer.html' %}
 
     {% block extra_js %}{% endblock %} 
 </body>

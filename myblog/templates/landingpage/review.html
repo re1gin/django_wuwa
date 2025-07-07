@@ -8,216 +8,216 @@
 {% endblock %}
 
 {% block content %}
-    <div class="review-page-container">
-        <div class="review">
-            <header class="header-section">
-                <h1>Build Review : {{ resonator.name }}</h1>
-                <div class="user-name">
-                    <span>User: {{ user_name }}</span>
-                    <span>Date: {{ current_date }}</span>
-                </div>
-            </header>
-            <div class="container-review">
-                <div class="left-panel">
+    
+    <div class="hero">
+        <header class="header-section">
+            <h1>Build Review : {{ resonator.name }}</h1>
+            <div class="user-name">
+                <span>User: {{ user_name }}</span>
+                <span>Date: {{ current_date }}</span>
+            </div>
+        </header>
+        <div class="container-review">
+            <div class="left-panel">
 
-                    <div class="right-stat-overview">
-                        <div class="stat-box">
-                            <div class="stat-value">{{ user_input_stats.character_level }}</div>
-                            <div class="stat-label">
-                                <div class="label">Level</div>
-                            </div>
-                        </div>
-                        <div class="stat-box">
-                            <img src="{{ resonator.weapon_type.icon_type.url }}" alt="{{ resonator.weapon.name }} Weapon Icon" class="icon-attribute">
-                            <div class="stat-label">
-                                <div class="label">Weapon</div>
-                            </div>
-                        </div>
-                        <div class="stat-box">
-                            <img src="{{ resonator.attribute.icon_attribute.url }}" alt="{{ resonator.attribute.name }} Attribute Icon" class="icon-attribute">
-                            <div class="stat-label">
-                                <div class="label">{{ resonator.attribute.name }}</div>
-                            </div>
+                <div class="right-stat-overview">
+                    <div class="stat-box">
+                        <div class="stat-value">{{ user_input_stats.character_level }}</div>
+                        <div class="stat-label">
+                            <div class="label">Level</div>
                         </div>
                     </div>
-
-                    <div class="character-display">
-                        <img src="{{ images.render }}" alt="{{ resonator.name }}" class="character-art" />
-                        <div class="stars">
-                            {# Render stars based on rarity: "x"|ljust:resonator.rarity creates a string of length equal to rarity #}
-                            {% for i in "x"|ljust:resonator.rarity %}
-                                <span>&#9733;</span>
-                            {% endfor %}
+                    <div class="stat-box">
+                        <img src="{{ resonator.weapon_type.icon_type.url }}" alt="{{ resonator.weapon.name }} Weapon Icon" class="icon-attribute">
+                        <div class="stat-label">
+                            <div class="label">Weapon</div>
                         </div>
-                        <h2 class="character-name">{{ resonator.name|upper }}</h2>
                     </div>
-
-                    <div class="role-hover-container">
-                        {% for role in resonator.role.all %}
-                            <div class="role-hover-item">
-                                <img src="{{ role.icon_role.url }}" class="role-icon" alt="{{ role.name }}">
-                                <span class="role-hover-name">{{ role.name }}</span>
-                            </div>
-                        {% empty %}
-                            <p class="no-roles">No roles assigned</p>
-                        {% endfor %}
-                    </div>
-
-                    <div class="left-stat-overview">
-                    {# Loop melalui daftar stat yang sudah diproses dari views.py #}
-                        {% for stat in overview_main_stats %}
-                            <div class="stat-item">
-                                <span class="stat-name">{{ stat.label }}</span>
-                                <span class="stat-value-placeholder" style="color: {{ stat.color }}">
-                                    {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
-                                    {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
-                                    {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
-                                    <span class="ideal-value-display">({{ stat.ideal_value }}{% if stat.is_percentage %}%{% endif %})</span>
-                                </span>
-                            </div>
-                        {% endfor %}
+                    <div class="stat-box">
+                        <img src="{{ resonator.attribute.icon_attribute.url }}" alt="{{ resonator.attribute.name }} Attribute Icon" class="icon-attribute">
+                        <div class="stat-label">
+                            <div class="label">{{ resonator.attribute.name }}</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="center-panel">
-                    <div class="panel assessment-panel">
-                        <div class="spider-chart-container">
-                            <h3>Ideal Build Performance Radar</h3>
-                            <canvas id="performanceRadarChart"></canvas>
-                            {{ performance_data_json|json_script:"performance-data" }}
-                        </div>
+                <div class="character-display">
+                    <img src="{{ images.render }}" alt="{{ resonator.name }}" class="character-art" />
+                    <div class="stars">
+                        {# Render stars based on rarity: "x"|ljust:resonator.rarity creates a string of length equal to rarity #}
+                        {% for i in "x"|ljust:resonator.rarity %}
+                            <span>&#9733;</span>
+                        {% endfor %}
                     </div>
-                        
-                    <div class="content-section">
-                        <div class="resonator-rating">
-                            <h3>Overall Resonator Build Rating</h3>
-                            {# Gunakan resonator_rating_color untuk warna teks #}
-                            <div class="rating-score" style="color: {{ resonator_rating_color }};">{{ resonator_rating|floatformat:"0" }} / 100</div>
-                            {% if resonator_rating_text %}
-                                <p class="rating-text">{{ resonator_rating_text }}</p>
-                            {% endif %}
-                        </div>
+                    <h2 class="character-name">{{ resonator.name|upper }}</h2>
+                </div>
 
-                        {% if warning_messages %}
-                            <div class="alert alert-warning" role="alert">
-                                <h3>Perhatian! Ada kekurangan pada build Anda:</h3>
-                                <ul>
-                                    {% for message in warning_messages %}
-                                        <li>{{ message }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                <div class="role-hover-container">
+                    {% for role in resonator.role.all %}
+                        <div class="role-hover-item">
+                            <img src="{{ role.icon_role.url }}" class="role-icon" alt="{{ role.name }}">
+                            <span class="role-hover-name">{{ role.name }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="no-roles">No roles assigned</p>
+                    {% endfor %}
+                </div>
+
+                <div class="damage-list">
+                {# Loop melalui daftar stat yang sudah diproses dari views.py #}
+                    {% for stat in overview_main_stats %}
+                        <div class="damage-item">
+                            <span class="damage-name">{{ stat.label }}</span>
+                            <span class="damege-value-placeholder" style="color: {{ stat.color }}">
+                                {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
+                                {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
+                                {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
+                                <span class="ideal-value-display">({{ stat.ideal_value }}{% if stat.is_percentage %}%{% endif %})</span>
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="center-panel">
+                <div class="panel assessment-panel">
+                    <div class="spider-chart-container">
+                        <h3>Ideal Build Performance Radar</h3>
+                        <canvas id="performanceRadarChart"></canvas>
+                        {{ performance_data_json|json_script:"performance-data" }}
+                    </div>
+                </div>
+                    
+                <div class="content-section">
+                    <div class="resonator-rating">
+                        <h3>Overall Resonator Build Rating</h3>
+                        {# Gunakan resonator_rating_color untuk warna teks #}
+                        <div class="rating-score" style="color: {{ resonator_rating_color }}">{{ resonator_rating|floatformat:"0" }} / 100</div>
+                        {% if resonator_rating_text %}
+                            <p class="rating-text">{{ resonator_rating_text }}</p>
                         {% endif %}
+                    </div>
 
-                        <div class="saran">Saran & Analisis Stat</div>
-
-                        <div class="suggestion-section">
-                            <ul class="suggestion-list"> {# Tambahkan kelas untuk styling #}
-                                {% for suggestion in status_differences %}
-                                    <li>{{ suggestion|safe }}</li>
+                    {% if warning_messages %}
+                        <div class="alert alert-warning" role="alert">
+                            <h3>Perhatian! Ada kekurangan pada build Anda:</h3>
+                            <ul>
+                                {% for message in warning_messages %}
+                                    <li>{{ message }}</li>
                                 {% endfor %}
                             </ul>
                         </div>
+                    {% endif %}
 
-                        <div class="button-box">
-                            <button class="btn enter" onclick="window.location.href='{{ damager_url }}';">DAMAGE CALCULATOR</button>
-                            <button class="btn recommend">BACK</button>
+                    <div class="saran">Saran & Analisis Stat</div>
+
+                    <div class="suggestion-section">
+                        <ul class="suggestion-list"> {# Tambahkan kelas untuk styling #}
+                            {% for suggestion in status_differences %}
+                                <li>{{ suggestion|safe }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="button-box">
+                        <button class="btn enter" onclick="window.location.href='{{ damager_url }}';">DAMAGE CALCULATOR</button>
+                        <button class="btn recommend">BACK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="weapon">
+                    <div class="weapon-details-container">
+                        <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.weapon_name }} Icon" class="weapon-icon-large">
+                        <div class="weapon-info">
+                            <div class="weapon-header-and-rank">
+                                <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
+                            </div>
+                            
+                            <div class="weapon-attributes">
+                                <p>ATK: <span class="attribute-value">{{ selected_weapon_obj.base_atk }}</span></p> {# Menggunakan base_atk sesuai koreksi #}
+                                <p>{{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
+                                <span class="rank-label">Rank 1</span> 
+                                <span class="rank-label">Level 90</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="right-panel">
-                    <div class="weapon">
-                        <div class="weapon-details-container">
-                            <img src="{{ selected_weapon_obj.icon_image.url }}" alt="{{ selected_weapon_obj.weapon_name }} Icon" class="weapon-icon-large">
-                            <div class="weapon-info">
-                                <div class="weapon-header-and-rank">
-                                    <div class="weapon-name-display">{{ selected_weapon_obj.weapon_name }}</div>
-                                </div>
-                                
-                                <div class="weapon-attributes">
-                                    <p>ATK: <span class="attribute-value">{{ selected_weapon_obj.base_atk }}</span></p> {# Menggunakan base_atk sesuai koreksi #}
-                                    <p>{{ selected_weapon_obj.secondary_stat }}: {{ selected_weapon_obj.secondary_value }}</p>
-                                    <span class="rank-label">Rank 1</span> 
-                                    <span class="rank-label">Level 90</span>
-                                </div>
-                            </div>
+                <div class="gear">
+                    <div class="equipment-gear">
+                        <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
+                        <div class="gear-title">{{ selected_echo_obj.name }}</div>
+                        <div class="gear-title">
+                            <p>Cost: {{selected_echo_obj.cost}}</p>
                         </div>
+
                     </div>
-
-                    <div class="gear">
-                        <div class="equipment-gear">
-                            <img src="{{ selected_echo_obj.icon_echo.url }}" alt="{{ selected_echo_obj.name }} Icon" class="gear-icon">
-                            <div class="gear-title">{{ selected_echo_obj.name }}</div>
-                            <div class="gear-title">
-                                <p>Cost: {{selected_echo_obj.cost}}</p>
-                            </div>
-
-                        </div>
-                        <div class="equipment-gear">
-                            <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
-                            <div class="gear-title">{{ selected_sonata_obj.name }}</div>
-                        </div>
+                    <div class="equipment-gear">
+                        <img src="{{ selected_sonata_obj.icon_sonata.url }}" alt="{{ selected_sonata_obj.name }} Icon" class="gear-icon">
+                        <div class="gear-title">{{ selected_sonata_obj.name }}</div>
                     </div>
+                </div>
 
-                    <div class="category-scores">
-                        <div class="score-grid">
-                            <div class="score-box">Weapon<br><span>{{ category_scores.Weapon }}</span></div>
-                            <div class="score-box">Echo<br><span>{{ category_scores.Echo }}</span></div>
-                            <div class="score-box">Skill<br><span>{{ category_scores.Skill }}</span></div>
-                            <div class="score-box">Stats<br><span>{{ category_scores.Stats}}</span></div>
-                        </div>
+                <div class="category-scores">
+                    <div class="score-grid">
+                        <div class="score-box">Weapon<br><span>{{ category_scores.Weapon }}</span></div>
+                        <div class="score-box">Echo<br><span>{{ category_scores.Echo }}</span></div>
+                        <div class="score-box">Skill<br><span>{{ category_scores.Skill }}</span></div>
+                        <div class="score-box">Stats<br><span>{{ category_scores.Stats}}</span></div>
                     </div>
+                </div>
 
-                    <div class="damage-list">
-                        {% for stat in overview_bonus_stats %}
-                            <div class="damage-item">
-                                <span class="damage-name">{{ stat.label }}</span>
-                                <span class="damage-value-placeholder" style="color: {{ stat.color }}">
-                                    {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
-                                    {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
-                                    {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
-                                    <span class="ideal-value-display">({{ stat.ideal_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %})</span>
-                                </span>
-                                <span class="priority-indicator">
-                                    {% if stat.is_prioritized %}
-                                        <span class="badge badge-priority-high">PRIORITY</span> {# Tambahkan CSS untuk styling #}
-                                    {% else %}
-                                        <span class="badge badge-priority-normal">NORMAL</span> {# Tambahkan CSS untuk styling #}
-                                    {% endif %}
-                                </span>
-                            </div>
-                        {% endfor %}
+                <div class="damage-list">
+                    {% for stat in overview_bonus_stats %}
+                        <div class="damage-item">
+                            <span class="damage-name">{{ stat.label }}</span>
+                            <span class="damage-value-placeholder" style="color: {{ stat.color }}">
+                                {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
+                                {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
+                                {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
+                                <span class="ideal-value-display">({{ stat.ideal_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %})</span>
+                            </span>
+                            <span class="priority-indicator">
+                                {% if stat.is_prioritized %}
+                                    <span class="badge badge-priority-high">PRIORITY</span> {# Tambahkan CSS untuk styling #}
+                                {% else %}
+                                    <span class="badge badge-priority-normal">NORMAL</span> {# Tambahkan CSS untuk styling #}
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="skill-levels">
+                    <div class="level-text">
+                        <span>LV {{ user_input_stats.basic_atk_level }}</span>
+                        <span>LV {{ user_input_stats.resonance_skill_level }}</span>
+                        <span>LV {{ user_input_stats.forte_circuit_level }}</span>
+                        <span>LV {{ user_input_stats.resonance_liberation_level }}</span>
+                        <span>LV {{ user_input_stats.intro_skill_level }}</span>
                     </div>
-
-                    <div class="skill-levels">
-                        <div class="level-text">
-                            <span>LV {{ user_input_stats.basic_atk_level }}</span>
-                            <span>LV {{ user_input_stats.resonance_skill_level }}</span>
-                            <span>LV {{ user_input_stats.forte_circuit_level }}</span>
-                            <span>LV {{ user_input_stats.resonance_liberation_level }}</span>
-                            <span>LV {{ user_input_stats.intro_skill_level }}</span>
-                        </div>
-                        <div class="skill-icons">
-                            {# Tempat untuk ikon skill level yang akan ditambahkan secara manual #}
-                            <img src="{% static 'assets/basic_attack_icon.png' %}" alt="Basic Attack Skill Icon" class="skill-icon">
-                            <img src="{% static 'path/to/resonance_skill_icon.png' %}" alt="Resonance Skill Icon" class="skill-icon">
-                            <img src="{% static 'path/to/forte_circuit_icon.png' %}" alt="Forte Circuit Icon" class="skill-icon">
-                            <img src="{% static 'path/to/resonance_liberation_icon.png' %}" alt="Resonance Liberation Icon" class="skill-icon">
-                            <img src="{% static 'path/to/intro_skill_icon.png' %}" alt="Intro Skill Icon" class="skill-icon">
-                        </div>
-                        <div class="skill-names">
-                            <span>Basic Attack</span>
-                            <span>Resonance Skill</span>
-                            <span>Forte Circuit</span>
-                            <span>Resonance Liberation</span>
-                            <span>Intro Skill</span>
-                        </div>
+                    <div class="skill-icons">
+                        {# Tempat untuk ikon skill level yang akan ditambahkan secara manual #}
+                        <img src="{% static 'assets/basic_attack_icon.png' %}" alt="Basic Attack Skill Icon" class="skill-icon">
+                        <img src="{% static 'path/to/resonance_skill_icon.png' %}" alt="Resonance Skill Icon" class="skill-icon">
+                        <img src="{% static 'path/to/forte_circuit_icon.png' %}" alt="Forte Circuit Icon" class="skill-icon">
+                        <img src="{% static 'path/to/resonance_liberation_icon.png' %}" alt="Resonance Liberation Icon" class="skill-icon">
+                        <img src="{% static 'path/to/intro_skill_icon.png' %}" alt="Intro Skill Icon" class="skill-icon">
+                    </div>
+                    <div class="skill-names">
+                        <span>Basic Attack</span>
+                        <span>Resonance Skill</span>
+                        <span>Forte Circuit</span>
+                        <span>Resonance Liberation</span>
+                        <span>Intro Skill</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
 {% endblock content %}
 
 {% block extra_js %}
