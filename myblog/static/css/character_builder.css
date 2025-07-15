@@ -6,9 +6,10 @@
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
-    box-sizing: border-box;
     animation: fadeIn 1s ease-out forwards;
-    background-color: #717171;
+    background-color: #111111;
+    border-radius: 20px;
+
 }
 
 .left {
@@ -38,25 +39,24 @@
 }
 
 .right {
-    padding-top: 40px;
-    width: 50%; /* Dari patokan */
-    height: 100%; /* Dari patokan */
+    width: 50%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Dari patokan */
+    gap: 20px;
 }
 
 /* --- 5. Icon Container (Slider Karakter) --- */
 .icon-container {
     display: flex;
     flex-direction: row;
-    width: 270px; /* Dari patokan */
+    width: 300px;
     overflow-x: auto;
     white-space: nowrap;
-    padding: 0 18px; /* Dari patokan */
-    margin-left: auto; /* Dari patokan */
-    gap: 13.5px; /* Dari patokan */
+    padding: 0 18px;
+    margin-left: auto;
+    gap: 1rem;
     scroll-snap-type: x mandatory;
     mask-image: linear-gradient(
         to right,
@@ -65,8 +65,8 @@
         black 90%,
         transparent 100%
     );
-    scroll-padding-left: 9px; /* Dari patokan */
-    scroll-padding-right: 9px; /* Dari patokan */
+    scroll-padding-left: 9px;
+    scroll-padding-right: 9px;
 }
 
 .icon-container::-webkit-scrollbar {
@@ -78,8 +78,8 @@
 }
 
 .character-icon {
-    width: 54px; /* Dari patokan */
-    height: 54px; /* Dari patokan */
+    width: 60px; /* Dari patokan */
+    height: 60px; /* Dari patokan */
     border-radius: 50%;
     object-fit: cover;
     margin: 10px 0px; /* Dari patokan */
@@ -120,8 +120,11 @@
     border-radius: 5px;
     font-weight: bold;
 }
-.messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.messages .error { 
+    display: flex;
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb; }
 
 /* Gaya untuk input yang memiliki error */
 input.input-error, select.input-error {

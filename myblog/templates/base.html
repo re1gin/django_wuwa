@@ -21,13 +21,13 @@
 
     <div class="container">
         {% include 'component/navbar.html' %}
+        
         <main class="main-content">
+
             {% block content %}
             {% endblock %}
-            <footer class="footer">
-                {% include 'component/footer.html' %}
-            </footer>
-            
+
+            {% include 'component/footer.html' %}
         </main>
         
     </div>

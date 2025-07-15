@@ -64,14 +64,11 @@
                 </div>
 
                 <div class="damage-list">
-                {# Loop melalui daftar stat yang sudah diproses dari views.py #}
                     {% for stat in overview_main_stats %}
                         <div class="damage-item">
                             <span class="damage-name">{{ stat.label }}</span>
                             <span class="damege-value-placeholder" style="color: {{ stat.color }}">
-                                {# Menampilkan nilai user, diformat sebagai angka bulat, dan menambahkan '%' jika is_percentage true #}
                                 {{ stat.user_value|floatformat:"0" }}{% if stat.is_percentage %}%{% endif %}
-                                {# Menampilkan nilai ideal dalam tanda kurung, lebih kecil, dan berwarna abu-abu #}
                                 <span class="ideal-value-display">({{ stat.ideal_value }}{% if stat.is_percentage %}%{% endif %})</span>
                             </span>
                         </div>

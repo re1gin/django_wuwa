@@ -66,9 +66,9 @@
                                 <span class="title-block">MAIN STAT </span>
                                 <div class="stat">
                                     {# Diatur tanpa default '0.0' agar benar-benar kosong jika tidak ada nilai #}
-                                    <p>HP: <input type="number" name="hp" min="900"  max="55000" placeholder="0.0" value="{{ form.hp.value|default:'' }}" class="{% if form.hp.errors %}input-error{% endif %}"></p>
-                                    <p>ATK: <input type="number" name="attack" placeholder="0.0" value="{{ form.attack.value|default:'' }}" class="{% if form.attack.errors %}input-error{% endif %}"></p>
-                                    <p>DEF: <input type="number" name="defense" placeholder="0.0" value="{{ form.defense.value|default:'' }}" class="{% if form.defense.errors %}input-error{% endif %}"></p>
+                                    <p>HP: <input type="number" name="hp" min="10000"  max="55000" placeholder="0.0" value="{{ form.hp.value|default:'' }}" class="{% if form.hp.errors %}input-error{% endif %}"></p>
+                                    <p>ATK: <input type="number" name="attack" min="1000" placeholder="0.0" value="{{ form.attack.value|default:'' }}" class="{% if form.attack.errors %}input-error{% endif %}"></p>
+                                    <p>DEF: <input type="number" name="defense" min="1000" placeholder="0.0" value="{{ form.defense.value|default:'' }}" class="{% if form.defense.errors %}input-error{% endif %}"></p>
                                     <p>ENERGY REGEN: <input type="number" name="energy" min="100" placeholder="0.0" value="{{ form.energy.value|default:'' }}" class="{% if form.energy.errors %}input-error{% endif %}"></p>
                                     <p>CRITICAL RATE: <input type="number" name="crit_rate" min="5.0" placeholder="0.0" value="{{ form.crit_rate.value|default:'' }}" class="{% if form.crit_rate.errors %}input-error{% endif %}"></p>
                                     <p>CRITICAL DAMAGE: <input type="number" name="crit_dmg" min="150.0" placeholder="0.0" value="{{ form.crit_dmg.value|default:'' }}" class="{% if form.crit_dmg.errors %}input-error{% endif %}"></p>
@@ -94,7 +94,7 @@
                                 </div>
 
                                 <div class="sonata">
-                                    <span class="title-block">SONATA EFFECT</span>
+                                    <span class="title-block">SONATA</span>
                                     <div class="block-icon">
                                         <img id="sonata-icon" src="{% if selected_sonata_obj %}{{ selected_sonata_obj.icon_sonata.url }}{% else %}{% static 'assets/ikon/Sonata.png' %}{% endif %}" alt="Sonata Preview" class="icon-img"/>
                                     </div>

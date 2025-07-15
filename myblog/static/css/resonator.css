@@ -4,12 +4,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    background-color: #1a1a1a;
     width: 100%;
     gap: 67px;
     height: 100vh;
-    margin: 0 auto;
-    max-width: 1050px;
-    padding: 0 0px;
+    padding: 10px;
+    border-radius: 20px;
     } 
 
     .left {

@@ -15,10 +15,14 @@ body {
 }
 
 .container {
+    background-color: rgb(0, 0, 0);
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    padding: 0 10px;
+    padding-top: none;
+    gap: 0.5rem;
 }
 
 .navbar {
@@ -27,12 +31,9 @@ body {
     height: 50px;
     width: 100%;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.141);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    background-color: #1a1a1a;
     transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
     z-index: 1000;
-    backdrop-filter: blur(7px);
-    -webkit-backdrop-filter: blur(7px);
 }
 
 .logo-company {
@@ -63,25 +64,23 @@ body {
 
 .main-content {
     width: 100%;
-    height: 100vh;
+    gap: 1rem;
+    border-radius: 20px 20px 0 0;
     overflow-y: scroll;
     scrollbar-width: none;
 
 }
 
 
-.footer {
+footer {
     width: 100%;
     background-color: rgb(0, 0, 0); 
     color: #ccc;
     padding: 15px 0;
     text-align: center; 
     font-size: 14px;
-    margin-top: auto;
-
-}
-
-.footer p {
-    margin: 0;
-    padding: 0;
+    margin-top: 10px;
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
